@@ -1,0 +1,42 @@
+{
+  "tag": "holdout_everglades",
+  "model_info": {
+    "model": "mlp",
+    "params": 17291,
+    "receptive_field_m": 10,
+    "train_px": 90026,
+    "val_px": 30008,
+    "test_px": 100002
+  },
+  "test": {
+    "everglades": {
+      "mangrove_iou": 0.9016141953738899,
+      "mangrove_precision": 0.9485850579247517,
+      "mangrove_recall": 0.9479390681003584,
+      "mangrove_f1": 0.9482619529947472,
+      "mangrove_ap": 0.9903262426852967,
+      "miou": 0.28569447115637414,
+      "overall_acc": 0.8001539969200616,
+      "mangrove_px": 55800,
+      "valid_px": 100002,
+      "per_class_iou": {
+        "mangrove": 0.9016141953738899,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.14207364847218595,
+        "water": 0.8478379857690203,
+        "seasonal_water": 0.07976278724981467,
+        "coastal_forest": 0.19047619047619047,
+        "cropland": 0.0,
+        "herbaceous_wetland": 0.3895424131232463,
+        "other_land": 0.019943019943019943
+      },
+      "threshold": 0.56,
+      "val_mangrove_iou_tuned": 0.8987010865125398,
+      "mangrove_iou_tuned": 0.9034051901688864,
+      "mangrove_f1_tuned": 0.9492515779981965,
+      "mangrove_precision_tuned": 0.9552813067150635,
+      "mangrove_recall_tuned": 0.9432974910394265,
+      "fit_seconds": 6.3
+    }
+  }
+}

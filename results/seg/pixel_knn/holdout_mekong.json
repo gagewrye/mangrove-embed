@@ -1,0 +1,44 @@
+{
+  "tag": "holdout_mekong",
+  "model_info": {
+    "model": "knn",
+    "params": null,
+    "receptive_field_m": 10,
+    "train_px": 89976,
+    "val_px": 30012,
+    "test_px": 59998
+  },
+  "test": {
+    "mekong": {
+      "mangrove_iou": 0.7749897031334158,
+      "mangrove_precision": 0.8137662596892777,
+      "mangrove_recall": 0.9420758713652995,
+      "mangrove_f1": 0.8732329001856347,
+      "mangrove_ap": 0.9206940400749059,
+      "miou": 0.27486301799111573,
+      "overall_acc": 0.6954398479949332,
+      "mangrove_px": 25965,
+      "valid_px": 59998,
+      "per_class_iou": {
+        "mangrove": 0.7749897031334158,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.4206787687450671,
+        "water": 0.5868624623049692,
+        "seasonal_water": 0.23759051317032218,
+        "built_up": 0.32296204107031734,
+        "barren": 0.048604860486048604,
+        "coastal_forest": 0.24923857868020305,
+        "cropland": 0.30315323621611656,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.07941303409581356
+      },
+      "threshold": 0.4,
+      "val_mangrove_iou_tuned": 0.956428187197418,
+      "mangrove_iou_tuned": 0.765523460091415,
+      "mangrove_f1_tuned": 0.8671914901111287,
+      "mangrove_precision_tuned": 0.7989356178608515,
+      "mangrove_recall_tuned": 0.9481994993260158,
+      "fit_seconds": 75.6
+    }
+  }
+}
