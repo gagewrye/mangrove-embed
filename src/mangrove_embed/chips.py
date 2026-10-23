@@ -2,9 +2,10 @@
 Dense chips for segmentation: 64-band AlphaEarth embeddings + 11-class v3 label raster.
 
 Per region:
-  1. Chip centers, drawn at 100 m (cheap): half on mangrove pixels, half on random coastal-zone
-     pixels (so chips also cover mangrove-free coast). Greedy de-duplication keeps chips from
-     overlapping more than ~50%.
+  1. Chip centers, drawn at 100 m with stratifiedSample (cheap, exact counts): half on mangrove
+     pixels, half on random coastal-zone pixels (so chips also cover mangrove-free coast).
+     Greedy de-duplication keeps chips from overlapping more than ~50%. Rerunning tops up a
+     region to the configured counts without touching existing chips.
   2. Each chip is pulled with ee.data.computePixels on the embedding's native UTM 10 m grid
      (no resampling): `chip_px` x `chip_px` pixels, bands = A00..A63, class, valid.
   3. Saved to data/chips/<region>/chip_NNNN.npz (x: float16 [64,H,W], y: uint8 [H,W]) with
@@ -61,20 +62,59 @@ def to_arrays(structured, n_bands=64):
 
 
 # ------------------------------------------------------------------ Earth Engine
-def chip_centers(name, bbox, cfg: Config, labels, coastal, proj):
+def chip_centers(bbox, cfg: Config, labels, coastal, proj, n_mang, n_rand, seed):
+    """Candidate centers (lon, lat). stratifiedSample returns the requested count of the target
+    class wherever it occurs; plain sample() spreads points over the bbox first and loses most
+    of them to the mask when the class is a small fraction of the area."""
     region = ee.Geometry.Rectangle(bbox)
-    def pts(img, n, seed):
-        fc = img.selfMask().rename("v").sample(region=region, scale=CANDIDATE_SCALE,
-                                                projection=proj, numPixels=int(n), seed=seed,
-                                                tileScale=4, geometries=True)
+    def pts(mask, n, seed):
+        if n <= 0:
+            return []
+        img = mask.selfMask().rename("v").toInt()
+        fc = img.stratifiedSample(numPoints=0, classBand="v", classValues=[1],
+                                  classPoints=[int(n)], region=region, scale=CANDIDATE_SCALE,
+                                  projection=proj, seed=seed, tileScale=4, geometries=True)
         feats = _with_retry(lambda: fc.getInfo())["features"]
         return [f["geometry"]["coordinates"] for f in feats]
-    # numPixels is approximate (pre-mask); ask for extra
-    mang = pts(labels.eq(1), cfg.chip_n_mangrove * 8, cfg.seed)
-    rand = pts(coastal, cfg.chip_n_random * 8, cfg.seed + 1)
-    rng = np.random.default_rng(cfg.seed)
-    rng.shuffle(mang); rng.shuffle(rand)
-    return mang, rand
+    # oversample: de-duplication drops points that would overlap existing chips
+    return pts(labels.eq(1), n_mang * 6, seed), pts(coastal, n_rand * 6, seed + 1)
+
+
+def plan_index(name, bbox, cfg, labels, coastal, proj, crs, grid_x0, grid_y0, index=None):
+    """Create the chip index, or top it up to the configured counts (existing chips are kept and
+    new ones are placed at least half a chip away from them)."""
+    have = index.kind.value_counts().to_dict() if index is not None else {}
+    need_m = max(0, cfg.chip_n_mangrove - have.get("mangrove", 0))
+    need_r = max(0, cfg.chip_n_random - have.get("random", 0))
+    if index is not None and need_m == need_r == 0:
+        return index, False
+    seed = cfg.seed + (0 if index is None else 1000 + len(index))
+    mang, rand = chip_centers(bbox, cfg, labels, coastal, proj, need_m, need_r, seed)
+    fwd = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+    utm = lambda ll: np.array([fwd.transform(lo, la) for lo, la in ll]).reshape(-1, 2)
+    half = cfg.chip_px * 5
+    existing = (np.c_[index.x0 + half, index.y1 - half] if index is not None
+                else np.zeros((0, 2)))
+    min_d = cfg.chip_px * 10 * 0.5
+    m_xy = dedupe(np.vstack([existing, utm(mang)]), min_d)[len(existing):][:need_m]
+    base = np.vstack([existing, m_xy])
+    r_xy = dedupe(np.vstack([base, utm(rand)]), min_d)[len(base):][:need_r]
+    rows = [dict(kind=k, x0=x0, y1=y1)
+            for k, xy in (("mangrove", m_xy), ("random", r_xy))
+            for x0, y1 in (snap_origin(cx, cy, grid_x0, grid_y0, cfg.chip_px) for cx, cy in xy)]
+    new = pd.DataFrame(rows, columns=["kind", "x0", "y1"])
+    inv = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    if len(new):
+        new["lon"], new["lat"] = zip(*[inv.transform(x + half, y - half)
+                                       for x, y in zip(new.x0, new.y1)])
+    start = 0 if index is None else int(index.chip.str[5:].astype(int).max()) + 1
+    new.insert(0, "chip", [f"chip_{i:04d}" for i in range(start, start + len(new))])
+    new["region"], new["crs"] = name, crs
+    if len(m_xy) < need_m or len(r_xy) < need_r:
+        log.warning("%s: only %d/%d mangrove and %d/%d random new chips fit without overlap",
+                    name, len(m_xy), need_m, len(r_xy), need_r)
+    out = new if index is None else pd.concat([index, new], ignore_index=True)
+    return out, True
 
 
 def fetch_chip(img, crs, x0, y1, px):
@@ -96,28 +136,9 @@ def extract_chips_region(name, bbox, cfg: Config):
     t = pinfo.get("transform", [10, 0, 0, 0, -10, 0])
     grid_x0, grid_y0 = t[2], t[5]
 
-    if index_path.exists():
-        index = pd.read_csv(index_path)
-    else:
-        mang, rand = chip_centers(name, bbox, cfg, labels, coastal, proj)
-        fwd = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
-        def utm(lonlat):
-            return np.array([fwd.transform(lo, la) for lo, la in lonlat]).reshape(-1, 2)
-        min_d = cfg.chip_px * 10 * 0.5
-        m_xy = dedupe(utm(mang), min_d)[: cfg.chip_n_mangrove]
-        r_xy = dedupe(np.vstack([m_xy, utm(rand)]), min_d)[len(m_xy):][: cfg.chip_n_random]
-        rows = []
-        for kind, xy in (("mangrove", m_xy), ("random", r_xy)):
-            for cx, cy in xy:
-                x0, y1 = snap_origin(cx, cy, grid_x0, grid_y0, cfg.chip_px)
-                rows.append(dict(kind=kind, x0=x0, y1=y1))
-        index = pd.DataFrame(rows)
-        inv = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
-        half = cfg.chip_px * 5
-        index["lon"], index["lat"] = zip(*[inv.transform(x + half, y - half)
-                                          for x, y in zip(index.x0, index.y1)])
-        index.insert(0, "chip", [f"chip_{i:04d}" for i in range(len(index))])
-        index["region"], index["crs"] = name, crs
+    index = pd.read_csv(index_path) if index_path.exists() else None
+    index, changed = plan_index(name, bbox, cfg, labels, coastal, proj, crs, grid_x0, grid_y0, index)
+    if changed:
         index.to_csv(index_path, index=False)
     log.info("%s: %d chips (%s), %s, %d px", name, len(index),
              index.kind.value_counts().to_dict(), crs, cfg.chip_px)

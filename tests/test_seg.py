@@ -98,3 +98,28 @@ def test_chip_helpers():
     s["class"] = 1; s["valid"] = 1; s["class"][0, 0] = 255; s["valid"][1, 1] = 0
     x, y = to_arrays(s)
     assert x.shape == (64, 4, 4) and y[0, 0] == IGNORE and y[1, 1] == IGNORE and y[2, 2] == 1
+
+
+def test_plan_index_topup(monkeypatch):
+    import numpy as np
+    from mangrove_embed import chips, config
+    cfg = config.load(None)
+    cfg.chip_px, cfg.chip_n_mangrove, cfg.chip_n_random = 16, 4, 3
+    rng = np.random.default_rng(0)
+    # candidates spread ~2 km apart around Jamaica, so dedupe (80 m) keeps all
+    def fake(bbox, cfg_, labels, coastal, proj, n_m, n_r, seed):
+        lon = -77 + rng.random(n_m + n_r) * 0.5
+        lat = 18 + rng.random(n_m + n_r) * 0.5
+        pts = list(zip(lon, lat))
+        return pts[:n_m], pts[n_m:]
+    monkeypatch.setattr(chips, "chip_centers", fake)
+    args = ("jamaica", None, cfg, None, None, None, "EPSG:32618", 0.0, 0.0)
+    idx, changed = chips.plan_index(*args)
+    assert changed and idx.kind.value_counts().to_dict() == {"mangrove": 4, "random": 3}
+    short = idx[idx.kind == "random"].copy()           # simulate a region missing mangrove chips
+    short = short.assign(chip=["chip_0000", "chip_0001", "chip_0005"])
+    idx2, changed2 = chips.plan_index(*args, index=short)
+    assert changed2 and (idx2.kind == "mangrove").sum() == 4 and (idx2.kind == "random").sum() == 3
+    assert idx2.chip.iloc[:3].tolist() == ["chip_0000", "chip_0001", "chip_0005"]   # kept
+    assert idx2.chip.iloc[3] == "chip_0006" and idx2.chip.is_unique
+    assert not chips.plan_index(*args, index=idx2)[1]                                # complete
