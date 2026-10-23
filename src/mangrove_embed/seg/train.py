@@ -10,7 +10,8 @@ Protocols
 Model selection uses a validation split carved from the *training* chips (10% of spatial blocks),
 never the test region. The held-out score reported is at the best validation epoch.
 
-Outputs (results/seg/<run>/): metrics.json per split, summary.csv, best checkpoint per split.
+Outputs (results/model_comparison/<run>/): metrics.json per split, summary.csv, best checkpoint
+per split.
 """
 import contextlib
 import json
@@ -40,7 +41,7 @@ MANGROVE = 0  # class 1 -> index 0
 @dataclass
 class TrainConfig:
     chips_dir: str = "data/chips"
-    out_dir: str = "results/seg"
+    out_dir: str = "results/model_comparison"
     weights: str = "nvidia/segformer-b0-finetuned-ade-512-512"
     stem_stride: int | None = 2
     epochs: int = 40
@@ -579,7 +580,7 @@ def _line(r):
             f"IoU {r['mangrove_iou']:.3f} AP {r['mangrove_ap']:.3f} | mIoU {r['miou']:.3f}{tuned}")
 
 
-def compare(out_dir="results/seg", metric="mangrove_iou", region=None):
+def compare(out_dir="results/model_comparison", metric="mangrove_iou", region=None):
     """Side-by-side table of every run folder's summary.csv; `region` restricts to one held-out
     region so single-holdout runs compare like-for-like with that split of full runs."""
     rows = []

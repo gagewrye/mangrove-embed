@@ -20,7 +20,7 @@ def main(argv=None):
 
     d = sub.add_parser("diagnose", help="run Q1-Q4 diagnostics on extracted data")
     d.add_argument("--data", help="dir with *_labeled.parquet (default: data/processed)")
-    d.add_argument("--out", help="results dir (default: results)")
+    d.add_argument("--out", help="results dir (default: <results_dir>/point_diagnostics)")
     d.add_argument("--models", nargs="*", default=["knn", "logreg", "mlp"])
     d.add_argument("--features", nargs="*")
     d.add_argument("--anchor", help="single-region training probe (default: config anchor)")
@@ -42,19 +42,22 @@ def main(argv=None):
         _train_args(t)
 
     cs = sub.add_parser("compare-seg", help="tabulate all train-seg runs side by side")
-    cs.add_argument("--out", help="results dir (default: <results_dir>/seg)")
+    cs.add_argument("--out", help="results dir (default: <results_dir>/model_comparison)")
     cs.add_argument("--metric", default="mangrove_iou")
     cs.add_argument("--region", help="only this held-out region (e.g. mekong)")
 
     px = sub.add_parser("compare-pixel",
                         help="per-pixel knn/logreg/mlp on chip pixels, scored like train-seg")
     px.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
-    px.add_argument("--out", help="results dir (default: <results_dir>/seg)")
+    px.add_argument("--out", help="results dir (default: <results_dir>/model_comparison)")
     px.add_argument("--models", nargs="*", default=["knn", "logreg", "mlp"])
     px.add_argument("--holdout", default="all", help="region to hold out, or 'all'")
+    px.add_argument("--regions", nargs="*", help="restrict to these regions")
     px.add_argument("--n-train", type=int, default=30_000, help="training pixels per region")
     px.add_argument("--n-test", type=int, default=100_000, help="test pixels (held-out region)")
     px.add_argument("--seed", type=int, default=0)
+
+    sub.add_parser("plots", help="summary figures for model comparison and receptive field")
 
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
@@ -78,8 +81,9 @@ def main(argv=None):
         extract(cfg, a.regions)
     elif a.cmd == "diagnose":
         from .diagnostics import run
-        run(a.data or cfg.processed_dir, a.out or cfg.results_dir, a.models, a.features,
-            a.anchor or cfg.anchor, a.skip_within, not a.no_centering, cfg.block_deg)
+        run(a.data or cfg.processed_dir, a.out or f"{cfg.results_dir}/point_diagnostics",
+            a.models, a.features, a.anchor or cfg.anchor, a.skip_within, not a.no_centering,
+            cfg.block_deg)
     elif a.cmd == "chips":
         from .chips import extract_chips
         extract_chips(cfg, a.regions)
@@ -98,11 +102,15 @@ def main(argv=None):
         bench(tc, a.models, a.seeds, a.holdout, a.regions, a.metric)
     elif a.cmd == "compare-seg":
         from .seg.train import compare
-        compare(a.out or f"{cfg.results_dir}/seg", a.metric, a.region)
+        compare(a.out or f"{cfg.results_dir}/model_comparison", a.metric, a.region)
     elif a.cmd == "compare-pixel":
         from .pixel import run as run_pixel
-        run_pixel(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/seg",
-                  a.models, a.holdout, a.n_train, n_test=a.n_test, seed=a.seed)
+        run_pixel(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/model_comparison",
+                  a.models, a.holdout, a.n_train, n_test=a.n_test, seed=a.seed,
+                  regions=a.regions)
+    elif a.cmd == "plots":
+        from .plots import run as run_plots
+        run_plots(cfg.results_dir)
     elif a.cmd == "demo":
         from . import synthetic
         from .diagnostics import run
@@ -114,7 +122,7 @@ def _train_args(t):
     t.add_argument("--holdout", default="all", help="region to hold out, or 'all' (loro)")
     t.add_argument("--regions", nargs="*", help="restrict to these regions")
     t.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
-    t.add_argument("--out", help="output dir (default: <results_dir>/seg)")
+    t.add_argument("--out", help="output dir (default: <results_dir>/model_comparison)")
     t.add_argument("--weights", help="HF SegFormer weights (default: b0 ADE)")
     t.add_argument("--stem-stride", type=int, help="stage-1 stride (default 2; pretrained 4)")
     t.add_argument("--epochs", type=int)
@@ -148,7 +156,7 @@ def _train_args(t):
 def _train_config(a, cfg):
     from .seg.train import TrainConfig
     tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
-                     out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
+                     out_dir=a.out or f"{cfg.results_dir}/model_comparison", seed=cfg.seed)
     mlp = (tuple(int(x) for x in a.mlp_hidden.replace("-", ",").split(",") if x != "")
            if a.mlp_hidden else None)
     if a.seed is not None:

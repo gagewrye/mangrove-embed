@@ -1,0 +1,44 @@
+{
+  "tag": "holdout_sundarbans",
+  "model_info": {
+    "model": "mlp",
+    "params": 17291,
+    "receptive_field_m": 10,
+    "train_px": 89997,
+    "val_px": 29997,
+    "test_px": 100009
+  },
+  "test": {
+    "sundarbans": {
+      "mangrove_iou": 0.9679092894918372,
+      "mangrove_precision": 0.9847069315905669,
+      "mangrove_recall": 0.9826811403892731,
+      "mangrove_f1": 0.9836929930258882,
+      "mangrove_ap": 0.9986533685467254,
+      "miou": 0.23936703152268404,
+      "overall_acc": 0.8889699927006569,
+      "mangrove_px": 68538,
+      "valid_px": 100009,
+      "per_class_iou": {
+        "mangrove": 0.9679092894918372,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.038461538461538464,
+        "water": 0.8350942708807724,
+        "seasonal_water": 0.24239967571949736,
+        "built_up": 0.10526315789473684,
+        "barren": 0.030303030303030304,
+        "coastal_forest": 0.36836518046709127,
+        "cropland": 0.029765013054830286,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.015476190476190477
+      },
+      "threshold": 0.43,
+      "val_mangrove_iou_tuned": 0.9176255964075217,
+      "mangrove_iou_tuned": 0.9679268870974695,
+      "mangrove_f1_tuned": 0.9837020810514786,
+      "mangrove_precision_tuned": 0.9846079635151728,
+      "mangrove_recall_tuned": 0.9827978639586799,
+      "fit_seconds": 18.7
+    }
+  }
+}

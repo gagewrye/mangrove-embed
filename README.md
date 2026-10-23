@@ -42,6 +42,8 @@ p(mangrove)) plus overall accuracy. Main metric: `mangrove_f1`.
 | Q4 | Does spatial context help, and cross-region? | 3×3 / 7×7 / 15×15 mean-pooled vs pixel |
 | + | Does label-free per-region centering help? | centered vs uncentered LORO |
 
+Outputs: `results/point_diagnostics/`.
+
 AlphaEarth pixels already encode their surroundings, so Q4 measures *marginal* context gain.
 Mean pooling is a lower bound (composition, not layout). A LORO gain there justifies a patch
 CNN/transformer; a within-only gain means it's learning region-specific layout.
@@ -66,7 +68,7 @@ mangrove train-seg --protocol pooled                            # in-distributio
 Chips: 128x128 px (1.28 km) on the native 10 m UTM grid, half centered on mangrove, half on random
 coast; cached in `data/chips/<region>/`. Training: SegFormer-B0, 64-band stem, stem stride 2,
 JaccardLoss (inverse-sqrt class weights), dihedral augmentation, model selection on a validation
-split of the training regions only. Results in `results/seg/<protocol>/summary.csv`.
+split of the training regions only. Results in `results/model_comparison/<protocol>/summary.csv`.
 pooled − loro = segmentation-level domain gap.
 
 Input reduction and a capacity baseline (each variant writes to its own results folder):
@@ -88,8 +90,8 @@ mangrove compare-seg --region mekong       # everything side by side on one held
 ```
 `compare-pixel` trains on pixels from the other regions' chips and tests on a uniform pixel sample
 of the held-out region's chips (the population `train-seg` scores), writing to
-`results/seg/pixel_<model>/` so `compare-seg` lists it with the seg models. Both `train-seg` and
-`compare-pixel` also tune the mangrove threshold on validation pixels from the training regions
+`results/model_comparison/pixel_<model>/` so `compare-seg` lists it with the seg models. Both
+`train-seg` and `compare-pixel` also tune the mangrove threshold on validation pixels from the training regions
 (`threshold`, `mangrove_iou_tuned`).
 
 Findings (4 regions, held-out mangrove IoU): per-pixel MLP 0.846, SegFormer-B0 0.832, logreg 0.825,
@@ -128,6 +130,15 @@ Five residual blocks in every run (fixed depth); only the dilations change. A di
 `--fcn-width 184` keeps the pixel-only model at the same parameter count (width 64 would be 26k).
 Add `--seed N` for repeats (folder gets `_sN`).
 
+The sweep runs so far live in W&B; `python scripts/export_rf_wandb.py` copies them to
+`results/receptive_field/rf_runs.csv`.
+
+## Figures
+```bash
+mangrove plots    # results/model_comparison/model_comparison.png, results/receptive_field/receptive_field.png
+```
+`results/README.md` indexes every results folder.
+
 ## Hardware
 `train-seg` picks CUDA > Apple Metal (MPS) > CPU automatically; force with `--device`.
 - **NVIDIA:** fp16 autocast + GradScaler on by default. Install a CUDA torch wheel, e.g.
@@ -157,6 +168,7 @@ src/mangrove_embed/
   extract.py                Earth Engine -> parquet (v3 labels)
   chips.py                  Earth Engine -> dense chips for segmentation
   diagnostics.py            Q1-Q4
+  plots.py                  `mangrove plots` summary figures
   synthetic.py              offline test data
   cli.py                    `mangrove` command
   seg/                      SegFormer (native 64-band stem) + JaccardLoss, from ml-mangrove;

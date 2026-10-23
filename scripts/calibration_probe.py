@@ -75,4 +75,4 @@ for model in ["logreg", "mlp"]:
             res = score(yte, P, cl)
             rows.append(dict(model=model, holdout=ho, variant=variant, **res))
             print(model, ho, variant, {k: (round(v, 3) if isinstance(v, float) else v) for k, v in res.items()}, flush=True)
-pd.DataFrame(rows).to_csv("results/seg_calibration/calibration.csv", index=False)
+pd.DataFrame(rows).to_csv("results/calibration/calibration.csv", index=False)

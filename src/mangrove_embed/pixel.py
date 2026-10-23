@@ -1,6 +1,6 @@
 """
 Per-pixel classifiers on chip pixels, evaluated exactly like train-seg so results sit in the same
-compare-seg table (results/seg/pixel_<model>/).
+compare-seg table (results/model_comparison/pixel_<model>/).
 
 For each held-out region (leave-one-region-out):
   train   pixels sampled from the other regions' chips (equal count per region, proportional to
@@ -128,15 +128,20 @@ def metrics(y, proba, classes, val_t=None, val_p=None):
 
 
 # ------------------------------------------------------------------ run
-def run(chips_dir="data/chips", out_dir="results/seg", models=("knn", "logreg", "mlp"),
+def run(chips_dir="data/chips", out_dir="results/model_comparison",
+        models=("knn", "logreg", "mlp"),
         holdout="all", n_train_per_region=30_000, n_val=30_000, n_test=100_000,
-        block_deg=0.1, val_frac=0.15, seed=0):
+        block_deg=0.1, val_frac=0.15, seed=0, regions=None):
     df = load_index(chips_dir, block_deg)
+    if regions:
+        df = df[df.region.isin(regions)].reset_index(drop=True)
     regions = sorted(df.region.unique())
     if len(regions) < 2:
         raise SystemExit("compare-pixel needs chips from at least 2 regions.")
     targets = regions if holdout == "all" else [holdout]
     rows = {m: [] for m in models}
+    # seed 0 keeps the unsuffixed folder, so compare-seg counts it as one seed of the variant
+    folder = {m: f"pixel_{m}" + (f"_s{seed}" if seed else "") for m in models}
     for r in targets:
         tr = df[df.region != r]
         val = split_val_blocks(tr, val_frac, seed)
@@ -159,7 +164,7 @@ def run(chips_dir="data/chips", out_dir="results/seg", models=("knn", "logreg", 
             vp = pv[:, cl.index(MANGROVE)] if MANGROVE in cl else np.zeros(len(yva))
             res = metrics(yte, m.predict_proba(Xte), cl, vt, vp)
             res["fit_seconds"] = round(time.time() - t0, 1)
-            run_dir = Path(out_dir) / f"pixel_{name}"
+            run_dir = Path(out_dir) / folder[name]
             run_dir.mkdir(parents=True, exist_ok=True)
             info = dict(model=name, params=n_params(m), receptive_field_m=10,
                         train_px=int(len(ytr)), val_px=int(len(yva)), test_px=int(len(yte)))
@@ -168,11 +173,11 @@ def run(chips_dir="data/chips", out_dir="results/seg", models=("knn", "logreg", 
             row = dict(protocol="loro", region=r,
                        **{k: v for k, v in res.items() if not isinstance(v, dict)})
             rows[name].append(row)
-            print(f"[pixel_{name}] {r}: IoU {res['mangrove_iou']:.3f} F1 {res['mangrove_f1']:.3f} "
+            print(f"[{folder[name]}] {r}: IoU {res['mangrove_iou']:.3f} F1 {res['mangrove_f1']:.3f} "
                   f"AP {res['mangrove_ap']:.3f} | tuned@{res['threshold']:.2f}: IoU "
                   f"{res['mangrove_iou_tuned']:.3f} ({res['fit_seconds']}s)")
     for name, rr in rows.items():
-        path = Path(out_dir) / f"pixel_{name}" / "summary.csv"
+        path = Path(out_dir) / folder[name] / "summary.csv"
         new = pd.DataFrame(rr)
         if path.exists() and holdout != "all":
             prev = pd.read_csv(path)

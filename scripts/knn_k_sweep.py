@@ -55,7 +55,7 @@ for ho in R:
             print(ho, weight, k, {a: round(float(b), 3) for a, b in res.items()}, flush=True)
 
 df = pd.DataFrame(rows)
-df.to_csv("results/seg_calibration/knn_k_sweep.csv", index=False)
+df.to_csv("results/calibration/knn_k_sweep.csv", index=False)
 for m in ["iou", "ap", "iou_oracle"]:
     t = df.pivot_table(index=["weight", "k"], columns="holdout", values=m)
     t["mean"] = t.mean(axis=1)

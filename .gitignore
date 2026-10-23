@@ -8,7 +8,7 @@ wandb/
 # results are versioned (metrics, tables, plots); model weights and scratch runs are not
 results/**/*.pt
 results/synthetic/
-results/seg/mps_smoke/
+results/model_comparison/mps_smoke/
 
 # local data transfer archives
 *.zip
