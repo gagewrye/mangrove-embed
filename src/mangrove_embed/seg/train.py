@@ -56,6 +56,7 @@ class TrainConfig:
     pca: int | None = None        # fixed PCA 64 -> k, fit on training-region pixels only
     input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
     fcn_width: int = 64
+    from_scratch: bool = False    # segformer with random init (same architecture)
 
 
 # ------------------------------------------------------------------ data
@@ -238,10 +239,13 @@ def build_model(tc, in_ch, px, train_paths):
         pre, k = torch.nn.Identity(), in_ch
     if tc.model == "segformer":
         core = SegFormer(num_classes=N_CLASSES, input_image_size=px, weights=tc.weights,
-                         in_channels=k, stem_stride=tc.stem_stride)
+                         in_channels=k, stem_stride=tc.stem_stride, pretrained=not tc.from_scratch)
         stem = next(m for m in core.backbone.modules() if isinstance(m, torch.nn.Conv2d))
-        new = [stem, core.decode_core, core.classifier, pre]
+        # from scratch: nothing is pretrained, so everything trains at lr_new
+        new = [core, pre] if tc.from_scratch else [stem, core.decode_core, core.classifier, pre]
     elif tc.model == "fcn":
+        if tc.from_scratch:
+            log.info("--from-scratch is implied for fcn")
         core = TinyFCN(k, N_CLASSES, width=tc.fcn_width)
         new = [core, pre]
     else:
@@ -250,6 +254,7 @@ def build_model(tc, in_ch, px, train_paths):
     new_ids = {id(p) for m in new for p in m.parameters()}
     info["params"] = sum(p.numel() for p in model.parameters() if p.requires_grad)
     info["model_in_channels"] = k
+    info["pretrained"] = tc.model == "segformer" and not tc.from_scratch
     return model, new_ids, info
 
 
@@ -364,6 +369,8 @@ def run_name(tc, protocol):
     parts = [protocol]
     if tc.model != "segformer":
         parts.append(tc.model)
+    elif tc.from_scratch:
+        parts.append("scratch")
     if tc.pca:
         parts.append(f"pca{tc.pca}")
     if tc.input_proj:
@@ -426,3 +433,28 @@ def _flat(m):
 def _line(r):
     return (f"[{r['protocol']}] {r['region']}: mangrove F1 {r['mangrove_f1']:.3f} "
             f"IoU {r['mangrove_iou']:.3f} AP {r['mangrove_ap']:.3f} | mIoU {r['miou']:.3f}")
+
+
+def compare(out_dir="results/seg", metric="mangrove_iou"):
+    """Side-by-side table of every run folder's summary.csv."""
+    rows = []
+    for f in sorted(Path(out_dir).glob("*/summary.csv")):
+        s = pd.read_csv(f)
+        s["run"] = f.parent.name
+        info = {}
+        js = sorted(f.parent.glob("*.json"))
+        if js:
+            info = json.loads(js[0].read_text()).get("model_info", {})
+        s["params"] = info.get("params")
+        rows.append(s)
+    if not rows:
+        raise SystemExit(f"No summary.csv under {out_dir}.")
+    df = pd.concat(rows, ignore_index=True)
+    cols = ["mangrove_iou", "mangrove_f1", "mangrove_ap", "miou"]
+    agg = df.groupby("run").agg(**{c: (c, "mean") for c in cols}, regions=("region", "nunique"),
+                                params=("params", "first")).sort_values(metric, ascending=False)
+    print(agg.round(3).to_string())
+    print(f"\n{metric} by region:")
+    print(df.pivot_table(index="run", columns="region", values=metric).round(3)
+            .reindex(agg.index).to_string())
+    return agg

@@ -75,6 +75,8 @@ mangrove train-seg --pca 16                # fixed PCA 64->16, fit on training r
 mangrove train-seg --input-proj 16         # learned 1x1 projection 64->16
 mangrove train-seg --model fcn             # ~190k-param dilated CNN (630 m receptive field)
 mangrove train-seg --model fcn --pca 16
+mangrove train-seg --from-scratch          # same SegFormer, random init (are RGB weights useful?)
+mangrove compare-seg                       # all runs side by side
 ```
 Point-level check: 16 PCs retain 93% of variance and match full 64-d LORO kNN F1 (0.806 vs
 0.800); 8 PCs lose ~0.06 AP for logreg.

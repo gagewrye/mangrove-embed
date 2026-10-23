@@ -9,7 +9,7 @@ transformers<5 (SegformerDecodeCore relies on the 4.x decode-head layout).
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import SegformerDecodeHead, SegformerModel
+from transformers import SegformerConfig, SegformerDecodeHead, SegformerModel
 
 
 class SegFormer(nn.Module):
@@ -36,7 +36,7 @@ class SegFormer(nn.Module):
     
     """
     def __init__(self, num_classes=1, input_image_size=512, weights="nvidia/segformer-b2-finetuned-ade-512-512",
-                 in_channels=3, stem_init="random", stem_stride=None):
+                 in_channels=3, stem_init="random", stem_stride=None, pretrained=True):
         """
         Args:
             in_channels: input bands. 3 keeps the pretrained RGB stem (and the legacy behavior of
@@ -49,6 +49,8 @@ class SegFormer(nn.Module):
             stem_stride: optional stride for the stage-1 patch embedding (pretrained: 4). Lower it
                 (e.g. 2 or 1) for coarse inputs such as 10 m embeddings, where 4x downsampling
                 leaves stage 1 at 40 m. Costs memory: stage-1 tokens scale with 1/stride^2.
+            pretrained: False builds the same architecture (config from `weights`) with random
+                init, as a baseline for whether the RGB-pretrained weights help.
         """
         super().__init__()
         self.num_classes = num_classes
@@ -57,7 +59,8 @@ class SegFormer(nn.Module):
         self.in_channels = in_channels
 
         # --- backbone: MiT encoder only ---
-        self.backbone = SegformerModel.from_pretrained(weights)
+        self.backbone = (SegformerModel.from_pretrained(weights) if pretrained
+                         else SegformerModel(SegformerConfig.from_pretrained(weights)))
         config = self.backbone.config
         if in_channels != 3 or stem_stride is not None:
             self._replace_stem(in_channels, stem_init, stem_stride)

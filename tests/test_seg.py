@@ -147,3 +147,28 @@ def test_variants_pca_proj_fcn(tmp_path):
     x = torch.zeros(1, 64, 2, 2); x[0, :, 0, 0] = 2.0
     z = p(x)
     assert z.shape == (1, 8, 2, 2) and torch.all(z[0, :, 1, 1] == 0) and torch.allclose(z[0, :, 0, 0], torch.ones(8))
+
+
+def test_from_scratch_is_random_but_same_architecture():
+    import json
+    pre = SegFormer(num_classes=11, input_image_size=64, weights=W, in_channels=64)
+    scr = SegFormer(num_classes=11, input_image_size=64, weights=W, in_channels=64, pretrained=False)
+    a, b = pre.backbone.state_dict(), scr.backbone.state_dict()
+    assert a.keys() == b.keys() and all(a[k].shape == b[k].shape for k in a)
+    stem = [k for k in a if a[k].dim() == 4][0]
+    differ = [k for k in a if k != stem and a[k].dim() > 1 and not torch.equal(a[k], b[k])]
+    assert len(differ) > 10   # weights not loaded
+
+
+def test_from_scratch_run_folder(tmp_path):
+    import json
+    from mangrove_embed.seg.train import TrainConfig, run
+    _synthetic_chips(tmp_path / "chips", n=4)
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=1, batch_size=4, workers=0, block_deg=0.3, device="cpu", from_scratch=True)
+    run(tc, "loro", "a")
+    info = json.loads((tmp_path / "out" / "loro_scratch" / "holdout_a.json").read_text())["model_info"]
+    assert info["pretrained"] is False
+    from mangrove_embed.seg.train import compare
+    agg = compare(str(tmp_path / "out"))
+    assert "loro_scratch" in agg.index
