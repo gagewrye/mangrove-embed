@@ -9,8 +9,10 @@ Labels are a port of mangrove_training_knn.js (v3):
   10 herbaceous_wetland · 11 other_land
   Ambiguous pixels (another dataset says mangrove, label doesn't) are masked.
   Mangroves anywhere in the region; other classes only within coast_buffer_m of mangrove.
-Sampling is directly at 10 m, so every label is an exact 10 m match (replaces the JS
-100 m-candidate + 10 m re-check step).
+Sampling is two-stage, as in v3: stratified candidates are drawn at 100 m (cheap: 100x fewer
+pixels to scan), then labels are re-checked and embeddings pulled at 10 m at those points only.
+Candidates whose 10 m label differs from the 100 m one are dropped, so every kept label is an
+exact 10 m match.
 
 Per region:
   1. Tile the bbox; one cheap request gets approximate per-tile class counts at 100 m.
@@ -38,6 +40,8 @@ log = logging.getLogger(__name__)
 
 EMB = "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL"
 OVERSAMPLE = 1.3
+CANDIDATE_SCALE = 100   # m; stage-1 candidate draw
+CANDIDATE_FACTOR = 3    # candidates per needed point (some fail the 10 m re-check)
 MAX_SPLIT_DEPTH = 3
 
 
@@ -192,11 +196,16 @@ def fetch_labeled(tile, points, feat_img, labels, proj, cols, seed, depth=0):
     if sum(points) == 0:
         return pd.DataFrame(columns=cols)
     try:
-        fc = feat_img.addBands(labels).stratifiedSample(
-            numPoints=0, classBand="class", classValues=CLASS_IDS, classPoints=points,
-            region=ee.Geometry.Rectangle(tile), scale=10, projection=proj, seed=seed,
-            tileScale=16, geometries=False)
-        return _pull(fc, cols)
+        candidates = labels.stratifiedSample(
+            numPoints=0, classBand="class", classValues=CLASS_IDS,
+            classPoints=[p * CANDIDATE_FACTOR for p in points],
+            region=ee.Geometry.Rectangle(tile), scale=CANDIDATE_SCALE, projection=proj,
+            seed=seed, tileScale=4, geometries=True)
+        checked = (feat_img.addBands(labels.rename("class10"))
+                   .sampleRegions(collection=candidates, properties=["class"], scale=10,
+                                  projection=proj, tileScale=16, geometries=False)
+                   .filter(ee.Filter.equals(leftField="class", rightField="class10")))
+        return _pull(checked, cols)
     except TooBig:
         if depth >= MAX_SPLIT_DEPTH:
             raise
@@ -210,9 +219,11 @@ def fetch_unlabeled(tile, n, feat_img, coastal, proj, cols, seed, depth=0):
     if n == 0:
         return pd.DataFrame(columns=cols)
     try:
-        fc = feat_img.updateMask(coastal).sample(
-            region=ee.Geometry.Rectangle(tile), scale=10, projection=proj, numPixels=int(n),
-            seed=seed, tileScale=16, geometries=False)
+        points = coastal.selfMask().rename("coastal").sample(
+            region=ee.Geometry.Rectangle(tile), scale=CANDIDATE_SCALE, projection=proj,
+            numPixels=int(n), seed=seed, tileScale=4, geometries=True)
+        fc = feat_img.sampleRegions(collection=points, scale=10, projection=proj,
+                                    tileScale=16, geometries=False)
         return _pull(fc, cols)
     except TooBig:
         if depth >= MAX_SPLIT_DEPTH:
