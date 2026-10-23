@@ -123,3 +123,27 @@ def test_plan_index_topup(monkeypatch):
     assert idx2.chip.iloc[:3].tolist() == ["chip_0000", "chip_0001", "chip_0005"]   # kept
     assert idx2.chip.iloc[3] == "chip_0006" and idx2.chip.is_unique
     assert not chips.plan_index(*args, index=idx2)[1]                                # complete
+
+
+def test_variants_pca_proj_fcn(tmp_path):
+    import json
+    import numpy as np
+    from mangrove_embed.seg.train import PCAProject, TrainConfig, run
+    _synthetic_chips(tmp_path / "chips", n=4)
+    base = dict(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                epochs=1, batch_size=4, workers=0, block_deg=0.3, device="cpu")
+    for kw, folder in [(dict(pca=16), "loro_pca16"), (dict(input_proj=16), "loro_proj16"),
+                       (dict(model="fcn"), "loro_fcn"), (dict(model="fcn", pca=16), "loro_fcn_pca16")]:
+        s = run(TrainConfig(**base, **kw), "loro", "a")
+        assert s.mangrove_iou.between(0, 1).all()
+        info = json.loads((tmp_path / "out" / folder / "holdout_a.json").read_text())["model_info"]
+        assert info["model_in_channels"] == (16 if ("pca" in kw or "input_proj" in kw) else 64)
+        if "pca" in kw:
+            assert 0 < info["pca_variance"] <= 1
+    fcn = json.loads((tmp_path / "out" / "loro_fcn" / "holdout_a.json").read_text())["model_info"]
+    assert fcn["params"] < 300_000
+    # PCA keeps no-data pixels at zero
+    p = PCAProject(np.ones(64), np.eye(64)[:8])
+    x = torch.zeros(1, 64, 2, 2); x[0, :, 0, 0] = 2.0
+    z = p(x)
+    assert z.shape == (1, 8, 2, 2) and torch.all(z[0, :, 1, 1] == 0) and torch.allclose(z[0, :, 0, 0], torch.ones(8))

@@ -52,6 +52,10 @@ class TrainConfig:
     seed: int = 0
     max_chips_per_region: int | None = None
     device: str | None = None
+    model: str = "segformer"      # segformer | fcn (small dilated CNN baseline)
+    pca: int | None = None        # fixed PCA 64 -> k, fit on training-region pixels only
+    input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
+    fcn_width: int = 64
 
 
 # ------------------------------------------------------------------ data
@@ -152,6 +156,103 @@ class Meter:
         )
 
 
+# ------------------------------------------------------------------ input reduction + models
+class PCAProject(torch.nn.Module):
+    """Fixed linear map x -> components @ (x - mean), per pixel. No-data pixels stay zero."""
+    def __init__(self, mean, components):
+        super().__init__()
+        self.register_buffer("mean", torch.as_tensor(mean, dtype=torch.float32).view(1, -1, 1, 1))
+        self.register_buffer("w", torch.as_tensor(components, dtype=torch.float32))
+
+    def forward(self, x):
+        nodata = (x == 0).all(1, keepdim=True)
+        z = torch.einsum("kc,bchw->bkhw", self.w, x - self.mean)
+        return z.masked_fill(nodata, 0.0)
+
+
+class LearnedProject(torch.nn.Sequential):
+    """Learned 1x1 projection 64 -> k (linear + BatchNorm). Unlike PCA it can keep the
+    directions that matter for the labels rather than the ones with most variance."""
+    def __init__(self, c_in, k):
+        super().__init__(torch.nn.Conv2d(c_in, k, 1, bias=False), torch.nn.BatchNorm2d(k))
+
+
+class TinyFCN(torch.nn.Module):
+    """Small dilated residual CNN, ~150k params at width 64. Receptive field ~ 63 px (630 m).
+    Baseline for whether SegFormer's capacity buys anything over local context."""
+    def __init__(self, c_in, n_classes, width=64, dilations=(1, 2, 4, 8, 16)):
+        super().__init__()
+        self.inp = torch.nn.Sequential(torch.nn.Conv2d(c_in, width, 1, bias=False),
+                                       torch.nn.BatchNorm2d(width), torch.nn.ReLU(inplace=True))
+        self.blocks = torch.nn.ModuleList(torch.nn.Sequential(
+            torch.nn.Conv2d(width, width, 3, padding=d, dilation=d, bias=False),
+            torch.nn.BatchNorm2d(width), torch.nn.ReLU(inplace=True)) for d in dilations)
+        self.drop = torch.nn.Dropout2d(0.1)
+        self.head = torch.nn.Conv2d(width, n_classes, 1)
+
+    def forward(self, x):
+        h = self.inp(x)
+        for b in self.blocks:
+            h = h + b(h)
+        return self.head(self.drop(h))
+
+
+class Net(torch.nn.Module):
+    def __init__(self, pre, core):
+        super().__init__()
+        self.pre, self.core = pre, core
+
+    def forward(self, x):
+        return self.core(self.pre(x))
+
+
+def fit_pca(paths, k, n_px=200_000, seed=0):
+    """PCA on valid pixels sampled evenly from the given (training) chips."""
+    from sklearn.decomposition import PCA
+    rng = np.random.default_rng(seed)
+    per = max(1, n_px // len(paths))
+    samples = []
+    for p in paths:
+        a = np.load(p)["x"]
+        x = a.astype(np.float32).reshape(a.shape[0], -1).T
+        x = x[np.abs(x).sum(1) > 0]
+        if len(x):
+            samples.append(x[rng.choice(len(x), min(per, len(x)), replace=False)])
+    pca = PCA(n_components=k, random_state=seed).fit(np.concatenate(samples))
+    return pca.mean_, pca.components_, float(pca.explained_variance_ratio_.sum())
+
+
+def build_model(tc, in_ch, px, train_paths):
+    """Returns (model, new-parameter ids, info). New params get lr_new; pretrained get lr_backbone."""
+    info = {}
+    if tc.pca and tc.input_proj:
+        raise ValueError("use either pca or input_proj, not both")
+    if tc.pca:
+        mean, comps, var = fit_pca(train_paths, tc.pca, seed=tc.seed)
+        pre, k = PCAProject(mean, comps), tc.pca
+        info["pca_variance"] = var
+        log.info("PCA %d -> %d (fit on %d training chips): %.3f variance", in_ch, k, len(train_paths), var)
+    elif tc.input_proj:
+        pre, k = LearnedProject(in_ch, tc.input_proj), tc.input_proj
+    else:
+        pre, k = torch.nn.Identity(), in_ch
+    if tc.model == "segformer":
+        core = SegFormer(num_classes=N_CLASSES, input_image_size=px, weights=tc.weights,
+                         in_channels=k, stem_stride=tc.stem_stride)
+        stem = next(m for m in core.backbone.modules() if isinstance(m, torch.nn.Conv2d))
+        new = [stem, core.decode_core, core.classifier, pre]
+    elif tc.model == "fcn":
+        core = TinyFCN(k, N_CLASSES, width=tc.fcn_width)
+        new = [core, pre]
+    else:
+        raise ValueError(f"model must be segformer or fcn, got {tc.model!r}")
+    model = Net(pre, core)
+    new_ids = {id(p) for m in new for p in m.parameters()}
+    info["params"] = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    info["model_in_channels"] = k
+    return model, new_ids, info
+
+
 # ------------------------------------------------------------------ training
 def _device(tc):
     if tc.device:
@@ -200,14 +301,13 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
     amp = device.type == "cuda"
     px = np.load(train_paths[0])["x"].shape[-1]
     in_ch = np.load(train_paths[0])["x"].shape[0]
-    model = SegFormer(num_classes=N_CLASSES, input_image_size=px, weights=tc.weights,
-                      in_channels=in_ch, stem_stride=tc.stem_stride).to(device)
-
-    stem = next(m for m in model.backbone.modules() if isinstance(m, torch.nn.Conv2d))
-    new_ids = {id(p) for p in stem.parameters()}
-    new_ids |= {id(p) for mod in (model.decode_core, model.classifier) for p in mod.parameters()}
+    model, new_ids, info = build_model(tc, in_ch, px, train_paths)
+    model = model.to(device)
+    log.info("%s: %s, %d params, model input %d channels", tag, tc.model, info["params"],
+             info["model_in_channels"])
     params = [{"params": [p for p in model.parameters() if id(p) not in new_ids], "lr": tc.lr_backbone},
               {"params": [p for p in model.parameters() if id(p) in new_ids], "lr": tc.lr_new}]
+    params = [g for g in params if g["params"]]
     opt = torch.optim.AdamW(params, weight_decay=tc.weight_decay)
     tr_loader = _loader(train_paths, tc, True)
     steps = tc.epochs * len(tr_loader)
@@ -250,6 +350,7 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
     res = dict(tag=tag, best_epoch=best_ep, val_mangrove_iou=best, history=hist,
                train_chips=len(train_paths), val_chips=len(val_paths),
                train_class_px={CLASS_NAMES[i]: int(c) for i, c in enumerate(counts)},
+               model_info=info,
                config=asdict(tc), test={})
     for name, paths in test_sets.items():
         res["test"][name] = evaluate(model, _loader(paths, tc, False), device, amp)
@@ -258,14 +359,27 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
     return res
 
 
-def run(tc: TrainConfig, protocol="loro", holdout="all", regions=None):
+def run_name(tc, protocol):
+    """Results subfolder; variants get their own so runs don't overwrite each other."""
+    parts = [protocol]
+    if tc.model != "segformer":
+        parts.append(tc.model)
+    if tc.pca:
+        parts.append(f"pca{tc.pca}")
+    if tc.input_proj:
+        parts.append(f"proj{tc.input_proj}")
+    return "_".join(parts)
+
+
+def run(tc: TrainConfig, protocol="loro", holdout="all", regions=None, tag=None):
     df = add_blocks(load_index(tc.chips_dir, regions), tc.block_deg)
     if tc.max_chips_per_region:
         df = (df.groupby("region", group_keys=False)
                 .apply(lambda g: g.sample(min(len(g), tc.max_chips_per_region), random_state=tc.seed)))
     all_regions = sorted(df.region.unique())
     print(df.groupby(["region", "kind"]).size().unstack(fill_value=0).to_string())
-    run_dir = Path(tc.out_dir) / protocol
+    run_dir = Path(tc.out_dir) / (tag or run_name(tc, protocol))
+    print(f"results -> {run_dir}")
     run_dir.mkdir(parents=True, exist_ok=True)
     rows = []
 

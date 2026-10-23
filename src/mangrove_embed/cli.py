@@ -47,6 +47,10 @@ def main(argv=None):
     t.add_argument("--max-chips-per-region", type=int)
     t.add_argument("--loader-workers", type=int)
     t.add_argument("--device")
+    t.add_argument("--model", choices=["segformer", "fcn"], help="default segformer")
+    t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
+    t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
+    t.add_argument("--tag", help="subfolder for this run's results (default: protocol name)")
 
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
@@ -82,10 +86,11 @@ def main(argv=None):
         for k, v in dict(weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
                          batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
                          max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
-                         device=a.device).items():
+                         device=a.device, model=a.model, pca=a.pca,
+                         input_proj=a.input_proj).items():
             if v is not None:
                 setattr(tc, k, v)
-        run(tc, a.protocol, a.holdout, a.regions)
+        run(tc, a.protocol, a.holdout, a.regions, a.tag)
     elif a.cmd == "demo":
         from . import synthetic
         from .diagnostics import run
