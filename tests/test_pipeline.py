@@ -34,7 +34,8 @@ def test_diagnostics_end_to_end(tmp_path):
     diagnostics.run(data, tmp_path / "r", models=("knn", "logreg"),
                     fsets=["pixel", "ctx7"], anchor="jamaica", block_deg=0.05)
     s = pd.read_csv(tmp_path / "r" / "results_summary.csv")
-    assert {"loro", "within_blocked", "jamaica_only"} <= set(s.protocol)
+    assert {"loro", "within_blocked", "jamaica_only", "loro_edge", "within_edge"} <= set(s.protocol)
+    assert not s[s.protocol.str.endswith("_edge")].centered.any()
     assert s.mangrove_f1.between(0, 1).all() and s.overall_acc.between(0, 1).all()
     assert s.centered.any()
     for f in ["q1_geometry.csv", "q1_mangrove_centroids.png", "q2_loro_by_region.png",

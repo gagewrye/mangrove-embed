@@ -11,6 +11,8 @@ Models are trained on all 11 classes (as in the v3 kNN) and scored on mangrove
   Q3 Shift     - Domain gap = within-region spatially blocked CV minus LORO;
                  single-anchor training (e.g. Jamaica only) -> every other region.
   Q4 Spatial   - Pixel vs 3x3 / 7x7 / 15x15 mean-pooled context, within-region and LORO.
+                 Q4-edge repeats it on boundary pixels (*_edge.parquet, test-only), where the
+                 two-stage training sample is thin and context should matter most.
   +  Centering - Subtract a label-free per-region mean (coastal-zone pixels) before LORO.
 
 Run via:  mangrove diagnose [--models knn logreg mlp] [--skip-within]
@@ -59,12 +61,22 @@ def load(data_dir, block_deg=0.05):
     if lab is None:
         raise SystemExit(f"No *_labeled.parquet/csv in {d}. Run `mangrove extract` first.")
     unl = _read(sorted(d.glob("*_unlabeled.parquet")) or sorted(d.glob("*_unlabeled.csv")))
-    lab = lab.dropna().reset_index(drop=True)
-    lab["class"] = lab["class"].astype(int)
-    bx = np.floor(lab["longitude"].values / block_deg).astype(int)
-    by = np.floor(lab["latitude"].values / block_deg).astype(int)
-    lab["block"] = lab["region"] + "_" + pd.Series(bx).astype(str) + "_" + pd.Series(by).astype(str)
-    return lab, unl
+    edge = _read(sorted(d.glob("*_edge.parquet")))
+    lab = _prep(lab, block_deg)
+    if edge is not None and len(edge):
+        edge = _prep(edge, block_deg)
+    else:
+        edge = None
+    return lab, unl, edge
+
+
+def _prep(df, block_deg):
+    df = df.dropna().reset_index(drop=True)
+    df["class"] = df["class"].astype(int)
+    bx = np.floor(df["longitude"].values / block_deg).astype(int)
+    by = np.floor(df["latitude"].values / block_deg).astype(int)
+    df["block"] = df["region"] + "_" + pd.Series(bx).astype(str) + "_" + pd.Series(by).astype(str)
+    return df
 
 
 def unit(a):
@@ -121,7 +133,10 @@ def score(y, pred, p_m):
 
 
 def fit_predict(model, Xtr, ytr, Xte):
-    m = make_model(model).fit(Xtr, ytr)
+    return predict(make_model(model).fit(Xtr, ytr), Xte)
+
+
+def predict(m, Xte):
     proba = m.predict_proba(Xte)
     classes = list(m.classes_)
     pred = np.asarray(classes)[proba.argmax(1)]
@@ -173,19 +188,35 @@ def geometry(lab, out):
 
 
 # ---------------------------------------------------------------- protocols
-def run_protocols(lab, models, fsets, centers, skip_within, anchor):
+def run_protocols(lab, models, fsets, centers, skip_within, anchor, edge=None):
+    """edge: boundary test set (never trained on). Adds loro_edge / within_edge protocols."""
     regions = sorted(lab.region.unique())
     y = lab["class"].values
+    ye = edge["class"].values if edge is not None else None
     rows, false_src = [], []
     variants = [(fs, False) for fs in fsets] + ([("pixel", True)] if centers else [])
+
+    def edge_eval(model, mask, tag, protocol, r):
+        if edge is None or not mask.any() or not (ye[mask] == MANGROVE).any():
+            return None
+        pred, p_m = predict(model, Xe[mask])
+        return dict(**tag, protocol=protocol, region=r, **score(ye[mask], pred, p_m))
+
     for fs, centered in variants:
         X = features(lab, fs, centers if centered else None)
+        use_edge = edge is not None and not centered
+        Xe = features(edge, fs) if use_edge else None
         for mdl in models:
             tag = dict(features=fs, model=mdl, centered=centered)
             for r in regions:  # LORO
                 te = (lab.region == r).values
-                pred, p_m = fit_predict(mdl, X[~te], y[~te], X[te])
+                model = make_model(mdl).fit(X[~te], y[~te])
+                pred, p_m = predict(model, X[te])
                 rows.append(dict(**tag, protocol="loro", region=r, **score(y[te], pred, p_m)))
+                if use_edge:
+                    row = edge_eval(model, (edge.region == r).values, tag, "loro_edge", r)
+                    if row:
+                        rows.append(row)
                 if fs == "pixel" and not centered:
                     fm = (pred == MANGROVE) & (y[te] != MANGROVE)
                     for c, n in pd.Series(y[te][fm]).value_counts().items():
@@ -206,16 +237,25 @@ def run_protocols(lab, models, fsets, centers, skip_within, anchor):
                     k = min(5, len(np.unique(groups)))
                     if k < 2:
                         continue
-                    folds = []
+                    folds, efolds = [], []
                     for tr_i, te_i in GroupKFold(k).split(idx, groups=groups):
                         a, b = idx[tr_i], idx[te_i]
                         if not (y[b] == MANGROVE).any() or not (y[a] == MANGROVE).any():
                             continue
-                        pred, p_m = fit_predict(mdl, X[a], y[a], X[b])
+                        model = make_model(mdl).fit(X[a], y[a])
+                        pred, p_m = predict(model, X[b])
                         folds.append(score(y[b], pred, p_m))
+                        if use_edge:  # edge points in this fold's held-out blocks
+                            emask = ((edge.region == r) & edge.block.isin(set(groups[te_i]))).values
+                            row = edge_eval(model, emask, tag, "within_edge", r)
+                            if row:
+                                efolds.append({k_: v for k_, v in row.items() if k_ in folds[0]})
                     if folds:
                         rows.append(dict(**tag, protocol="within_blocked", region=r,
                                          **pd.DataFrame(folds).mean().to_dict()))
+                    if efolds:
+                        rows.append(dict(**tag, protocol="within_edge", region=r,
+                                         **pd.DataFrame(efolds).mean().to_dict()))
             log.info("done: %-12s %-6s centered=%s", fs, mdl, centered)
     return pd.DataFrame(rows), pd.DataFrame(false_src)
 
@@ -268,6 +308,15 @@ def summarize(res, false_src, out, anchor):
             print(f"Q4 {fs:12s} gain over pixel:     within {dw:+.3f} | LORO {dl:+.3f}")
     if res.centered.any():
         print(f"   region centering, LORO, pixel:   {m('loro', 'pixel', best, True) - m('loro', 'pixel', best):+.3f}")
+    if "loro_edge" in set(res.protocol):
+        print(f"Q4-edge: boundary pixels (another class within the edge radius), never trained on")
+        print(f"   edge penalty, pixel (edge - all):  within {m('within_edge', 'pixel', best) - m('within_blocked', 'pixel', best):+.3f}"
+              f" | LORO {m('loro_edge', 'pixel', best) - m('loro', 'pixel', best):+.3f}")
+        for fs in fsets:
+            if fs != "pixel":
+                dw = m("within_edge", fs, best) - m("within_edge", "pixel", best)
+                dl = m("loro_edge", fs, best) - m("loro_edge", "pixel", best)
+                print(f"Q4-edge {fs:12s} gain over pixel: within {dw:+.3f} | LORO {dl:+.3f}")
 
     sub = res[(res.protocol == "loro") & (~res.centered) & (res.features == "pixel")]
     p = sub.pivot_table(index="region", columns="model", values=METRIC)
@@ -275,7 +324,8 @@ def summarize(res, false_src, out, anchor):
     ax.set_title("Leave-one-region-out, pixel features"); plt.tight_layout()
     plt.savefig(out / "q2_loro_by_region.png", dpi=150); plt.close()
 
-    sub = res[res.protocol.isin(["loro", "within_blocked"]) & (~res.centered) & (res.model == best)]
+    sub = res[res.protocol.isin(["loro", "within_blocked", "loro_edge", "within_edge"])
+              & (~res.centered) & (res.model == best)]
     p = sub.groupby(["features", "protocol"])[METRIC].mean().unstack().reindex(fsets)
     ax = p.plot.bar(figsize=(8, 4)); ax.set_ylabel(f"mean {METRIC}")
     ax.set_title(f"Spatial context ablation ({best})"); plt.tight_layout()
@@ -286,13 +336,16 @@ def run(data_dir, out, models=("knn", "logreg", "mlp"), fsets=None, anchor=None,
         skip_within=False, centering=True, block_deg=0.05):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    lab, unl = load(data_dir, block_deg)
+    lab, unl, edge = load(data_dir, block_deg)
     avail = present_scales(lab)
     fsets = [f for f in (fsets or FEATURE_SETS) if set(FEATURE_SETS[f]) <= avail]
     print(lab.groupby(["region", "class"]).size().unstack(fill_value=0)
           .rename(columns=NAME).to_string())
     geometry(lab, out)
     centers = region_centers(unl, lab) if centering else None
-    res, false_src = run_protocols(lab, list(models), fsets, centers, skip_within, anchor)
+    if edge is not None:
+        print(f"edge set: {len(edge)} boundary points, "
+              f"{int((edge['class'] == MANGROVE).sum())} mangrove")
+    res, false_src = run_protocols(lab, list(models), fsets, centers, skip_within, anchor, edge)
     summarize(res, false_src, out, anchor)
     print(f"\nWrote tables and plots to {out.resolve()}")

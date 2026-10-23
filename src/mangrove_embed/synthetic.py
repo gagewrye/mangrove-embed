@@ -20,8 +20,10 @@ def make(out_dir, n=150, scales=(0, 1, 3, 7), seed=0):
     for r, (lo, la) in REGIONS.items():
         shift = rng.normal(size=64) * 1.2
 
-        def gen(k, c):
+        def gen(k, c, mix=None):
             base = shift + (class_dir[c] if c else 0) + rng.normal(size=(k, 64))
+            if mix is not None:  # boundary pixel: blended with a neighbouring class
+                base = base + 0.6 * np.stack([class_dir[m] for m in mix])
             d = {}
             for s in scales:
                 v = base + rng.normal(size=(k, 64)) / (1 + s)  # context averages out noise
@@ -34,4 +36,9 @@ def make(out_dir, n=150, scales=(0, 1, 3, 7), seed=0):
         lab = pd.concat([gen(n, c).assign(**{"class": c}) for c in CLASSES], ignore_index=True)
         lab.to_parquet(out / f"{r}_labeled.parquet", index=False)
         gen(2 * n, None).to_parquet(out / f"{r}_unlabeled.parquet", index=False)
+        edge = []
+        for c in CLASSES:
+            others = rng.choice([o for o in CLASSES if o != c], size=n // 2)
+            edge.append(gen(n // 2, c, mix=others).assign(**{"class": c}))
+        pd.concat(edge, ignore_index=True).to_parquet(out / f"{r}_edge.parquet", index=False)
     return out

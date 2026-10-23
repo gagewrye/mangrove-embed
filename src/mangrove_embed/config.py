@@ -17,6 +17,8 @@ class Config:
     coast_buffer_m: int = 5000
     n_per_class: int = 300
     n_unlabeled: int = 3000
+    n_edge: int = 1500
+    edge_radius_px: int = 3
     tile_deg: float = 0.25
     workers: int = 6
     block_deg: float = 0.05

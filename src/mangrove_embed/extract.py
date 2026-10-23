@@ -20,7 +20,13 @@ Per region:
   3. Pull tiles concurrently with computeFeatures. Timeouts/memory errors -> split tile into
      quadrants and retry; rate limits -> backoff.
   4. Cache each tile in data/raw/<region>/; reruns skip finished tiles (resumable).
-  5. Merge + subsample to exact budget -> data/processed/<region>_{labeled,unlabeled}.parquet.
+  5. Merge + subsample to exact budget -> data/processed/<region>_{labeled,unlabeled,edge}.parquet.
+
+Edge stratum (<region>_edge.parquet): the two-stage draw oversamples homogeneous patches, so
+boundary pixels are under-represented. The edge set fixes that for evaluation: random coastal
+locations jittered uniformly within each 100 m cell (so 10 m positions are unbiased), kept where
+another class lies within edge_radius_px (default 3 px = 30 m). Labels are exact 10 m. Used only
+as a test set (Q4-edge), never for training.
 """
 import logging
 import math
@@ -42,6 +48,7 @@ EMB = "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL"
 OVERSAMPLE = 1.3
 CANDIDATE_SCALE = 100   # m; stage-1 candidate draw
 CANDIDATE_FACTOR = 3    # candidates per needed point (some fail the 10 m re-check)
+EDGE_FACTOR = 5         # random candidates per kept edge point (most pixels aren't boundary)
 MAX_SPLIT_DEPTH = 3
 
 
@@ -233,6 +240,48 @@ def fetch_unlabeled(tile, n, feat_img, coastal, proj, cols, seed, depth=0):
                           for i, q in enumerate(quadrants(tile))], ignore_index=True)
 
 
+def edge_image(labels, radius_px):
+    """1 where another class (or a masked/ambiguous pixel) lies within radius_px 10 m pixels."""
+    lab = labels.unmask(0)
+    k = ee.Kernel.square(radius_px, "pixels")
+    return lab.reduceNeighborhood(ee.Reducer.max(), k).neq(
+        lab.reduceNeighborhood(ee.Reducer.min(), k)).rename("edge")
+
+
+def fetch_edge(tile, n_cand, feat_img, labels, edge, coastal, proj, cols, seed, depth=0):
+    """Boundary stratum. Unbiased 10 m locations (100 m draw + uniform jitter within the cell),
+    kept only where the pixel is within the edge radius of a class change. Labels are 10 m."""
+    if n_cand == 0:
+        return pd.DataFrame(columns=cols)
+    try:
+        lat = (tile[1] + tile[3]) / 2
+        half = CANDIDATE_SCALE / 2
+        dlon = half / (111_320 * math.cos(math.radians(lat)))
+        dlat = half / 110_540
+
+        def jitter(f):
+            xy = f.geometry().coordinates()
+            x = ee.Number(xy.get(0)).add(ee.Number(f.get("rx")).multiply(2).subtract(1).multiply(dlon))
+            y = ee.Number(xy.get(1)).add(ee.Number(f.get("ry")).multiply(2).subtract(1).multiply(dlat))
+            return ee.Feature(ee.Geometry.Point([x, y]))
+
+        pts = (coastal.selfMask().rename("coastal").sample(
+                   region=ee.Geometry.Rectangle(tile), scale=CANDIDATE_SCALE, projection=proj,
+                   numPixels=int(n_cand), seed=seed, tileScale=4, geometries=True)
+               .randomColumn("rx", seed).randomColumn("ry", seed + 1).map(jitter))
+        fc = (feat_img.addBands(labels).addBands(edge)
+              .sampleRegions(collection=pts, scale=10, projection=proj, tileScale=16,
+                             geometries=False)
+              .filter(ee.Filter.eq("edge", 1)))
+        return _pull(fc, cols)
+    except TooBig:
+        if depth >= MAX_SPLIT_DEPTH:
+            raise
+        return pd.concat([fetch_edge(q, math.ceil(n_cand / 4), feat_img, labels, edge, coastal,
+                                     proj, cols, seed + 7 * (i + 1), depth + 1)
+                          for i, q in enumerate(quadrants(tile))], ignore_index=True)
+
+
 # ------------------------------------------------------------------ orchestration
 def _cached(path: Path, fn):
     if path.exists():
@@ -248,11 +297,13 @@ def _cached(path: Path, fn):
 def extract_region(name, bbox, cfg: Config):
     out_lab = cfg.processed_dir / f"{name}_labeled.parquet"
     out_unl = cfg.processed_dir / f"{name}_unlabeled.parquet"
-    if out_lab.exists() and out_unl.exists():
+    out_edge = cfg.processed_dir / f"{name}_edge.parquet"
+    if out_lab.exists() and out_unl.exists() and (out_edge.exists() or not cfg.n_edge):
         log.info("%s: already processed, skipping", name)
         return
 
     proj, feat_img, labels, coastal = build_images(bbox, cfg)
+    edge = edge_image(labels, cfg.edge_radius_px)
     tiles = tile_grid(bbox, cfg.tile_deg)
     raw = cfg.raw_dir / name
     raw.mkdir(parents=True, exist_ok=True)
@@ -261,6 +312,7 @@ def extract_region(name, bbox, cfg: Config):
         tile_class_counts(tiles, labels, proj), columns=[str(c) for c in CLASS_IDS])).values
     alloc = np.stack([allocate(cnt[:, j], cfg.n_per_class) for j in range(cnt.shape[1])], 1)
     a_unl = allocate(cnt.sum(1), cfg.n_unlabeled * 2)
+    a_edge = allocate(cnt.sum(1), cfg.n_edge * EDGE_FACTOR) if cfg.n_edge else np.zeros(len(tiles), int)
     log.info("%s: %d tiles (%d with mangrove); approx px per class at 100 m: %s",
              name, len(tiles), int((cnt[:, 0] > 0).sum()),
              dict(zip(CLASS_IDS, cnt.sum(0).astype(int).tolist())))
@@ -278,6 +330,10 @@ def extract_region(name, bbox, cfg: Config):
             jobs.append((raw / f"unl_{i:04d}.parquet",
                          lambda t=t, i=i, s=s: fetch_unlabeled(t, a_unl[i], feat_img, coastal,
                                                                proj, unl_cols, s + 1)))
+        if a_edge[i] > 0:
+            jobs.append((raw / f"edge_{i:04d}.parquet",
+                         lambda t=t, i=i, s=s: fetch_edge(t, a_edge[i], feat_img, labels, edge,
+                                                          coastal, proj, lab_cols, s + 2)))
 
     failed = []
     with ThreadPoolExecutor(cfg.workers) as ex:
@@ -300,13 +356,21 @@ def extract_region(name, bbox, cfg: Config):
     unl = pd.concat([pd.read_parquet(p) for p in sorted(raw.glob("unl_*.parquet"))],
                     ignore_index=True).dropna()
     unl = unl.sample(min(len(unl), cfg.n_unlabeled), random_state=cfg.seed)
-    for df in (lab, unl):
+    edge_files = sorted(raw.glob("edge_*.parquet"))
+    edg = (pd.concat([pd.read_parquet(p) for p in edge_files], ignore_index=True).dropna()
+           if edge_files else pd.DataFrame(columns=lab_cols))
+    edg = edg.sample(min(len(edg), cfg.n_edge), random_state=cfg.seed)
+    edg["class"] = edg["class"].astype(int)
+    for df in (lab, unl, edg):
         df["region"] = name
     cfg.processed_dir.mkdir(parents=True, exist_ok=True)
     lab.to_parquet(out_lab, index=False)
     unl.to_parquet(out_unl, index=False)
-    log.info("%s: labeled per class %s | unlabeled %d", name,
-             lab["class"].value_counts().sort_index().to_dict(), len(unl))
+    if cfg.n_edge:
+        edg.to_parquet(out_edge, index=False)
+    log.info("%s: labeled per class %s | unlabeled %d | edge %d (per class %s)", name,
+             lab["class"].value_counts().sort_index().to_dict(), len(unl), len(edg),
+             edg["class"].value_counts().sort_index().to_dict())
 
 
 def extract(cfg: Config, regions=None):
