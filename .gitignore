@@ -9,3 +9,6 @@ wandb/
 results/**/*.pt
 results/synthetic/
 results/seg/mps_smoke/
+
+# local data transfer archives
+*.zip
