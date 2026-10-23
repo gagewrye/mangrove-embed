@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from mangrove_embed import diagnostics, synthetic
+from mangrove_embed import BANDS, diagnostics, synthetic
 from mangrove_embed.extract import allocate, feature_columns, quadrants, tile_grid
 
 
@@ -32,7 +32,7 @@ def test_feature_columns():
 def test_diagnostics_end_to_end(tmp_path):
     data = synthetic.make(tmp_path / "d", n=120)
     diagnostics.run(data, tmp_path / "r", models=("knn", "logreg"),
-                    fsets=["pixel", "ctx7"], anchor="jamaica", block_deg=0.05)
+                    fsets=["pixel", "ctx7", "rings"], anchor="jamaica", block_deg=0.05)
     s = pd.read_csv(tmp_path / "r" / "results_summary.csv")
     assert {"loro", "within_blocked", "jamaica_only", "loro_edge", "within_edge"} <= set(s.protocol)
     assert not s[s.protocol.str.endswith("_edge")].centered.any()
@@ -41,3 +41,12 @@ def test_diagnostics_end_to_end(tmp_path):
     for f in ["q1_geometry.csv", "q1_mangrove_centroids.png", "q2_loro_by_region.png",
               "q2_false_mangrove_sources.csv", "q4_spatial_ablation.png"]:
         assert (tmp_path / "r" / f).exists()
+
+
+def test_ring_is_exact_annulus_mean():
+    # 3x3 window: center c, 8 neighbors each n -> s1 mean = (c + 8n)/9; ring must recover n
+    c, n = np.ones(64), np.full(64, 3.0)
+    row = {**{f"s0_{b}": c[i] for i, b in enumerate(BANDS)},
+           **{f"s1_{b}": (c[i] + 8 * n[i]) / 9 for i, b in enumerate(BANDS)}}
+    r = diagnostics.ring(pd.DataFrame([row]), 1)
+    assert np.allclose(r, 3.0)

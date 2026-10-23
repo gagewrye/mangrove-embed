@@ -13,6 +13,8 @@ Models are trained on all 11 classes (as in the v3 kNN) and scored on mangrove
   Q4 Spatial   - Pixel vs 3x3 / 7x7 / 15x15 mean-pooled context, within-region and LORO.
                  Q4-edge repeats it on boundary pixels (*_edge.parquet, test-only), where the
                  two-stage training sample is thin and context should matter most.
+                 Ring features (annulus means, derived from stored window means) test whether
+                 the center-vs-surroundings contrast matters, not just neighborhood composition.
   +  Centering - Subtract a label-free per-region mean (coastal-zone pixels) before LORO.
 
 Run via:  mangrove diagnose [--models knn logreg mlp] [--skip-within]
@@ -37,6 +39,9 @@ from . import BANDS, CLASS_NAMES, MANGROVE
 
 log = logging.getLogger(__name__)
 
+# Tokens: int s -> mean over the (2s+1)^2 window; "r<s>" -> ring: mean over that window minus the
+# next-smaller extracted window (exact, derived from the stored means; no extra extraction).
+# With scales [0, 1, 3, 7]: r1 = 3x3 minus center, r3 = 7x7 minus 3x3, r7 = 15x15 minus 7x7.
 FEATURE_SETS = {
     "pixel":       [0],
     "ctx3":        [1],
@@ -44,6 +49,8 @@ FEATURE_SETS = {
     "ctx15":       [7],
     "pixel+ctx7":  [0, 3],
     "pixel+multi": [0, 1, 3, 7],
+    "pixel+ring7": [0, "r7"],              # center vs 40-75 m surroundings
+    "rings":       [0, "r1", "r3", "r7"],  # radial profile: center + three disjoint annuli
 }
 NAME = dict(enumerate(CLASS_NAMES, start=1))
 METRIC = "mangrove_f1"
@@ -87,13 +94,45 @@ def present_scales(df):
     return {int(c.split("_")[0][1:]) for c in df.columns if c.startswith("s") and c.endswith("_A00")}
 
 
+def _window(df, s):
+    return df[[f"s{s}_{b}" for b in BANDS]].values.astype(np.float32)
+
+
+def _prev_scale(df, s):
+    smaller = [q for q in present_scales(df) if q < s]
+    return max(smaller) if smaller else None
+
+
+def needed_scales(df, fset):
+    need = set()
+    for t in FEATURE_SETS[fset]:
+        if isinstance(t, str):
+            s = int(t[1:])
+            p = _prev_scale(df, s)
+            need |= {s} | ({p} if p is not None else {-1})  # -1: unsatisfiable
+        else:
+            need.add(t)
+    return need
+
+
+def ring(df, s):
+    """Mean over the annulus between window s and the next-smaller extracted window."""
+    p = _prev_scale(df, s)
+    n_s, n_p = (2 * s + 1) ** 2, (2 * p + 1) ** 2
+    return (n_s * _window(df, s) - n_p * _window(df, p)) / (n_s - n_p)
+
+
 def features(df, fset, centers=None):
-    """Concat per-scale blocks, each re-normalized to unit length (means of unit vectors aren't)."""
+    """Concat blocks, each re-normalized to unit length (means of unit vectors aren't).
+    Centering applies to window-mean blocks only."""
     blocks = []
-    for s in FEATURE_SETS[fset]:
-        v = df[[f"s{s}_{b}" for b in BANDS]].values.astype(np.float32)
-        if centers is not None:
-            v = v - np.stack([centers[(r, s)] for r in df["region"].values])
+    for t in FEATURE_SETS[fset]:
+        if isinstance(t, str):
+            v = ring(df, int(t[1:]))
+        else:
+            v = _window(df, t)
+            if centers is not None:
+                v = v - np.stack([centers[(r, t)] for r in df["region"].values])
         blocks.append(unit(v))
     return np.hstack(blocks) / np.sqrt(len(blocks))
 
@@ -338,7 +377,7 @@ def run(data_dir, out, models=("knn", "logreg", "mlp"), fsets=None, anchor=None,
     out.mkdir(parents=True, exist_ok=True)
     lab, unl, edge = load(data_dir, block_deg)
     avail = present_scales(lab)
-    fsets = [f for f in (fsets or FEATURE_SETS) if set(FEATURE_SETS[f]) <= avail]
+    fsets = [f for f in (fsets or FEATURE_SETS) if needed_scales(lab, f) <= avail]
     print(lab.groupby(["region", "class"]).size().unstack(fill_value=0)
           .rename(columns=NAME).to_string())
     geometry(lab, out)
