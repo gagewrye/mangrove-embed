@@ -46,7 +46,9 @@ def main(argv=None):
     t.add_argument("--lr-new", type=float)
     t.add_argument("--max-chips-per-region", type=int)
     t.add_argument("--loader-workers", type=int)
-    t.add_argument("--device")
+    t.add_argument("--device", help="cuda | mps | cpu (default: best available)")
+    t.add_argument("--amp", action=argparse.BooleanOptionalAction, default=None,
+                   help="fp16 mixed precision (default: on for CUDA, off for MPS)")
     t.add_argument("--model", choices=["segformer", "fcn"], help="default segformer")
     t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
     t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
@@ -88,6 +90,9 @@ def main(argv=None):
         from .chips import extract_chips
         extract_chips(cfg, a.regions)
     elif a.cmd == "train-seg":
+        import os
+        # Apple Metal: run any op MPS lacks on CPU instead of erroring (must precede torch import)
+        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
         from .seg.train import TrainConfig, run
         tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
                          out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
@@ -97,7 +102,7 @@ def main(argv=None):
                          device=a.device, model=a.model, pca=a.pca,
                          input_proj=a.input_proj, from_scratch=a.from_scratch or None,
                          wandb=a.wandb or None, wandb_project=a.wandb_project,
-                         wandb_entity=a.wandb_entity).items():
+                         wandb_entity=a.wandb_entity, amp=a.amp).items():
             if v is not None:
                 setattr(tc, k, v)
         run(tc, a.protocol, a.holdout, a.regions, a.tag)

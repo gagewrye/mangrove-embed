@@ -12,9 +12,11 @@ never the test region. The held-out score reported is at the best validation epo
 
 Outputs (results/seg/<run>/): metrics.json per split, summary.csv, best checkpoint per split.
 """
+import contextlib
 import json
 import logging
 import math
+import os
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -57,6 +59,7 @@ class TrainConfig:
     input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
     fcn_width: int = 64
     from_scratch: bool = False    # segformer with random init (same architecture)
+    amp: bool | None = None       # mixed precision; None = on for CUDA, off for MPS/CPU
     wandb: bool = False           # log to Weights & Biases (needs the [track] extra)
     wandb_project: str = "mangrove-embed"
     wandb_entity: str | None = None
@@ -306,8 +309,15 @@ class Tracker:
 
 # ------------------------------------------------------------------ training
 def _device(tc):
+    """CUDA (NVIDIA) > MPS (Apple Metal) > CPU, unless --device is given."""
     if tc.device:
-        return torch.device(tc.device)
+        d = torch.device(tc.device)
+        if d.type == "mps" and not torch.backends.mps.is_available():
+            raise SystemExit("MPS requested but not available (needs Apple Silicon, macOS 12.3+, "
+                             "and a PyTorch build with MPS: torch.backends.mps.is_built()).")
+        if d.type == "cuda" and not torch.cuda.is_available():
+            raise SystemExit("CUDA requested but not available.")
+        return d
     if torch.cuda.is_available():
         return torch.device("cuda")
     if torch.backends.mps.is_available():
@@ -315,11 +325,25 @@ def _device(tc):
     return torch.device("cpu")
 
 
-def _loader(paths, tc, train):
+def _use_amp(tc, device):
+    """fp16 autocast. Default on for CUDA; opt-in on MPS (--amp), where fp16 autocast works on
+    recent PyTorch but is less battle-tested; never on CPU."""
+    if device.type == "cpu":
+        return False
+    return (device.type == "cuda") if tc.amp is None else bool(tc.amp)
+
+
+def _autocast(device, amp):
+    return torch.autocast(device.type, dtype=torch.float16) if amp else contextlib.nullcontext()
+
+
+def _loader(paths, tc, train, device=None):
+    workers = tc.workers
     return DataLoader(ChipDataset(paths, augment=train), batch_size=tc.batch_size, shuffle=train,
-                      num_workers=tc.workers, pin_memory=torch.cuda.is_available(),
+                      num_workers=workers,
+                      pin_memory=device is not None and device.type == "cuda",
                       drop_last=train and len(paths) > tc.batch_size,
-                      persistent_workers=tc.workers > 0)
+                      persistent_workers=workers > 0)
 
 
 @torch.no_grad()
@@ -328,7 +352,7 @@ def evaluate(model, loader, device, amp):
     m = Meter()
     for x, y in loader:
         x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
-        with torch.autocast(device.type, enabled=amp):
+        with _autocast(device, amp):
             m.update(model(x), y)
     return m.result()
 
@@ -350,13 +374,14 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
         job_type="loro"):
     torch.manual_seed(tc.seed); np.random.seed(tc.seed)
     device = _device(tc)
-    amp = device.type == "cuda"
+    amp = _use_amp(tc, device)
     px = np.load(train_paths[0])["x"].shape[-1]
     in_ch = np.load(train_paths[0])["x"].shape[0]
     model, new_ids, info = build_model(tc, in_ch, px, train_paths)
     model = model.to(device)
-    log.info("%s: %s, %d params, model input %d channels", tag, tc.model, info["params"],
-             info["model_in_channels"])
+    log.info("%s: %s, %d params, model input %d channels | device %s, amp %s", tag, tc.model,
+             info["params"], info["model_in_channels"], device, amp)
+    info["device"], info["amp"] = str(device), amp
     tracker = Tracker(tc, run_dir.name, tag, job_type,
                       {**info, "train_chips": len(train_paths), "val_chips": len(val_paths),
                        "test_regions": sorted(test_sets)})
@@ -364,7 +389,7 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
               {"params": [p for p in model.parameters() if id(p) in new_ids], "lr": tc.lr_new}]
     params = [g for g in params if g["params"]]
     opt = torch.optim.AdamW(params, weight_decay=tc.weight_decay)
-    tr_loader = _loader(train_paths, tc, True)
+    tr_loader = _loader(train_paths, tc, True, device)
     steps = tc.epochs * len(tr_loader)
     warm = max(1, steps // 20)
     sched = torch.optim.lr_scheduler.LambdaLR(
@@ -372,8 +397,10 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
     weights, counts = class_weights(train_paths)
     loss_fn = JaccardLoss(num_classes=N_CLASSES, ignore_index=IGNORE, weight=weights.to(device),
                           alpha=tc.alpha)
-    scaler = torch.amp.GradScaler("cuda", enabled=amp)
-    val_loader = _loader(val_paths, tc, False)
+    # loss scaling guards fp16 underflow; CUDA has GradScaler, other backends train in fp32 by
+    # default (or fp16 autocast without scaling, which is fine at these loss magnitudes)
+    scaler = torch.amp.GradScaler("cuda", enabled=amp and device.type == "cuda")
+    val_loader = _loader(val_paths, tc, False, device)
 
     best, best_ep, hist = -1.0, -1, []
     ckpt = run_dir / f"{tag}_best.pt"
@@ -383,7 +410,7 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
         tot, n = 0.0, 0
         for x, y in tr_loader:
             x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
-            with torch.autocast(device.type, enabled=amp):
+            with _autocast(device, amp):
                 out = model(x)
             loss = loss_fn(out.float(), y)
             opt.zero_grad(set_to_none=True)
@@ -404,14 +431,14 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
             best, best_ep = score, ep
             torch.save(model.state_dict(), ckpt)
 
-    model.load_state_dict(torch.load(ckpt, map_location=device))
+    model.load_state_dict(torch.load(ckpt, map_location=device, weights_only=True))
     res = dict(tag=tag, best_epoch=best_ep, val_mangrove_iou=best, history=hist,
                train_chips=len(train_paths), val_chips=len(val_paths),
                train_class_px={CLASS_NAMES[i]: int(c) for i, c in enumerate(counts)},
                model_info=info,
                config=asdict(tc), test={})
     for name, paths in test_sets.items():
-        res["test"][name] = evaluate(model, _loader(paths, tc, False), device, amp)
+        res["test"][name] = evaluate(model, _loader(paths, tc, False, device), device, amp)
         res["test"][name]["chips"] = len(paths)
     (run_dir / f"{tag}.json").write_text(json.dumps(res, indent=2))
     tracker.finish(res)

@@ -81,6 +81,15 @@ mangrove compare-seg                       # all runs side by side
 Point-level check: 16 PCs retain 93% of variance and match full 64-d LORO kNN F1 (0.806 vs
 0.800); 8 PCs lose ~0.06 AP for logreg.
 
+## Hardware
+`train-seg` picks CUDA > Apple Metal (MPS) > CPU automatically; force with `--device`.
+- **NVIDIA:** fp16 autocast + GradScaler on by default. Install a CUDA torch wheel, e.g.
+  `pip install torch --index-url https://download.pytorch.org/whl/cu128`.
+- **Apple Silicon (MPS):** default `pip install torch` includes Metal. fp32 by default; `--amp`
+  enables fp16 autocast. `PYTORCH_ENABLE_MPS_FALLBACK=1` is set so any op Metal lacks runs on CPU
+  instead of failing. Quick check: `python -c "import torch; print(torch.backends.mps.is_available())"`.
+  Smoke test: `mangrove train-seg --model fcn --epochs 1 --max-chips-per-region 20 --tag mps_smoke`.
+
 ## Experiment tracking (W&B)
 ```bash
 pip install -e ".[track]" && wandb login

@@ -187,3 +187,19 @@ def test_wandb_offline(tmp_path, monkeypatch):
     run(tc, "loro", "a")
     runs = list((tmp_path / "wandb").glob("offline-run-*"))
     assert len(runs) == 1
+
+
+def test_device_and_amp_selection(monkeypatch):
+    from mangrove_embed.seg.train import TrainConfig, _device, _use_amp
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True)
+    tc = TrainConfig()
+    assert _device(tc).type == "mps"                       # Apple Metal picked when no CUDA
+    assert _use_amp(tc, torch.device("mps")) is False      # off by default on MPS
+    assert _use_amp(TrainConfig(amp=True), torch.device("mps")) is True
+    assert _use_amp(tc, torch.device("cuda")) is True      # on by default on CUDA
+    assert _use_amp(TrainConfig(amp=True), torch.device("cpu")) is False
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+    assert _device(tc).type == "cpu"
+    with pytest.raises(SystemExit):
+        _device(TrainConfig(device="mps"))
