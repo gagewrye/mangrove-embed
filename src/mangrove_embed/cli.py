@@ -34,37 +34,12 @@ def main(argv=None):
 
     t = sub.add_parser("train-seg", help="train SegFormer on chips (needs the [seg] extra)")
     t.add_argument("--protocol", choices=["loro", "pooled"], default="loro")
-    t.add_argument("--holdout", default="all", help="region to hold out, or 'all' (loro)")
-    t.add_argument("--regions", nargs="*", help="restrict to these regions")
-    t.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
-    t.add_argument("--out", help="output dir (default: <results_dir>/seg)")
-    t.add_argument("--weights", help="HF SegFormer weights (default: b0 ADE)")
-    t.add_argument("--stem-stride", type=int, help="stage-1 stride (default 2; pretrained 4)")
-    t.add_argument("--epochs", type=int)
-    t.add_argument("--batch-size", type=int)
-    t.add_argument("--lr-backbone", type=float)
-    t.add_argument("--lr-new", type=float)
-    t.add_argument("--max-chips-per-region", type=int)
-    t.add_argument("--loader-workers", type=int)
-    t.add_argument("--device", help="cuda | mps | cpu (default: best available)")
-    t.add_argument("--amp", action=argparse.BooleanOptionalAction, default=None,
-                   help="fp16 mixed precision (default: on for CUDA, off for MPS)")
-    t.add_argument("--model", choices=["segformer", "fcn"], help="default segformer")
-    t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
-    t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
-    t.add_argument("--fcn-dilations", help="fcn dilations, comma- or dash-separated, one block "
-                   "each; 0 = 1x1 (no context). Default 1,2,4,8,16 (630 m receptive field)")
-    t.add_argument("--fcn-width", type=int, help="fcn channels (default 64)")
-    t.add_argument("--seed", type=int, help="random seed (adds _s<seed> to the results folder)")
-    t.add_argument("--from-scratch", action="store_true", help="segformer with random init")
-    t.add_argument("--wandb", action="store_true", help="log runs to Weights & Biases")
-    t.add_argument("--wandb-project", help="default mangrove-embed")
-    t.add_argument("--wandb-entity", help="W&B team/user (default: your default entity)")
-    t.add_argument("--wandb-name", help="W&B run name (split is appended, e.g. rf11/holdout_mekong)")
-    t.add_argument("--wandb-group", help="W&B group (default: results folder name)")
-    t.add_argument("--wandb-tags", nargs="*", help="extra W&B tags")
-    t.add_argument("--wandb-notes", help="W&B run notes")
-    t.add_argument("--tag", help="subfolder for this run's results (default: protocol name)")
+    b = sub.add_parser("bench", help="multi-seed LORO comparison of models on the same splits")
+    b.add_argument("--models", nargs="*", default=["mlp", "fcn", "segformer"])
+    b.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2])
+    b.add_argument("--metric", default="mangrove_iou")
+    for t in (t, b):
+        _train_args(t)
 
     cs = sub.add_parser("compare-seg", help="tabulate all train-seg runs side by side")
     cs.add_argument("--out", help="results dir (default: <results_dir>/seg)")
@@ -84,7 +59,7 @@ def main(argv=None):
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg", "compare-pixel") else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg", "bench", "compare-pixel") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -112,26 +87,15 @@ def main(argv=None):
         import os
         # Apple Metal: run any op MPS lacks on CPU instead of erroring (must precede torch import)
         os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-        from .seg.train import TrainConfig, run
-        tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
-                         out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
-        if a.seed is not None:
-            tc.seed, tc.name_seed = a.seed, True
-        dil = (tuple(int(x) for x in a.fcn_dilations.replace("-", ",").split(",") if x != "")
-               if a.fcn_dilations else None)
-        for k, v in dict(fcn_dilations=dil, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
-                         batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
-                         max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
-                         device=a.device, model=a.model, pca=a.pca,
-                         input_proj=a.input_proj, from_scratch=a.from_scratch or None,
-                         wandb=a.wandb or None, wandb_project=a.wandb_project,
-                         wandb_entity=a.wandb_entity, amp=a.amp, wandb_name=a.wandb_name,
-                         wandb_group=a.wandb_group,
-                         wandb_tags=tuple(a.wandb_tags) if a.wandb_tags else None,
-                         wandb_notes=a.wandb_notes).items():
-            if v is not None:
-                setattr(tc, k, v)
+        from .seg.train import run
+        tc = _train_config(a, cfg)
         run(tc, a.protocol, a.holdout, a.regions, a.tag)
+    elif a.cmd == "bench":
+        import os
+        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+        from .seg.train import bench
+        tc = _train_config(a, cfg)
+        bench(tc, a.models, a.seeds, a.holdout, a.regions, a.metric)
     elif a.cmd == "compare-seg":
         from .seg.train import compare
         compare(a.out or f"{cfg.results_dir}/seg", a.metric, a.region)
@@ -144,6 +108,66 @@ def main(argv=None):
         from .diagnostics import run
         data = synthetic.make(f"{cfg.data_dir}/synthetic")
         run(data, f"{cfg.results_dir}/synthetic", ("knn", "logreg"), anchor="jamaica")
+
+
+def _train_args(t):
+    t.add_argument("--holdout", default="all", help="region to hold out, or 'all' (loro)")
+    t.add_argument("--regions", nargs="*", help="restrict to these regions")
+    t.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
+    t.add_argument("--out", help="output dir (default: <results_dir>/seg)")
+    t.add_argument("--weights", help="HF SegFormer weights (default: b0 ADE)")
+    t.add_argument("--stem-stride", type=int, help="stage-1 stride (default 2; pretrained 4)")
+    t.add_argument("--epochs", type=int)
+    t.add_argument("--batch-size", type=int)
+    t.add_argument("--lr-backbone", type=float)
+    t.add_argument("--lr-new", type=float)
+    t.add_argument("--max-chips-per-region", type=int)
+    t.add_argument("--loader-workers", type=int)
+    t.add_argument("--device", help="cuda | mps | cpu (default: best available)")
+    t.add_argument("--amp", action=argparse.BooleanOptionalAction, default=None,
+                   help="fp16 mixed precision (default: on for CUDA, off for MPS)")
+    t.add_argument("--model", choices=["segformer", "fcn", "mlp"], help="default segformer")
+    t.add_argument("--mlp-hidden", help="mlp hidden widths, comma-separated (default 64)")
+    t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
+    t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
+    t.add_argument("--fcn-dilations", help="fcn dilations, comma- or dash-separated, one block "
+                   "each; 0 = 1x1 (no context). Default 1,2,4,8,16 (630 m receptive field)")
+    t.add_argument("--fcn-width", type=int, help="fcn channels (default 64)")
+    t.add_argument("--seed", type=int, help="random seed (adds _s<seed> to the results folder)")
+    t.add_argument("--from-scratch", action="store_true", help="segformer with random init")
+    t.add_argument("--wandb", action="store_true", help="log runs to Weights & Biases")
+    t.add_argument("--wandb-project", help="default mangrove-embed")
+    t.add_argument("--wandb-entity", help="W&B team/user (default: your default entity)")
+    t.add_argument("--wandb-name", help="W&B run name (split is appended, e.g. rf11/holdout_mekong)")
+    t.add_argument("--wandb-group", help="W&B group (default: results folder name)")
+    t.add_argument("--wandb-tags", nargs="*", help="extra W&B tags")
+    t.add_argument("--wandb-notes", help="W&B run notes")
+    t.add_argument("--tag", help="subfolder for this run's results (default: protocol name)")
+
+
+def _train_config(a, cfg):
+    from .seg.train import TrainConfig
+    tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
+                     out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
+    mlp = (tuple(int(x) for x in a.mlp_hidden.replace("-", ",").split(",") if x != "")
+           if a.mlp_hidden else None)
+    if a.seed is not None:
+        tc.seed, tc.name_seed = a.seed, True
+    dil = (tuple(int(x) for x in a.fcn_dilations.replace("-", ",").split(",") if x != "")
+           if a.fcn_dilations else None)
+    for k, v in dict(fcn_dilations=dil, mlp_hidden=mlp, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
+                     batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
+                     max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
+                     device=a.device, model=a.model, pca=a.pca,
+                     input_proj=a.input_proj, from_scratch=a.from_scratch or None,
+                     wandb=a.wandb or None, wandb_project=a.wandb_project,
+                     wandb_entity=a.wandb_entity, amp=a.amp, wandb_name=a.wandb_name,
+                     wandb_group=a.wandb_group,
+                     wandb_tags=tuple(a.wandb_tags) if a.wandb_tags else None,
+                     wandb_notes=a.wandb_notes).items():
+        if v is not None:
+            setattr(tc, k, v)
+    return tc
 
 
 if __name__ == "__main__":

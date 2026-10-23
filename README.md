@@ -97,6 +97,22 @@ kNN 0.758; AP 0.975 for all but kNN (0.882). The FCN receptive-field sweep (10 m
 Mekong was flat within run-to-run noise (~0.025). Thresholds tuned on training regions did not
 transfer (calibration shift between regions, e.g. Jamaica).
 
+## Per-pixel MLP and multi-seed benchmark
+```bash
+mangrove train-seg --model mlp                     # 64 -> 64 -> 11 per pixel (~4.9k params)
+mangrove train-seg --model mlp --mlp-hidden 128,64 # wider / deeper
+mangrove bench                                     # mlp, fcn, segformer x seeds 0 1 2, LORO
+mangrove bench --models mlp fcn --seeds 0 1 2 3 4 --holdout mekong
+```
+`--model mlp` is a stack of 1x1 convs (no context, no normalization), trained through the same
+chip pipeline as the seg models: same splits, JaccardLoss, validation-based model selection and
+threshold tuning. Folder `loro_mlp` (non-default widths: `loro_mlp_h128-64`).
+
+`bench` runs each model at each seed into `loro_<model>_s<N>`, skips runs that are already
+complete (so it resumes), then prints `compare-seg` plus a seed-aggregated table: per run, mean
+over held-out regions; per variant, mean ± std over seeds. `compare-seg` prints that table
+whenever any variant has 2+ seeds (an unsuffixed folder counts as one seed).
+
 ## Receptive-field sweep (FCN)
 Five residual blocks in every run (fixed depth); only the dilations change. A dilation of 0 is a
 1x1 block, so `0,0,0,0,0` is a per-pixel MLP with no spatial context.

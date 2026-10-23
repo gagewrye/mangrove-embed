@@ -55,11 +55,12 @@ class TrainConfig:
     seed: int = 0
     max_chips_per_region: int | None = None
     device: str | None = None
-    model: str = "segformer"      # segformer | fcn (small dilated CNN baseline)
+    model: str = "segformer"      # segformer | fcn (dilated CNN) | mlp (per-pixel, no context)
     pca: int | None = None        # fixed PCA 64 -> k, fit on training-region pixels only
     input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
     fcn_width: int = 64
     fcn_dilations: tuple = (1, 2, 4, 8, 16)  # one residual block per entry; 0 = 1x1 (no context)
+    mlp_hidden: tuple = (64,)     # per-pixel MLP hidden widths
     name_seed: bool = False       # include the seed in the results folder name (set by --seed)
     from_scratch: bool = False    # segformer with random init (same architecture)
     amp: bool | None = None       # mixed precision; None = on for CUDA, off for MPS/CPU
@@ -227,6 +228,19 @@ class TinyFCN(torch.nn.Module):
         return self.head(self.drop(h))
 
 
+class PixelMLP(torch.nn.Sequential):
+    """Per-pixel MLP: 1x1 convs = the same small MLP applied to every pixel's 64-d embedding.
+    No spatial context, no normalization layers. Default 64 -> 64 -> 11 is ~4.9k params; small
+    enough to run as matrix ops on array images inside Earth Engine."""
+    def __init__(self, c_in, n_classes, hidden=(64,)):
+        layers, c = [], c_in
+        for h in hidden:
+            layers += [torch.nn.Conv2d(c, h, 1), torch.nn.ReLU(inplace=True)]
+            c = h
+        super().__init__(*layers, torch.nn.Conv2d(c, n_classes, 1))
+        self.hidden = tuple(hidden)
+
+
 class Net(torch.nn.Module):
     def __init__(self, pre, core):
         super().__init__()
@@ -280,8 +294,13 @@ def build_model(tc, in_ch, px, train_paths):
         info["fcn_dilations"] = list(core.dilations)
         info["receptive_field_px"] = core.receptive_field
         info["receptive_field_m"] = core.receptive_field * 10
+    elif tc.model == "mlp":
+        core = PixelMLP(k, N_CLASSES, hidden=tc.mlp_hidden)
+        new = [core, pre]
+        info["mlp_hidden"] = list(core.hidden)
+        info["receptive_field_px"], info["receptive_field_m"] = 1, 10
     else:
-        raise ValueError(f"model must be segformer or fcn, got {tc.model!r}")
+        raise ValueError(f"model must be segformer, fcn or mlp, got {tc.model!r}")
     model = Net(pre, core)
     new_ids = {id(p) for m in new for p in m.parameters()}
     info["params"] = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -485,7 +504,9 @@ def run_name(tc, protocol):
         parts.append(tc.model)
     if tc.model == "fcn" and tuple(tc.fcn_dilations) != (1, 2, 4, 8, 16):
         parts.append(f"rf{receptive_field(tc.fcn_dilations)}")
-    elif tc.from_scratch:
+    elif tc.model == "mlp" and tuple(tc.mlp_hidden) != (64,):
+        parts.append("h" + "-".join(str(h) for h in tc.mlp_hidden))
+    elif tc.from_scratch and tc.model == "segformer":
         parts.append("scratch")
     if tc.pca:
         parts.append(f"pca{tc.pca}")
@@ -588,4 +609,47 @@ def compare(out_dir="results/seg", metric="mangrove_iou", region=None):
     print(f"\n{metric} by region:")
     print(df.pivot_table(index="run", columns="region", values=metric).round(3)
             .reindex(agg.index).to_string())
+    seeds = seed_summary(agg, metric)
+    if seeds is not None:
+        print(f"\n{metric} across seeds (mean over regions per run, then mean ± std over seeds):")
+        print(seeds.round(3).to_string())
     return agg
+
+
+def seed_summary(agg, metric="mangrove_iou"):
+    """Group run folders that differ only by seed suffix (_s<N>; no suffix counts as a seed).
+    Returns None when no variant has more than one seed."""
+    a = agg.reset_index()
+    a["variant"] = a.run.str.replace(r"_s\d+$", "", regex=True)
+    g = a.groupby("variant").agg(mean=(metric, "mean"), std=(metric, "std"), seeds=("run", "size"),
+                                 regions=("regions", "min"), params=("params", "first"),
+                                 rf_m=("rf_m", "first"))
+    if (g.seeds < 2).all():
+        return None
+    return g.sort_values("mean", ascending=False)
+
+
+def bench(tc: TrainConfig, models=("mlp", "fcn", "segformer"), seeds=(0, 1, 2), holdout="all",
+          regions=None, metric="mangrove_iou"):
+    """Same LORO splits, several seeds per model, then the seed-aggregated comparison.
+    Each (model, seed) writes to its usual folder (loro_mlp_s0, ...); existing complete runs are
+    skipped, so an interrupted bench resumes."""
+    from dataclasses import replace
+    done = []
+    for m in models:
+        for sd in seeds:
+            t = replace(tc, model=m, seed=sd, name_seed=True,
+                        wandb_name=" ".join(x for x in (tc.wandb_name, m, f"s{sd}") if x))
+            folder = Path(t.out_dir) / run_name(t, "loro")
+            want = None if holdout == "all" else {holdout}
+            if (folder / "summary.csv").exists():
+                have = set(pd.read_csv(folder / "summary.csv").region)
+                if (want and want <= have) or (not want and len(have) >= 2 and
+                        have >= set(load_index(t.chips_dir, regions).region.unique())):
+                    print(f"skip {folder.name} (done)")
+                    done.append(folder.name)
+                    continue
+            run(t, "loro", holdout, regions)
+            done.append(folder.name)
+    agg = compare(tc.out_dir, metric, None if holdout == "all" else holdout)
+    return agg.loc[agg.index.isin(done)]

@@ -262,3 +262,36 @@ def test_compare_pixel_and_tuned_seg(tmp_path):
     agg = compare(str(out), region="a")
     assert {"pixel_knn", "pixel_logreg", "pixel_mlp", "loro_fcn"} <= set(agg.index)
     assert "mangrove_iou_tuned" in agg.columns
+
+
+def test_pixel_mlp_and_bench(tmp_path):
+    import json
+    import torch
+    from mangrove_embed.seg.train import PixelMLP, TrainConfig, bench
+    m = PixelMLP(64, 11)
+    assert sum(p.numel() for p in m.parameters()) == 64 * 64 + 64 + 64 * 11 + 11
+    x = torch.randn(2, 64, 8, 8)
+    y = m(x)
+    assert y.shape == (2, 11, 8, 8)
+    # per-pixel: shuffling pixels shuffles outputs identically (no spatial context)
+    perm = torch.randperm(64)
+    xs = x.flatten(2)[..., perm].view_as(x)
+    assert torch.allclose(m(xs).flatten(2), y.flatten(2)[..., perm], atol=1e-6)
+    _synthetic_chips(tmp_path / "chips", n=4)
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=1, batch_size=4, workers=0, block_deg=0.3, device="cpu")
+    agg = bench(tc, models=("mlp", "fcn"), seeds=(0, 1), holdout="a")
+    assert set(agg.index) == {"loro_mlp_s0", "loro_mlp_s1", "loro_fcn_s0", "loro_fcn_s1"}
+    info = json.loads((tmp_path / "out" / "loro_mlp_s0" / "holdout_a.json").read_text())["model_info"]
+    assert info["receptive_field_m"] == 10 and info["mlp_hidden"] == [64]
+    bench(tc, models=("mlp",), seeds=(0,), holdout="a")   # resumes: skips the finished run
+
+
+def test_seed_summary():
+    import pandas as pd
+    from mangrove_embed.seg.train import seed_summary
+    agg = pd.DataFrame(dict(mangrove_iou=[0.8, 0.82, 0.7], regions=[4, 4, 4], params=[1, 1, 2],
+                            rf_m=[10, 10, 630]), index=pd.Index(["loro_mlp_s0", "loro_mlp_s1", "loro_fcn"], name="run"))
+    s = seed_summary(agg)
+    assert s.loc["loro_mlp", "seeds"] == 2 and abs(s.loc["loro_mlp", "mean"] - 0.81) < 1e-9
+    assert seed_summary(agg.iloc[[0, 2]]) is None
