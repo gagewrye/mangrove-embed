@@ -46,6 +46,17 @@ AlphaEarth pixels already encode their surroundings, so Q4 measures *marginal* c
 Mean pooling is a lower bound (composition, not layout). A LORO gain there justifies a patch
 CNN/transformer; a within-only gain means it's learning region-specific layout.
 
+## Segmentation model
+`pip install -e ".[seg]"` (torch, transformers<5). Ported from UCSD-E4E/ml-mangrove; the only
+change is a native multi-band stem:
+```python
+from mangrove_embed.seg import SegFormer, JaccardLoss
+model = SegFormer(num_classes=11, input_image_size=64, in_channels=64, stem_stride=2)
+loss_fn = JaccardLoss(num_classes=11)
+```
+`in_channels=64` replaces the stage-1 patch-embedding conv (all other pretrained weights kept).
+`stem_stride` (pretrained 4) can be lowered for 10 m embeddings; 4 puts stage 1 at 40 m.
+
 ## Layout
 ```
 configs/default.yaml        project, regions, sampling, tiling
@@ -54,6 +65,7 @@ src/mangrove_embed/
   diagnostics.py            Q1-Q4
   synthetic.py              offline test data
   cli.py                    `mangrove` command
+  seg/                      SegFormer (native 64-band stem) + JaccardLoss, from ml-mangrove
 tests/
 legacy/                     v3 Code Editor kNN + change baseline (reference)
 ```

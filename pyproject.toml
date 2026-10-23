@@ -20,6 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+seg = ["torch>=2.6", "transformers>=4.40,<5"]
 
 [project.scripts]
 mangrove = "mangrove_embed.cli:main"
