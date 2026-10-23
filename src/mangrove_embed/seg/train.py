@@ -28,6 +28,7 @@ from sklearn.metrics import average_precision_score
 from torch.utils.data import DataLoader, Dataset
 
 from .. import CLASS_NAMES
+from ..thresholds import tuned_metrics
 from . import JaccardLoss, SegFormer
 
 log = logging.getLogger(__name__)
@@ -146,6 +147,15 @@ class Meter:
         keep = self.rng.random(len(pm)) < min(1.0, self.ap_sample / max(len(pm), 1) * 4)
         self.p.append(pm[keep]); self.t.append(true[keep] == MANGROVE)
 
+    def scores(self):
+        """Uniform pixel sample of (is_mangrove, p_mangrove), for AP and threshold tuning."""
+        p = np.concatenate(self.p) if self.p else np.array([])
+        t = np.concatenate(self.t) if self.t else np.array([], bool)
+        if len(p) > self.ap_sample:
+            idx = np.random.default_rng(0).choice(len(p), self.ap_sample, replace=False)
+            p, t = p[idx], t[idx]
+        return t, p
+
     def result(self):
         cm = self.cm
         tp = np.diag(cm).astype(float)
@@ -154,11 +164,7 @@ class Meter:
         present = cm.sum(1) > 0
         prec = tp[MANGROVE] / max(tp[MANGROVE] + fp[MANGROVE], 1)
         rec = tp[MANGROVE] / max(tp[MANGROVE] + fn[MANGROVE], 1)
-        p = np.concatenate(self.p) if self.p else np.array([])
-        t = np.concatenate(self.t) if self.t else np.array([], bool)
-        if len(p) > self.ap_sample:
-            idx = self.rng.choice(len(p), self.ap_sample, replace=False)
-            p, t = p[idx], t[idx]
+        t, p = self.scores()
         return dict(
             mangrove_iou=float(iou[MANGROVE]), mangrove_precision=float(prec),
             mangrove_recall=float(rec), mangrove_f1=float(2 * prec * rec / max(prec + rec, 1e-9)),
@@ -370,14 +376,14 @@ def _loader(paths, tc, train, device=None):
 
 
 @torch.no_grad()
-def evaluate(model, loader, device, amp):
+def evaluate(model, loader, device, amp, return_scores=False):
     model.eval()
     m = Meter()
     for x, y in loader:
         x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
         with _autocast(device, amp):
             m.update(model(x), y)
-    return m.result()
+    return (m.result(), *m.scores()) if return_scores else m.result()
 
 
 def class_weights(paths, cap=10.0):
@@ -460,9 +466,13 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
                train_class_px={CLASS_NAMES[i]: int(c) for i, c in enumerate(counts)},
                model_info=info,
                config=asdict(tc), test={})
+    # mangrove threshold tuned on validation pixels (training regions only), applied to test
+    _, val_t, val_p = evaluate(model, val_loader, device, amp, return_scores=True)
     for name, paths in test_sets.items():
-        res["test"][name] = evaluate(model, _loader(paths, tc, False, device), device, amp)
-        res["test"][name]["chips"] = len(paths)
+        m, tt, tp = evaluate(model, _loader(paths, tc, False, device), device, amp, return_scores=True)
+        m.update(tuned_metrics(val_t, val_p, tt, tp))
+        m["chips"] = len(paths)
+        res["test"][name] = m
     (run_dir / f"{tag}.json").write_text(json.dumps(res, indent=2))
     tracker.finish(res)
     return res
@@ -531,6 +541,7 @@ def run(tc: TrainConfig, protocol="loro", holdout="all", regions=None, tag=None)
         summary = pd.concat([prev[prev.region != holdout], summary], ignore_index=True)
     summary.to_csv(path, index=False)
     cols = ["region", "mangrove_f1", "mangrove_iou", "mangrove_ap", "miou"]
+    cols += [c for c in ("mangrove_iou_tuned", "threshold") if c in summary]
     print("\n" + summary[cols].round(3).to_string(index=False))
     print("mean:", summary[cols[1:]].mean().round(3).to_dict())
     return summary
@@ -541,8 +552,10 @@ def _flat(m):
 
 
 def _line(r):
+    tuned = (f" | tuned@{r['threshold']:.2f}: IoU {r['mangrove_iou_tuned']:.3f}"
+             if "threshold" in r else "")
     return (f"[{r['protocol']}] {r['region']}: mangrove F1 {r['mangrove_f1']:.3f} "
-            f"IoU {r['mangrove_iou']:.3f} AP {r['mangrove_ap']:.3f} | mIoU {r['miou']:.3f}")
+            f"IoU {r['mangrove_iou']:.3f} AP {r['mangrove_ap']:.3f} | mIoU {r['miou']:.3f}{tuned}")
 
 
 def compare(out_dir="results/seg", metric="mangrove_iou", region=None):
@@ -567,6 +580,7 @@ def compare(out_dir="results/seg", metric="mangrove_iou", region=None):
         if df.empty:
             raise SystemExit(f"No runs with held-out region {region!r}.")
     cols = ["mangrove_iou", "mangrove_f1", "mangrove_ap", "miou"]
+    cols += [c for c in ("mangrove_iou_tuned", "threshold") if c in df]
     agg = df.groupby("run").agg(**{c: (c, "mean") for c in cols}, regions=("region", "nunique"),
                                 params=("params", "first"), rf_m=("rf_m", "first")
                                 ).sort_values(metric, ascending=False)

@@ -229,3 +229,36 @@ def test_fcn_dilation_sweep(tmp_path):
     run(tc, "loro", "a")
     info = json.loads((tmp_path / "out" / "loro_fcn_rf11_s3" / "holdout_a.json").read_text())["model_info"]
     assert info["receptive_field_px"] == 11 and info["receptive_field_m"] == 110
+
+
+def test_thresholds():
+    import numpy as np
+    from mangrove_embed.thresholds import binary_scores, tune_threshold
+    t = np.array([1, 1, 1, 0, 0, 0], bool)
+    p = np.array([0.9, 0.8, 0.35, 0.3, 0.2, 0.1])
+    thr, iou = tune_threshold(t, p)
+    assert 0.3 < thr <= 0.35 and iou == 1.0
+    assert binary_scores(t, p, 0.5)["iou"] == 2 / 3
+
+
+def test_compare_pixel_and_tuned_seg(tmp_path):
+    import json
+    from mangrove_embed import pixel
+    from mangrove_embed.seg.train import TrainConfig, compare, run
+    _synthetic_chips(tmp_path / "chips", n=6)
+    out = tmp_path / "out"
+    res = pixel.run(str(tmp_path / "chips"), str(out), ("knn", "logreg", "mlp"), "all",
+                    n_train_per_region=500, n_val=300, n_test=800, block_deg=0.3)
+    for m in ("knn", "logreg", "mlp"):
+        s = res[m]
+        assert set(s.region) == {"a", "b", "c"}
+        assert s.mangrove_iou_tuned.between(0, 1).all() and s.threshold.between(0, 1).all()
+    info = json.loads((out / "pixel_logreg" / "holdout_a.json").read_text())["model_info"]
+    assert info["params"] == 64 * 2 + 2 or info["params"] > 0
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(out), weights=W, epochs=1,
+                     batch_size=4, workers=0, block_deg=0.3, device="cpu", model="fcn")
+    s = run(tc, "loro", "a")
+    assert {"mangrove_iou_tuned", "threshold"} <= set(s.columns)
+    agg = compare(str(out), region="a")
+    assert {"pixel_knn", "pixel_logreg", "pixel_mlp", "loro_fcn"} <= set(agg.index)
+    assert "mangrove_iou_tuned" in agg.columns

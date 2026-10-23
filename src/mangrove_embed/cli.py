@@ -71,10 +71,20 @@ def main(argv=None):
     cs.add_argument("--metric", default="mangrove_iou")
     cs.add_argument("--region", help="only this held-out region (e.g. mekong)")
 
+    px = sub.add_parser("compare-pixel",
+                        help="per-pixel knn/logreg/mlp on chip pixels, scored like train-seg")
+    px.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
+    px.add_argument("--out", help="results dir (default: <results_dir>/seg)")
+    px.add_argument("--models", nargs="*", default=["knn", "logreg", "mlp"])
+    px.add_argument("--holdout", default="all", help="region to hold out, or 'all'")
+    px.add_argument("--n-train", type=int, default=30_000, help="training pixels per region")
+    px.add_argument("--n-test", type=int, default=100_000, help="test pixels (held-out region)")
+    px.add_argument("--seed", type=int, default=0)
+
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg") else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg", "compare-pixel") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -125,6 +135,10 @@ def main(argv=None):
     elif a.cmd == "compare-seg":
         from .seg.train import compare
         compare(a.out or f"{cfg.results_dir}/seg", a.metric, a.region)
+    elif a.cmd == "compare-pixel":
+        from .pixel import run as run_pixel
+        run_pixel(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/seg",
+                  a.models, a.holdout, a.n_train, n_test=a.n_test, seed=a.seed)
     elif a.cmd == "demo":
         from . import synthetic
         from .diagnostics import run

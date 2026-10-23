@@ -81,6 +81,22 @@ mangrove compare-seg                       # all runs side by side
 Point-level check: 16 PCs retain 93% of variance and match full 64-d LORO kNN F1 (0.806 vs
 0.800); 8 PCs lose ~0.06 AP for logreg.
 
+## Per-pixel baselines and threshold tuning
+```bash
+mangrove compare-pixel                     # knn / logreg / mlp on chip pixels, same LORO splits
+mangrove compare-seg --region mekong       # everything side by side on one held-out region
+```
+`compare-pixel` trains on pixels from the other regions' chips and tests on a uniform pixel sample
+of the held-out region's chips (the population `train-seg` scores), writing to
+`results/seg/pixel_<model>/` so `compare-seg` lists it with the seg models. Both `train-seg` and
+`compare-pixel` also tune the mangrove threshold on validation pixels from the training regions
+(`threshold`, `mangrove_iou_tuned`).
+
+Findings (4 regions, held-out mangrove IoU): per-pixel MLP 0.846, SegFormer-B0 0.832, logreg 0.825,
+kNN 0.758; AP 0.975 for all but kNN (0.882). The FCN receptive-field sweep (10 m to 1.27 km) on
+Mekong was flat within run-to-run noise (~0.025). Thresholds tuned on training regions did not
+transfer (calibration shift between regions, e.g. Jamaica).
+
 ## Receptive-field sweep (FCN)
 Five residual blocks in every run (fixed depth); only the dilations change. A dilation of 0 is a
 1x1 block, so `0,0,0,0,0` is a per-pixel MLP with no spatial context.
