@@ -79,6 +79,9 @@ def test_train_seg_loro_and_pooled(tmp_path):
                      epochs=2, batch_size=4, workers=0, block_deg=0.3, device="cpu")
     s = run(tc, "loro", "all")
     assert set(s.region) == {"a", "b", "c"} and s.mangrove_iou.between(0, 1).all()
+    tc.max_chips_per_region = 3                       # subsampling path (pandas 3 regression)
+    s3 = run(tc, "loro", "a", tag="sub")
+    assert set(s3.region) == {"a"}
     res = json.loads((tmp_path / "out" / "loro" / "holdout_a.json").read_text())
     assert res["best_epoch"] >= 0 and "mangrove" in res["test"]["a"]["per_class_iou"]
     p = run(tc, "pooled")

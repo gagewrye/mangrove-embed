@@ -462,8 +462,9 @@ def run_name(tc, protocol):
 def run(tc: TrainConfig, protocol="loro", holdout="all", regions=None, tag=None):
     df = add_blocks(load_index(tc.chips_dir, regions), tc.block_deg)
     if tc.max_chips_per_region:
-        df = (df.groupby("region", group_keys=False)
-                .apply(lambda g: g.sample(min(len(g), tc.max_chips_per_region), random_state=tc.seed)))
+        # explicit concat: pandas 3 drops the grouping column inside groupby.apply
+        df = pd.concat([g.sample(min(len(g), tc.max_chips_per_region), random_state=tc.seed)
+                        for _, g in df.groupby("region")], ignore_index=True)
     all_regions = sorted(df.region.unique())
     print(df.groupby(["region", "kind"]).size().unstack(fill_value=0).to_string())
     run_dir = Path(tc.out_dir) / (tag or run_name(tc, protocol))
