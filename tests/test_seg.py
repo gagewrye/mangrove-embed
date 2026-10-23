@@ -45,3 +45,56 @@ def test_channel_mismatch_raises():
     m = SegFormer(num_classes=1, input_image_size=64, weights=W, in_channels=64)
     with pytest.raises(ValueError):
         m(torch.randn(1, 3, 64, 64))
+
+
+def _synthetic_chips(root, regions=("a", "b", "c"), n=6, px=32, seed=0):
+    import numpy as np
+    import pandas as pd
+    rng = np.random.default_rng(seed)
+    dirs = rng.normal(size=(11, 64))
+    for ri, r in enumerate(regions):
+        d = root / r
+        d.mkdir(parents=True)
+        shift = rng.normal(size=64) * 0.5
+        rows = []
+        for i in range(n):
+            yy, xx = np.mgrid[:px, :px]
+            cx, cy = rng.integers(0, px, 2)
+            y = np.where((xx - cx) ** 2 + (yy - cy) ** 2 < (px // 3) ** 2, 1, 4).astype(np.uint8)
+            y[:2] = 255
+            cls = np.where(y == 255, 4, y) - 1
+            x = dirs[cls].transpose(2, 0, 1) + shift[:, None, None] + rng.normal(size=(64, px, px)) * 0.5
+            x = (x / np.linalg.norm(x, axis=0, keepdims=True)).astype(np.float16)
+            np.savez_compressed(d / f"chip_{i:04d}.npz", x=x, y=y)
+            rows.append(dict(chip=f"chip_{i:04d}", kind="mangrove", x0=0, y1=0,
+                             lon=ri * 10 + i * 0.2, lat=i * 0.2, region=r, crs="EPSG:32601"))
+        pd.DataFrame(rows).to_csv(d / "index.csv", index=False)
+
+
+def test_train_seg_loro_and_pooled(tmp_path):
+    import json
+    from mangrove_embed.seg.train import TrainConfig, run
+    _synthetic_chips(tmp_path / "chips")
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=2, batch_size=4, workers=0, block_deg=0.3, device="cpu")
+    s = run(tc, "loro", "all")
+    assert set(s.region) == {"a", "b", "c"} and s.mangrove_iou.between(0, 1).all()
+    res = json.loads((tmp_path / "out" / "loro" / "holdout_a.json").read_text())
+    assert res["best_epoch"] >= 0 and "mangrove" in res["test"]["a"]["per_class_iou"]
+    p = run(tc, "pooled")
+    assert len(p) >= 1
+
+
+def test_chip_helpers():
+    import numpy as np
+    from mangrove_embed import BANDS
+    from mangrove_embed.chips import IGNORE, dedupe, snap_origin, to_arrays
+    kept = dedupe(np.array([[0, 0], [10, 0], [100, 0]]), 50)
+    assert kept.tolist() == [[0, 0], [100, 0]]
+    x0, y1 = snap_origin(1003, 2007, 0, 0, 128)
+    assert x0 % 10 == 0 and y1 % 10 == 0 and abs(x0 + 640 - 1003) <= 10
+    dt = [(b, "f4") for b in BANDS] + [("class", "f4"), ("valid", "f4")]
+    s = np.zeros((4, 4), dtype=dt)
+    s["class"] = 1; s["valid"] = 1; s["class"][0, 0] = 255; s["valid"][1, 1] = 0
+    x, y = to_arrays(s)
+    assert x.shape == (64, 4, 4) and y[0, 0] == IGNORE and y[1, 1] == IGNORE and y[2, 2] == 1

@@ -27,10 +27,31 @@ def main(argv=None):
     d.add_argument("--skip-within", action="store_true")
     d.add_argument("--no-centering", action="store_true")
 
+    c = sub.add_parser("chips", help="pull dense embedding + label chips for segmentation")
+    c.add_argument("--project", help="Earth Engine Cloud project id")
+    c.add_argument("--regions", nargs="*")
+    c.add_argument("--workers", type=int)
+
+    t = sub.add_parser("train-seg", help="train SegFormer on chips (needs the [seg] extra)")
+    t.add_argument("--protocol", choices=["loro", "pooled"], default="loro")
+    t.add_argument("--holdout", default="all", help="region to hold out, or 'all' (loro)")
+    t.add_argument("--regions", nargs="*", help="restrict to these regions")
+    t.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
+    t.add_argument("--out", help="output dir (default: <results_dir>/seg)")
+    t.add_argument("--weights", help="HF SegFormer weights (default: b0 ADE)")
+    t.add_argument("--stem-stride", type=int, help="stage-1 stride (default 2; pretrained 4)")
+    t.add_argument("--epochs", type=int)
+    t.add_argument("--batch-size", type=int)
+    t.add_argument("--lr-backbone", type=float)
+    t.add_argument("--lr-new", type=float)
+    t.add_argument("--max-chips-per-region", type=int)
+    t.add_argument("--loader-workers", type=int)
+    t.add_argument("--device")
+
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd == "extract" else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -51,6 +72,20 @@ def main(argv=None):
         from .diagnostics import run
         run(a.data or cfg.processed_dir, a.out or cfg.results_dir, a.models, a.features,
             a.anchor or cfg.anchor, a.skip_within, not a.no_centering, cfg.block_deg)
+    elif a.cmd == "chips":
+        from .chips import extract_chips
+        extract_chips(cfg, a.regions)
+    elif a.cmd == "train-seg":
+        from .seg.train import TrainConfig, run
+        tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
+                         out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
+        for k, v in dict(weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
+                         batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
+                         max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
+                         device=a.device).items():
+            if v is not None:
+                setattr(tc, k, v)
+        run(tc, a.protocol, a.holdout, a.regions)
     elif a.cmd == "demo":
         from . import synthetic
         from .diagnostics import run

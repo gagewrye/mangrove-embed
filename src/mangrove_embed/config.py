@@ -19,6 +19,9 @@ class Config:
     n_unlabeled: int = 3000
     n_edge: int = 1500
     edge_radius_px: int = 3
+    chip_px: int = 128
+    chip_n_mangrove: int = 150
+    chip_n_random: int = 150
     tile_deg: float = 0.25
     workers: int = 6
     block_deg: float = 0.05

@@ -9,6 +9,9 @@ n_per_class: 300           # labeled samples per class per region
 n_unlabeled: 3000          # random coastal-zone pixels per region (label-free, for centering)
 n_edge: 1500               # boundary test points per region (0 to skip)
 edge_radius_px: 3          # boundary = another class within this many 10 m pixels (3 = 30 m)
+chip_px: 128               # segmentation chip size (10 m px -> 1.28 km)
+chip_n_mangrove: 150       # chips centered on mangrove, per region
+chip_n_random: 150         # chips centered on random coastal-zone pixels, per region
 tile_deg: 0.25             # tile size for server requests
 workers: 6                 # concurrent Earth Engine requests
 block_deg: 0.05            # spatial CV block size within a region (~5 km)

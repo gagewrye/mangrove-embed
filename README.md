@@ -57,15 +57,29 @@ loss_fn = JaccardLoss(num_classes=11)
 `in_channels=64` replaces the stage-1 patch-embedding conv (all other pretrained weights kept).
 `stem_stride` (pretrained 4) can be lowered for 10 m embeddings; 4 puts stage 1 at 40 m.
 
+## Multi-region segmentation
+```bash
+mangrove chips --regions sundarbans mekong everglades jamaica   # dense 64-band chips + labels
+mangrove train-seg --protocol loro --holdout all                # train on N-1, test held-out
+mangrove train-seg --protocol pooled                            # in-distribution reference
+```
+Chips: 128x128 px (1.28 km) on the native 10 m UTM grid, half centered on mangrove, half on random
+coast; cached in `data/chips/<region>/`. Training: SegFormer-B0, 64-band stem, stem stride 2,
+JaccardLoss (inverse-sqrt class weights), dihedral augmentation, model selection on a validation
+split of the training regions only. Results in `results/seg/<protocol>/summary.csv`.
+pooled − loro = segmentation-level domain gap.
+
 ## Layout
 ```
 configs/default.yaml        project, regions, sampling, tiling
 src/mangrove_embed/
   extract.py                Earth Engine -> parquet (v3 labels)
+  chips.py                  Earth Engine -> dense chips for segmentation
   diagnostics.py            Q1-Q4
   synthetic.py              offline test data
   cli.py                    `mangrove` command
-  seg/                      SegFormer (native 64-band stem) + JaccardLoss, from ml-mangrove
+  seg/                      SegFormer (native 64-band stem) + JaccardLoss, from ml-mangrove;
+                            train.py: multi-region training, loro / pooled
 tests/
 legacy/                     v3 Code Editor kNN + change baseline (reference)
 ```
