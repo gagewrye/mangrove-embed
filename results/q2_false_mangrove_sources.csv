@@ -1,0 +1,11 @@
+true_class,knn,logreg,mlp
+coastal_forest,97,195,111
+herbaceous_wetland,41,18,34
+seasonal_water,41,37,117
+salt_marsh,39,19,34
+barren,26,17,38
+other_land,22,27,27
+tidal_flat,12,11,28
+cropland,8,4,7
+built_up,0,2,6
+water,0,1,0

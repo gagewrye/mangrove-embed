@@ -1,0 +1,306 @@
+{
+  "tag": "holdout_jamaica",
+  "best_epoch": 31,
+  "val_mangrove_iou": 0.9410320377117943,
+  "history": [
+    {
+      "epoch": 0,
+      "loss": 2.3422912724164067,
+      "val_mangrove_iou": 0.8501447993104361,
+      "val_miou": 0.21895861014607346
+    },
+    {
+      "epoch": 1,
+      "loss": 1.4995054298517656,
+      "val_mangrove_iou": 0.9157012985742106,
+      "val_miou": 0.3113475575720824
+    },
+    {
+      "epoch": 2,
+      "loss": 1.285541265594716,
+      "val_mangrove_iou": 0.9038672916797241,
+      "val_miou": 0.35334112013201363
+    },
+    {
+      "epoch": 3,
+      "loss": 1.1364788948273172,
+      "val_mangrove_iou": 0.9174345640425933,
+      "val_miou": 0.3970798670762021
+    },
+    {
+      "epoch": 4,
+      "loss": 1.1099641517717012,
+      "val_mangrove_iou": 0.8944494345221848,
+      "val_miou": 0.4069994153065346
+    },
+    {
+      "epoch": 5,
+      "loss": 1.028065169344143,
+      "val_mangrove_iou": 0.9207362435966467,
+      "val_miou": 0.4169177019868007
+    },
+    {
+      "epoch": 6,
+      "loss": 0.9925380701921425,
+      "val_mangrove_iou": 0.9215603133538276,
+      "val_miou": 0.4073244686540392
+    },
+    {
+      "epoch": 7,
+      "loss": 0.9659661541179735,
+      "val_mangrove_iou": 0.9272209964789999,
+      "val_miou": 0.4249078063835544
+    },
+    {
+      "epoch": 8,
+      "loss": 0.9907860439650866,
+      "val_mangrove_iou": 0.9229728301709562,
+      "val_miou": 0.4306430445771531
+    },
+    {
+      "epoch": 9,
+      "loss": 0.9195964531022676,
+      "val_mangrove_iou": 0.9298379524934046,
+      "val_miou": 0.46444154963623685
+    },
+    {
+      "epoch": 10,
+      "loss": 0.9135578311219508,
+      "val_mangrove_iou": 0.9221073091205159,
+      "val_miou": 0.482797630852958
+    },
+    {
+      "epoch": 11,
+      "loss": 0.9134332610636341,
+      "val_mangrove_iou": 0.9193359052320071,
+      "val_miou": 0.4862461036866024
+    },
+    {
+      "epoch": 12,
+      "loss": 0.8806408765364666,
+      "val_mangrove_iou": 0.9331196665224744,
+      "val_miou": 0.5031490079400682
+    },
+    {
+      "epoch": 13,
+      "loss": 0.8693619942178532,
+      "val_mangrove_iou": 0.9222725825796526,
+      "val_miou": 0.4990280188163156
+    },
+    {
+      "epoch": 14,
+      "loss": 0.8536264762586477,
+      "val_mangrove_iou": 0.9342866193129162,
+      "val_miou": 0.4980165304465967
+    },
+    {
+      "epoch": 15,
+      "loss": 0.8495648077556065,
+      "val_mangrove_iou": 0.9309256524266658,
+      "val_miou": 0.4969999674856943
+    },
+    {
+      "epoch": 16,
+      "loss": 0.8400618421788119,
+      "val_mangrove_iou": 0.917554914432489,
+      "val_miou": 0.4993790647532795
+    },
+    {
+      "epoch": 17,
+      "loss": 0.831737896617578,
+      "val_mangrove_iou": 0.9289270791931392,
+      "val_miou": 0.5044581954406552
+    },
+    {
+      "epoch": 18,
+      "loss": 0.8273100415054633,
+      "val_mangrove_iou": 0.9332786515148079,
+      "val_miou": 0.508441289745896
+    },
+    {
+      "epoch": 19,
+      "loss": 0.8063177502885157,
+      "val_mangrove_iou": 0.9366928398641567,
+      "val_miou": 0.4997846252459625
+    },
+    {
+      "epoch": 20,
+      "loss": 0.7948915848926622,
+      "val_mangrove_iou": 0.9328545012280138,
+      "val_miou": 0.49256108726815523
+    },
+    {
+      "epoch": 21,
+      "loss": 0.7846520299814186,
+      "val_mangrove_iou": 0.9367525057523144,
+      "val_miou": 0.49866659163009835
+    },
+    {
+      "epoch": 22,
+      "loss": 0.7846833917559409,
+      "val_mangrove_iou": 0.9391103392688179,
+      "val_miou": 0.5014498905602757
+    },
+    {
+      "epoch": 23,
+      "loss": 0.7885473017789879,
+      "val_mangrove_iou": 0.9325208026829924,
+      "val_miou": 0.5071236563815792
+    },
+    {
+      "epoch": 24,
+      "loss": 0.7746434163074104,
+      "val_mangrove_iou": 0.935867709104788,
+      "val_miou": 0.5083458211562827
+    },
+    {
+      "epoch": 25,
+      "loss": 0.7620139353129328,
+      "val_mangrove_iou": 0.9348118020959446,
+      "val_miou": 0.5048970310269687
+    },
+    {
+      "epoch": 26,
+      "loss": 0.7562053994256623,
+      "val_mangrove_iou": 0.9395909244729158,
+      "val_miou": 0.515857346432829
+    },
+    {
+      "epoch": 27,
+      "loss": 0.7539866493672741,
+      "val_mangrove_iou": 0.9373086058509599,
+      "val_miou": 0.5149561495761449
+    },
+    {
+      "epoch": 28,
+      "loss": 0.7495555646565496,
+      "val_mangrove_iou": 0.937663136781964,
+      "val_miou": 0.5098365768098639
+    },
+    {
+      "epoch": 29,
+      "loss": 0.7490046596040532,
+      "val_mangrove_iou": 0.937975850436149,
+      "val_miou": 0.5138922034372919
+    },
+    {
+      "epoch": 30,
+      "loss": 0.7350632742959626,
+      "val_mangrove_iou": 0.939485797797853,
+      "val_miou": 0.5149860921742984
+    },
+    {
+      "epoch": 31,
+      "loss": 0.7355983232965275,
+      "val_mangrove_iou": 0.9410320377117943,
+      "val_miou": 0.5192603837215224
+    },
+    {
+      "epoch": 32,
+      "loss": 0.7295619152030166,
+      "val_mangrove_iou": 0.9394170120609,
+      "val_miou": 0.5157697988681714
+    },
+    {
+      "epoch": 33,
+      "loss": 0.7339707813700851,
+      "val_mangrove_iou": 0.9393044955690814,
+      "val_miou": 0.5187566742325284
+    },
+    {
+      "epoch": 34,
+      "loss": 0.7254615340914045,
+      "val_mangrove_iou": 0.9371750647155576,
+      "val_miou": 0.5189782086793854
+    },
+    {
+      "epoch": 35,
+      "loss": 0.7221669420904043,
+      "val_mangrove_iou": 0.9369383348075526,
+      "val_miou": 0.5171056313831208
+    },
+    {
+      "epoch": 36,
+      "loss": 0.7160537893674812,
+      "val_mangrove_iou": 0.9384283194993107,
+      "val_miou": 0.5163798200816623
+    },
+    {
+      "epoch": 37,
+      "loss": 0.7249561274538234,
+      "val_mangrove_iou": 0.9393093286202353,
+      "val_miou": 0.5181402196805859
+    },
+    {
+      "epoch": 38,
+      "loss": 0.7201577218211427,
+      "val_mangrove_iou": 0.9394070231782824,
+      "val_miou": 0.5175122561940088
+    },
+    {
+      "epoch": 39,
+      "loss": 0.7178689740142044,
+      "val_mangrove_iou": 0.938718627224633,
+      "val_miou": 0.5166387409115909
+    }
+  ],
+  "train_chips": 784,
+  "val_chips": 116,
+  "train_class_px": {
+    "mangrove": 6433922,
+    "salt_marsh": 93803,
+    "tidal_flat": 409840,
+    "water": 2298180,
+    "seasonal_water": 802291,
+    "built_up": 60484,
+    "barren": 31160,
+    "coastal_forest": 300774,
+    "cropland": 527594,
+    "herbaceous_wetland": 444944,
+    "other_land": 105781
+  },
+  "config": {
+    "chips_dir": "data/chips",
+    "out_dir": "results/seg",
+    "weights": "nvidia/segformer-b0-finetuned-ade-512-512",
+    "stem_stride": 2,
+    "epochs": 40,
+    "batch_size": 16,
+    "lr_backbone": 6e-05,
+    "lr_new": 0.0006,
+    "weight_decay": 0.01,
+    "alpha": 0.5,
+    "block_deg": 0.1,
+    "val_frac": 0.1,
+    "workers": 4,
+    "seed": 42,
+    "max_chips_per_region": null,
+    "device": null
+  },
+  "test": {
+    "jamaica": {
+      "mangrove_iou": 0.730000614059082,
+      "mangrove_precision": 0.778205303682721,
+      "mangrove_recall": 0.9217830964726165,
+      "mangrove_f1": 0.8439310461818731,
+      "mangrove_ap": 0.9491973548181486,
+      "miou": 0.40370640380032763,
+      "overall_acc": 0.8099022073809682,
+      "mangrove_px": 993059,
+      "valid_px": 4434486,
+      "per_class_iou": {
+        "mangrove": 0.730000614059082,
+        "tidal_flat": 0.11034027089527584,
+        "water": 0.9343309503331588,
+        "seasonal_water": 0.04832644551174653,
+        "built_up": 0.6573665596827278,
+        "barren": 0.22565398628023764,
+        "coastal_forest": 0.6009714624779924,
+        "cropland": 0.10267328199052132,
+        "herbaceous_wetland": 0.14585244858089866,
+        "other_land": 0.4815480181916347
+      },
+      "chips": 300
+    }
+  }
+}
