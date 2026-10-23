@@ -172,3 +172,18 @@ def test_from_scratch_run_folder(tmp_path):
     from mangrove_embed.seg.train import compare
     agg = compare(str(tmp_path / "out"))
     assert "loro_scratch" in agg.index
+
+
+def test_wandb_offline(tmp_path, monkeypatch):
+    pytest.importorskip("wandb")
+    from mangrove_embed.seg.train import TrainConfig, run
+    monkeypatch.setenv("WANDB_MODE", "offline")
+    monkeypatch.setenv("WANDB_DIR", str(tmp_path))
+    monkeypatch.setenv("WANDB_SILENT", "true")
+    _synthetic_chips(tmp_path / "chips", n=4)
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=2, batch_size=4, workers=0, block_deg=0.3, device="cpu", wandb=True,
+                     model="fcn")
+    run(tc, "loro", "a")
+    runs = list((tmp_path / "wandb").glob("offline-run-*"))
+    assert len(runs) == 1

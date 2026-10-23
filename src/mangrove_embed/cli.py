@@ -51,6 +51,9 @@ def main(argv=None):
     t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
     t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
     t.add_argument("--from-scratch", action="store_true", help="segformer with random init")
+    t.add_argument("--wandb", action="store_true", help="log runs to Weights & Biases")
+    t.add_argument("--wandb-project", help="default mangrove-embed")
+    t.add_argument("--wandb-entity", help="W&B team/user (default: your default entity)")
     t.add_argument("--tag", help="subfolder for this run's results (default: protocol name)")
 
     cs = sub.add_parser("compare-seg", help="tabulate all train-seg runs side by side")
@@ -92,7 +95,9 @@ def main(argv=None):
                          batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
                          max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
                          device=a.device, model=a.model, pca=a.pca,
-                         input_proj=a.input_proj, from_scratch=a.from_scratch or None).items():
+                         input_proj=a.input_proj, from_scratch=a.from_scratch or None,
+                         wandb=a.wandb or None, wandb_project=a.wandb_project,
+                         wandb_entity=a.wandb_entity).items():
             if v is not None:
                 setattr(tc, k, v)
         run(tc, a.protocol, a.holdout, a.regions, a.tag)

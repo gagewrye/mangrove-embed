@@ -81,6 +81,17 @@ mangrove compare-seg                       # all runs side by side
 Point-level check: 16 PCs retain 93% of variance and match full 64-d LORO kNN F1 (0.806 vs
 0.800); 8 PCs lose ~0.06 AP for logreg.
 
+## Experiment tracking (W&B)
+```bash
+pip install -e ".[track]" && wandb login
+mangrove train-seg --wandb                         # project mangrove-embed
+mangrove train-seg --wandb --model fcn --wandb-entity <team>
+```
+One W&B run per split, grouped by variant (`loro`, `loro_scratch`, `loro_fcn`, ...). Logged:
+config + model info (params, PCA variance), per-epoch train loss / lr / val metrics / per-class
+IoU, and held-out test metrics in the run summary (`test/<region>/...` plus region-agnostic
+`test/...` so the group view averages across held-out regions). `WANDB_MODE=offline` works.
+
 ## Layout
 ```
 configs/default.yaml        project, regions, sampling, tiling

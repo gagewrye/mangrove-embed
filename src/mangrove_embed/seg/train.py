@@ -57,6 +57,9 @@ class TrainConfig:
     input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
     fcn_width: int = 64
     from_scratch: bool = False    # segformer with random init (same architecture)
+    wandb: bool = False           # log to Weights & Biases (needs the [track] extra)
+    wandb_project: str = "mangrove-embed"
+    wandb_entity: str | None = None
 
 
 # ------------------------------------------------------------------ data
@@ -258,6 +261,49 @@ def build_model(tc, in_ch, px, train_paths):
     return model, new_ids, info
 
 
+# ------------------------------------------------------------------ tracking
+class Tracker:
+    """Thin W&B wrapper; a no-op when disabled. One W&B run per split, grouped by variant."""
+    def __init__(self, tc, group, name, job_type, extra_config):
+        self.run = None
+        if not tc.wandb:
+            return
+        try:
+            import wandb
+        except ImportError as e:
+            raise SystemExit("--wandb needs `pip install -e .[track]`") from e
+        cfg = {**asdict(tc), **extra_config, "variant": group, "split": name}
+        self.run = wandb.init(project=tc.wandb_project, entity=tc.wandb_entity, group=group,
+                              name=f"{group}/{name}", job_type=job_type, config=cfg,
+                              tags=[job_type, tc.model] + (["scratch"] if tc.from_scratch else []),
+                              reinit="finish_previous")
+
+    def log(self, d, step=None):
+        if self.run:
+            self.run.log(d, step=step)
+
+    def finish(self, res):
+        if not self.run:
+            return
+        import wandb
+        summ = {"best_epoch": res["best_epoch"], "val/best_mangrove_iou": res["val_mangrove_iou"]}
+        for region, m in res["test"].items():
+            for k, v in m.items():
+                if isinstance(v, dict):
+                    summ.update({f"test/{region}/iou_{c}": x for c, x in v.items()})
+                else:
+                    summ[f"test/{region}/{k}"] = v
+            # region-agnostic keys so the W&B group view can average across held-out regions
+            if len(res["test"]) == 1:
+                summ.update({f"test/{k}": v for k, v in m.items() if not isinstance(v, dict)})
+        self.run.summary.update(summ)
+        rows = [[r, m["mangrove_iou"], m["mangrove_f1"], m["mangrove_ap"], m["miou"]]
+                for r, m in res["test"].items()]
+        self.run.log({"test_table": wandb.Table(
+            columns=["region", "mangrove_iou", "mangrove_f1", "mangrove_ap", "miou"], data=rows)})
+        self.run.finish()
+
+
 # ------------------------------------------------------------------ training
 def _device(tc):
     if tc.device:
@@ -300,7 +346,8 @@ def class_weights(paths, cap=10.0):
     return torch.tensor(w, dtype=torch.float32), counts
 
 
-def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: str):
+def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: str,
+        job_type="loro"):
     torch.manual_seed(tc.seed); np.random.seed(tc.seed)
     device = _device(tc)
     amp = device.type == "cuda"
@@ -310,6 +357,9 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
     model = model.to(device)
     log.info("%s: %s, %d params, model input %d channels", tag, tc.model, info["params"],
              info["model_in_channels"])
+    tracker = Tracker(tc, run_dir.name, tag, job_type,
+                      {**info, "train_chips": len(train_paths), "val_chips": len(val_paths),
+                       "test_regions": sorted(test_sets)})
     params = [{"params": [p for p in model.parameters() if id(p) not in new_ids], "lr": tc.lr_backbone},
               {"params": [p for p in model.parameters() if id(p) in new_ids], "lr": tc.lr_new}]
     params = [g for g in params if g["params"]]
@@ -347,6 +397,9 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
         hist.append(dict(epoch=ep, loss=tot / max(n, 1), val_mangrove_iou=score, val_miou=v["miou"]))
         log.info("%s ep %02d loss %.4f val mangrove IoU %.3f mIoU %.3f (%.0fs)",
                  tag, ep, tot / max(n, 1), score, v["miou"], time.time() - t0)
+        tracker.log({"epoch": ep, "train/loss": tot / max(n, 1), "lr": sched.get_last_lr()[-1],
+                     **{f"val/{k}": x for k, x in v.items() if not isinstance(x, dict)},
+                     **{f"val/iou_{c}": x for c, x in v["per_class_iou"].items()}}, step=ep)
         if score > best:
             best, best_ep = score, ep
             torch.save(model.state_dict(), ckpt)
@@ -361,6 +414,7 @@ def fit(train_paths, val_paths, test_sets, tc: TrainConfig, run_dir: Path, tag: 
         res["test"][name] = evaluate(model, _loader(paths, tc, False), device, amp)
         res["test"][name]["chips"] = len(paths)
     (run_dir / f"{tag}.json").write_text(json.dumps(res, indent=2))
+    tracker.finish(res)
     return res
 
 
@@ -407,7 +461,8 @@ def run(tc: TrainConfig, protocol="loro", holdout="all", regions=None, tag=None)
         val = split_blocks(tr, tc.val_frac, tc.seed)
         tests = {r: list(df.path[test & (df.region == r).values]) for r in all_regions}
         tests = {r: p for r, p in tests.items() if p}
-        res = fit(list(tr.path[~val]), list(tr.path[val]), tests, tc, run_dir, "pooled")
+        res = fit(list(tr.path[~val]), list(tr.path[val]), tests, tc, run_dir, "pooled",
+                  job_type="pooled")
         for r, m in res["test"].items():
             rows.append(dict(protocol="pooled", region=r, **_flat(m)))
             print(_line(rows[-1]))
