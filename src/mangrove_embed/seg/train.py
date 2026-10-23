@@ -545,8 +545,9 @@ def _line(r):
             f"IoU {r['mangrove_iou']:.3f} AP {r['mangrove_ap']:.3f} | mIoU {r['miou']:.3f}")
 
 
-def compare(out_dir="results/seg", metric="mangrove_iou"):
-    """Side-by-side table of every run folder's summary.csv."""
+def compare(out_dir="results/seg", metric="mangrove_iou", region=None):
+    """Side-by-side table of every run folder's summary.csv; `region` restricts to one held-out
+    region so single-holdout runs compare like-for-like with that split of full runs."""
     rows = []
     for f in sorted(Path(out_dir).glob("*/summary.csv")):
         s = pd.read_csv(f)
@@ -556,13 +557,19 @@ def compare(out_dir="results/seg", metric="mangrove_iou"):
         if js:
             info = json.loads(js[0].read_text()).get("model_info", {})
         s["params"] = info.get("params")
+        s["rf_m"] = info.get("receptive_field_m")
         rows.append(s)
     if not rows:
         raise SystemExit(f"No summary.csv under {out_dir}.")
     df = pd.concat(rows, ignore_index=True)
+    if region:
+        df = df[df.region == region]
+        if df.empty:
+            raise SystemExit(f"No runs with held-out region {region!r}.")
     cols = ["mangrove_iou", "mangrove_f1", "mangrove_ap", "miou"]
     agg = df.groupby("run").agg(**{c: (c, "mean") for c in cols}, regions=("region", "nunique"),
-                                params=("params", "first")).sort_values(metric, ascending=False)
+                                params=("params", "first"), rf_m=("rf_m", "first")
+                                ).sort_values(metric, ascending=False)
     print(agg.round(3).to_string())
     print(f"\n{metric} by region:")
     print(df.pivot_table(index="run", columns="region", values=metric).round(3)

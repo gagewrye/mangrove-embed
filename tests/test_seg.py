@@ -175,6 +175,7 @@ def test_from_scratch_run_folder(tmp_path):
     from mangrove_embed.seg.train import compare
     agg = compare(str(tmp_path / "out"))
     assert "loro_scratch" in agg.index
+    assert (compare(str(tmp_path / "out"), region="a").regions == 1).all()
 
 
 def test_wandb_offline(tmp_path, monkeypatch):

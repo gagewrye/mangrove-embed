@@ -69,6 +69,7 @@ def main(argv=None):
     cs = sub.add_parser("compare-seg", help="tabulate all train-seg runs side by side")
     cs.add_argument("--out", help="results dir (default: <results_dir>/seg)")
     cs.add_argument("--metric", default="mangrove_iou")
+    cs.add_argument("--region", help="only this held-out region (e.g. mekong)")
 
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
@@ -123,7 +124,7 @@ def main(argv=None):
         run(tc, a.protocol, a.holdout, a.regions, a.tag)
     elif a.cmd == "compare-seg":
         from .seg.train import compare
-        compare(a.out or f"{cfg.results_dir}/seg", a.metric)
+        compare(a.out or f"{cfg.results_dir}/seg", a.metric, a.region)
     elif a.cmd == "demo":
         from . import synthetic
         from .diagnostics import run
