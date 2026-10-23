@@ -60,6 +60,10 @@ def main(argv=None):
     t.add_argument("--wandb", action="store_true", help="log runs to Weights & Biases")
     t.add_argument("--wandb-project", help="default mangrove-embed")
     t.add_argument("--wandb-entity", help="W&B team/user (default: your default entity)")
+    t.add_argument("--wandb-name", help="W&B run name (split is appended, e.g. rf11/holdout_mekong)")
+    t.add_argument("--wandb-group", help="W&B group (default: results folder name)")
+    t.add_argument("--wandb-tags", nargs="*", help="extra W&B tags")
+    t.add_argument("--wandb-notes", help="W&B run notes")
     t.add_argument("--tag", help="subfolder for this run's results (default: protocol name)")
 
     cs = sub.add_parser("compare-seg", help="tabulate all train-seg runs side by side")
@@ -110,7 +114,10 @@ def main(argv=None):
                          device=a.device, model=a.model, pca=a.pca,
                          input_proj=a.input_proj, from_scratch=a.from_scratch or None,
                          wandb=a.wandb or None, wandb_project=a.wandb_project,
-                         wandb_entity=a.wandb_entity, amp=a.amp).items():
+                         wandb_entity=a.wandb_entity, amp=a.amp, wandb_name=a.wandb_name,
+                         wandb_group=a.wandb_group,
+                         wandb_tags=tuple(a.wandb_tags) if a.wandb_tags else None,
+                         wandb_notes=a.wandb_notes).items():
             if v is not None:
                 setattr(tc, k, v)
         run(tc, a.protocol, a.holdout, a.regions, a.tag)

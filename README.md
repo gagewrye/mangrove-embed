@@ -115,6 +115,8 @@ One W&B run per split, grouped by variant (`loro`, `loro_scratch`, `loro_fcn`, .
 config + model info (params, PCA variance), per-epoch train loss / lr / val metrics / per-class
 IoU, and held-out test metrics in the run summary (`test/<region>/...` plus region-agnostic
 `test/...` so the group view averages across held-out regions). `WANDB_MODE=offline` works.
+Naming: `--wandb-name rf11` (split appended → `rf11/holdout_mekong`), `--wandb-group rf-sweep`
+(default: results folder), `--wandb-tags sweep mekong`, `--wandb-notes "..."`.
 
 ## Layout
 ```

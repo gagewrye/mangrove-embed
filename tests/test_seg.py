@@ -186,10 +186,13 @@ def test_wandb_offline(tmp_path, monkeypatch):
     _synthetic_chips(tmp_path / "chips", n=4)
     tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
                      epochs=2, batch_size=4, workers=0, block_deg=0.3, device="cpu", wandb=True,
-                     model="fcn")
+                     model="fcn", wandb_name="rf63-test", wandb_group="rf-sweep",
+                     wandb_tags=("sweep",))
     run(tc, "loro", "a")
     runs = list((tmp_path / "wandb").glob("offline-run-*"))
     assert len(runs) == 1
+    blob = next(runs[0].glob("*.wandb")).read_bytes()
+    assert b"rf63-test/holdout_a" in blob and b"rf-sweep" in blob and b"sweep" in blob
 
 
 def test_device_and_amp_selection(monkeypatch):

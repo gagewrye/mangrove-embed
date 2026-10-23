@@ -65,6 +65,10 @@ class TrainConfig:
     wandb: bool = False           # log to Weights & Biases (needs the [track] extra)
     wandb_project: str = "mangrove-embed"
     wandb_entity: str | None = None
+    wandb_name: str | None = None   # run name; the split is appended (name/holdout_mekong)
+    wandb_group: str | None = None  # default: variant folder (loro_fcn, ...)
+    wandb_tags: tuple = ()
+    wandb_notes: str | None = None
 
 
 # ------------------------------------------------------------------ data
@@ -292,9 +296,12 @@ class Tracker:
         except ImportError as e:
             raise SystemExit("--wandb needs `pip install -e .[track]`") from e
         cfg = {**asdict(tc), **extra_config, "variant": group, "split": name}
-        self.run = wandb.init(project=tc.wandb_project, entity=tc.wandb_entity, group=group,
-                              name=f"{group}/{name}", job_type=job_type, config=cfg,
-                              tags=[job_type, tc.model] + (["scratch"] if tc.from_scratch else []),
+        g = tc.wandb_group or group
+        run_name = f"{tc.wandb_name}/{name}" if tc.wandb_name else f"{group}/{name}"
+        tags = [job_type, tc.model] + (["scratch"] if tc.from_scratch else []) + list(tc.wandb_tags)
+        self.run = wandb.init(project=tc.wandb_project, entity=tc.wandb_entity, group=g,
+                              name=run_name, job_type=job_type, config=cfg, tags=tags,
+                              notes=tc.wandb_notes,
                               reinit="finish_previous")
 
     def log(self, d, step=None):
