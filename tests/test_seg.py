@@ -206,3 +206,22 @@ def test_device_and_amp_selection(monkeypatch):
     assert _device(tc).type == "cpu"
     with pytest.raises(SystemExit):
         _device(TrainConfig(device="mps"))
+
+
+def test_fcn_dilation_sweep(tmp_path):
+    import json
+    from mangrove_embed.seg.train import TinyFCN, TrainConfig, receptive_field, run
+    assert receptive_field((1, 2, 4, 8, 16)) == 63 and receptive_field((0,) * 5) == 1
+    x = torch.randn(1, 64, 32, 32)
+    pix = TinyFCN(64, 11, dilations=(0,) * 5).eval()
+    x2 = x.clone(); x2[..., 0, 0] += 5.0           # perturb one pixel
+    with torch.no_grad():
+        d = (pix(x) - pix(x2)).abs().sum(1)[0]
+    assert d[0, 0] > 0 and d[1:, :].sum() == 0 and d[0, 1:].sum() == 0   # no spatial mixing
+    _synthetic_chips(tmp_path / "chips", n=4)
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=1, batch_size=4, workers=0, block_deg=0.3, device="cpu", model="fcn",
+                     fcn_dilations=(1, 1, 1, 1, 1), seed=3, name_seed=True)
+    run(tc, "loro", "a")
+    info = json.loads((tmp_path / "out" / "loro_fcn_rf11_s3" / "holdout_a.json").read_text())["model_info"]
+    assert info["receptive_field_px"] == 11 and info["receptive_field_m"] == 110

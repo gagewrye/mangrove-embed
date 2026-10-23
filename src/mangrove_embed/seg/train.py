@@ -58,6 +58,8 @@ class TrainConfig:
     pca: int | None = None        # fixed PCA 64 -> k, fit on training-region pixels only
     input_proj: int | None = None # learned 1x1 conv 64 -> k in front of the model
     fcn_width: int = 64
+    fcn_dilations: tuple = (1, 2, 4, 8, 16)  # one residual block per entry; 0 = 1x1 (no context)
+    name_seed: bool = False       # include the seed in the results folder name (set by --seed)
     from_scratch: bool = False    # segformer with random init (same architecture)
     amp: bool | None = None       # mixed precision; None = on for CUDA, off for MPS/CPU
     wandb: bool = False           # log to Weights & Biases (needs the [track] extra)
@@ -184,16 +186,27 @@ class LearnedProject(torch.nn.Sequential):
         super().__init__(torch.nn.Conv2d(c_in, k, 1, bias=False), torch.nn.BatchNorm2d(k))
 
 
+def receptive_field(dilations):
+    """Pixels seen by each output pixel: 1x1 input conv, then each 3x3 block adds 2*d."""
+    return 1 + 2 * sum(dilations)
+
+
 class TinyFCN(torch.nn.Module):
-    """Small dilated residual CNN, ~150k params at width 64. Receptive field ~ 63 px (630 m).
-    Baseline for whether SegFormer's capacity buys anything over local context."""
+    """Small dilated residual CNN, ~190k params at width 64 with the default dilations
+    (receptive field 63 px = 630 m). Baseline for whether SegFormer's capacity buys anything over
+    local context. A dilation of 0 makes that block a 1x1 conv (per-pixel, no spatial context),
+    so receptive field can be swept at fixed depth; all-zero dilations = a per-pixel MLP."""
     def __init__(self, c_in, n_classes, width=64, dilations=(1, 2, 4, 8, 16)):
         super().__init__()
+        self.dilations = tuple(dilations)
+        self.receptive_field = receptive_field(self.dilations)
         self.inp = torch.nn.Sequential(torch.nn.Conv2d(c_in, width, 1, bias=False),
                                        torch.nn.BatchNorm2d(width), torch.nn.ReLU(inplace=True))
-        self.blocks = torch.nn.ModuleList(torch.nn.Sequential(
-            torch.nn.Conv2d(width, width, 3, padding=d, dilation=d, bias=False),
-            torch.nn.BatchNorm2d(width), torch.nn.ReLU(inplace=True)) for d in dilations)
+        def block(d):
+            conv = (torch.nn.Conv2d(width, width, 1, bias=False) if d == 0 else
+                    torch.nn.Conv2d(width, width, 3, padding=d, dilation=d, bias=False))
+            return torch.nn.Sequential(conv, torch.nn.BatchNorm2d(width), torch.nn.ReLU(inplace=True))
+        self.blocks = torch.nn.ModuleList(block(d) for d in self.dilations)
         self.drop = torch.nn.Dropout2d(0.1)
         self.head = torch.nn.Conv2d(width, n_classes, 1)
 
@@ -252,8 +265,11 @@ def build_model(tc, in_ch, px, train_paths):
     elif tc.model == "fcn":
         if tc.from_scratch:
             log.info("--from-scratch is implied for fcn")
-        core = TinyFCN(k, N_CLASSES, width=tc.fcn_width)
+        core = TinyFCN(k, N_CLASSES, width=tc.fcn_width, dilations=tc.fcn_dilations)
         new = [core, pre]
+        info["fcn_dilations"] = list(core.dilations)
+        info["receptive_field_px"] = core.receptive_field
+        info["receptive_field_m"] = core.receptive_field * 10
     else:
         raise ValueError(f"model must be segformer or fcn, got {tc.model!r}")
     model = Net(pre, core)
@@ -450,12 +466,16 @@ def run_name(tc, protocol):
     parts = [protocol]
     if tc.model != "segformer":
         parts.append(tc.model)
+    if tc.model == "fcn" and tuple(tc.fcn_dilations) != (1, 2, 4, 8, 16):
+        parts.append(f"rf{receptive_field(tc.fcn_dilations)}")
     elif tc.from_scratch:
         parts.append("scratch")
     if tc.pca:
         parts.append(f"pca{tc.pca}")
     if tc.input_proj:
         parts.append(f"proj{tc.input_proj}")
+    if tc.name_seed:
+        parts.append(f"s{tc.seed}")
     return "_".join(parts)
 
 

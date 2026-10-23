@@ -52,6 +52,10 @@ def main(argv=None):
     t.add_argument("--model", choices=["segformer", "fcn"], help="default segformer")
     t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
     t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
+    t.add_argument("--fcn-dilations", help="fcn dilations, comma- or dash-separated, one block "
+                   "each; 0 = 1x1 (no context). Default 1,2,4,8,16 (630 m receptive field)")
+    t.add_argument("--fcn-width", type=int, help="fcn channels (default 64)")
+    t.add_argument("--seed", type=int, help="random seed (adds _s<seed> to the results folder)")
     t.add_argument("--from-scratch", action="store_true", help="segformer with random init")
     t.add_argument("--wandb", action="store_true", help="log runs to Weights & Biases")
     t.add_argument("--wandb-project", help="default mangrove-embed")
@@ -96,7 +100,11 @@ def main(argv=None):
         from .seg.train import TrainConfig, run
         tc = TrainConfig(chips_dir=a.chips or f"{cfg.data_dir}/chips",
                          out_dir=a.out or f"{cfg.results_dir}/seg", seed=cfg.seed)
-        for k, v in dict(weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
+        if a.seed is not None:
+            tc.seed, tc.name_seed = a.seed, True
+        dil = (tuple(int(x) for x in a.fcn_dilations.replace("-", ",").split(",") if x != "")
+               if a.fcn_dilations else None)
+        for k, v in dict(fcn_dilations=dil, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
                          batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
                          max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
                          device=a.device, model=a.model, pca=a.pca,
