@@ -290,10 +290,94 @@ def change_history(run_dirs, out):
     plt.close(fig)
 
 
+def change_transitions(run_dir, out):
+    """What pixels change into (true from -> to shares) and, per class, how well the best
+    learned forecaster ranks the pixels that become / stop being that class."""
+    d = Path(run_dir)
+    s = pd.read_csv(d / "summary.csv")
+    a = s[(s.region == "all") & s.method.isin(LEARNED)].set_index("method")
+    best = a.change_ap.idxmax()
+    cl = pd.read_csv(d / "classes.csv")
+    tr = pd.read_csv(d / "transitions.csv")
+    names = list(cl.cls.drop_duplicates())
+    t = tr[tr.method == best].pivot_table(index="src", columns="dst", values="true_px", fill_value=0)
+    t = t.reindex(index=names, columns=names, fill_value=0)
+    share = 100 * t / t.values.sum()
+    keep = [c for c in names if t.loc[c].sum() + t[c].sum() > 0]
+    share = share.loc[keep, keep]
+
+    fig = plt.figure(figsize=(20, 6.8), facecolor=SURFACE)
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1, 1], wspace=0.55)
+    ax = fig.add_subplot(gs[0])
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list("seq", ["#f4f3f0"] + SEQ)
+    vals = share.values.astype(float)
+    np.fill_diagonal(vals, np.nan)
+    ax.imshow(vals, cmap=cmap, vmin=0, vmax=np.nanmax(vals), aspect="auto")
+    for i in range(len(keep)):
+        for j in range(len(keep)):
+            if i != j and vals[i, j] >= 0.5:
+                ax.text(j, i, f"{vals[i, j]:.0f}", ha="center", va="center", fontsize=8,
+                        color="white" if vals[i, j] > 0.55 * np.nanmax(vals) else INK)
+    lab = [c.replace("_", " ") for c in keep]
+    ax.set_xticks(range(len(keep)), lab, rotation=45, ha="right", color=INK, fontsize=9)
+    ax.set_yticks(range(len(keep)), lab, color=INK, fontsize=9)
+    ax.tick_params(length=0)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.set_xlabel("next year", color=INK2, fontsize=9)
+    ax.set_ylabel("this year", color=INK2, fontsize=9)
+    ax.set_title("What changing pixels become\n(% of all changed pixels; cells >= 0.5% labeled)",
+                 loc="left", color=INK, fontsize=11)
+
+    base = cl[cl.method == "classify_current"].set_index("cls")
+    mod = cl[cl.method == best].set_index("cls")
+    for k, (col, rate, title) in enumerate([("enter_ap", "enter_rate", "Becomes this class"),
+                                           ("exit_ap", "exit_rate", "Stops being this class")]):
+        ax = fig.add_subplot(gs[k + 1])
+        _style(ax)
+        ax.grid(axis="y", visible=False)
+        order = [c for c in names if c in mod.index and mod.loc[c, col] == mod.loc[c, col]][::-1]
+        y = np.arange(len(order))
+        for i, c in enumerate(order):
+            lo, hi = sorted([base.loc[c, col], mod.loc[c, col]])
+            ax.plot([lo, hi], [i, i], color=GRID, lw=3, zorder=1)
+        ax.scatter(mod.loc[order, rate], y, marker="|", s=120, color=INK2, zorder=2,
+                   label="random (change rate)")
+        ax.scatter(base.loc[order, col], y, s=55, color=BASE_GREY, edgecolor=SURFACE, lw=1.2,
+                   zorder=3, label="persistence, ranked by uncertainty")
+        ax.scatter(mod.loc[order, col], y, s=60, color=BLUE, edgecolor=SURFACE, lw=1.2, zorder=4,
+                   label=CHANGE_LABELS[best].lower())
+        for i, c in enumerate(order):
+            n = mod.loc[c, col.replace("_ap", "_px")]
+            ax.text(0.99, i, f"{n:,} px", va="center", ha="right", fontsize=7.5, color=INK2,
+                    transform=ax.get_yaxis_transform())
+        ax.set_xlim(0, 1.12)
+        ax.set_xticks(np.arange(0, 1.01, 0.2))
+        ax.set_ylim(-0.6, len(order) - 0.4)
+        ax.set_yticks(y, [c.replace("_", " ") for c in order], color=INK, fontsize=9)
+        ax.tick_params(axis="y", length=0)
+        ax.set_xlabel("average precision (right: pixels that change)", color=INK2, fontsize=9)
+        ax.set_title(title, loc="left", color=INK, fontsize=11)
+    fig.legend(*ax.get_legend_handles_labels(), frameon=False, fontsize=9, loc="lower right",
+               ncol=3, labelcolor=INK, bbox_to_anchor=(0.97, 0.0))
+    info = json.loads((d / "change.json").read_text())
+    fig.suptitle(f"Forecasting {info['test_year']}: class transitions ({a.px.iloc[0] / 1e6:.2f}M "
+                 f"held-out pixels, {100 * a.changed_frac.iloc[0]:.1f}% change class)",
+                 x=0.01, ha="left", color=INK, fontsize=12)
+    fig.subplots_adjust(left=0.08, right=0.98, bottom=0.22, top=0.86)
+    fig.savefig(out, dpi=150, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def run(results_dir="results"):
     r = Path(results_dir)
     outs = []
     ch = r / "change"
+    for d in sorted(ch.glob("change_*")):  # per-run figures where per-class outputs exist
+        if (d / "classes.csv").exists():
+            change_forecast(d, d / "forecast.png")
+            change_transitions(d, d / "transitions.png")
+            outs += [d / "forecast.png", d / "transitions.png"]
     best = ch / "change_clf_k2_s0"
     if (best / "summary.csv").exists():
         change_forecast(best, ch / "change_forecast.png")

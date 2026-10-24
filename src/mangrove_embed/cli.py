@@ -50,8 +50,10 @@ def main(argv=None):
     ch.add_argument("--methods", nargs="*", help="default: all (see `mangrove_embed.change`)")
     ch.add_argument("--history", type=int, default=1, help="prior years of embeddings as input")
     ch.add_argument("--test-year", type=int, help="default 2020 (gmw labels) / 2025 (classifier)")
-    ch.add_argument("--labels", choices=["gmw", "classifier"], default="gmw",
-                    help="targets: GMW-based labels, or our classifier's map for every year")
+    ch.add_argument("--labels", choices=["gmw", "classifier", "model"], default="gmw",
+                    help="targets: GMW-based labels, a classifier trained here on GMW, or a saved "
+                         "train-seg per-pixel MLP (--label-run) - its map for every year")
+    ch.add_argument("--label-run", help="train-seg run dir for --labels model")
     ch.add_argument("--px-per-chip", type=int, default=1000)
     ch.add_argument("--hidden", nargs="*", type=int, default=[128, 64])
     ch.add_argument("--dropout", type=float, default=0.1)
@@ -143,7 +145,7 @@ def main(argv=None):
             regions=tuple(a.regions) if a.regions else None,
             methods=tuple(a.methods or METHODS), history=a.history, test_year=a.test_year,
             px_per_chip=a.px_per_chip, hidden=tuple(a.hidden), dropout=a.dropout,
-            epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, seed=a.seed, device=a.device, tag=a.tag))
+            epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, label_run=a.label_run, seed=a.seed, device=a.device, tag=a.tag))
     elif a.cmd == "temporal-chips":
         from .temporal import extract_temporal
         extract_temporal(cfg, a.regions, a.years, a.n_change, a.coastal_year)

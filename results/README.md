@@ -95,6 +95,20 @@ Scored by how well each method ranks the pixels that change (AP; random = the ch
 
 Two prior years beat one; three add nothing.
 
+**Full class spread** (`change/change_model_k2_s0/`): targets from the regularized per-pixel MLP
+(128-64, BatchNorm, dropout 0.1) trained on all 11 regions, frozen; same test (2025, 2 prior years).
+7.3% of pixels change; the best forecaster (next class + next-embedding aux loss) has change AP
+0.494 vs 0.399 for uncertainty-ranked persistence.
+
+![class transitions](change/change_model_k2_s0/transitions.png)
+
+- **Tidal flat -> water is a fifth of all change** (21%), even with classifier labels: tide stage
+  in the yearly embedding, not land-cover change. Water -> tidal flat adds another 6%.
+- **Into mangrove** comes mostly from seasonal water (7%) and coastal forest (5%); **out of
+  mangrove** spreads over coastal forest, water, tidal flat and seasonal water (2-4% each).
+- **Forecasting helps most for barren, other land, tidal flat and mangrove** (entering AP up to
+  0.66 vs 0.42 for barren); it adds nothing for water, salt marsh and cropland.
+
 With GMW-based labels instead (forecast 2020), every embedding-only method ranks mangrove
 change near random (gain / loss AP <= 0.05): about 70% of the label change is tidal flat <->
 water flicker in GWL, and GMW's yearly mangrove changes are barely visible in the embeddings.

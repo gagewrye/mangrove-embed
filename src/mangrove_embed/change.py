@@ -40,6 +40,12 @@ years (train blocks) and labels every sampled pixel in every year 2017-2025, tes
 included. Training / val targets are the years before test_year (default 2025), test = test_year
 on test blocks. GMW/GWL label noise drops out; persistence = classify_current, and
 classify_true_next is exact by construction (kept as a check). `pseudo` is ignored.
+labels="model": as "classifier", but the readout is a saved train-seg per-pixel MLP (label_run),
+e.g. the regularized MLP, frozen.
+
+Per-class outputs (classes.csv, transitions.csv): for every class c, enter_ap ranks the pixels
+not c this year by P(c next year) and exit_ap ranks the pixels in c by 1 - P(c); transitions
+counts every from -> to change in the truth and in each method's prediction.
 
 Change metrics compare against the true C_t: changed_acc (accuracy where C_t != C_{t+1}),
 change_iou (predicted change = prediction != C_t), change_ap (ranking by P(change)), and mangrove
@@ -88,7 +94,9 @@ class ChangeConfig:
     weight_decay: float = 1e-4
     aux_weight: float = 1.0
     pseudo: bool = True           # train on pseudo-labeled targets after GMW (else GMW pairs only)
-    labels: str = "gmw"           # gmw | classifier (readout maps for every year are the targets)
+    labels: str = "gmw"           # gmw | classifier (readout maps are the targets) | model
+    label_run: str | None = None  # labels="model": a train-seg run dir whose per-pixel MLP makes
+                                  # the targets and is the readout (nothing is retrained)
     block_deg: float = 0.1        # = train-seg's, so splits match
     val_frac: float = 0.1
     seed: int = 0
@@ -159,6 +167,16 @@ class Readout(nn.Module):
 
     def forward(self, e):
         return self.head(self.body(e))
+
+
+class PixelReadout(nn.Module):
+    """A saved train-seg per-pixel model (1x1 convs) applied to embeddings [B, 64]."""
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+
+    def forward(self, e):
+        return self.model(e[:, :, None, None]).flatten(1)
 
 
 class Forecaster(nn.Module):
@@ -276,6 +294,41 @@ def score(pred, tgt, prev, p_mangrove=None, p_change=None):
     return out
 
 
+def class_scores(method, probs, tgt, prev):
+    """Per class c: AP for ranking the pixels that become c (among those not c now) by P(c),
+    and the pixels that stop being c (among those c now) by 1 - P(c). rate = random AP."""
+    v = (tgt != IGNORE) & (prev != IGNORE)
+    t, p0 = tgt[v], prev[v]
+    rows = []
+    for c, name in enumerate(CLASS_NAMES):
+        g, l = p0 != c, p0 == c
+        row = dict(method=method, cls=name, now_px=int(l.sum()), enter_px=int((g & (t == c)).sum()),
+                   exit_px=int((l & (t != c)).sum()))
+        row["enter_rate"] = row["enter_px"] / max(g.sum(), 1)
+        row["exit_rate"] = row["exit_px"] / max(l.sum(), 1)
+        if probs is not None:
+            pc = probs[v][:, c]
+            if row["enter_px"]:
+                row["enter_ap"] = float(average_precision_score(t[g] == c, pc[g]))
+            if row["exit_px"] and row["exit_px"] < l.sum():
+                row["exit_ap"] = float(average_precision_score(t[l] != c, 1 - pc[l]))
+        rows.append(row)
+    return rows
+
+
+def transitions(method, pred, tgt, prev):
+    """Every from -> to pair (from != to): true count, predicted count, correctly predicted."""
+    v = (tgt != IGNORE) & (prev != IGNORE)
+    p0, t, q = prev[v].astype(int), tgt[v].astype(int), pred[v].astype(int)
+    n = N_CLASSES
+    true = np.bincount(p0 * n + t, minlength=n * n).reshape(n, n)
+    pr = np.bincount(p0 * n + q, minlength=n * n).reshape(n, n)
+    hit = np.bincount((p0 * n + t)[q == t], minlength=n * n).reshape(n, n)
+    return [dict(method=method, src=CLASS_NAMES[a], dst=CLASS_NAMES[b], true_px=int(true[a, b]),
+                 pred_px=int(pr[a, b]), hit_px=int(hit[a, b]))
+            for a in range(n) for b in range(n) if a != b and (true[a, b] or pr[a, b])]
+
+
 # ------------------------------------------------------------------ run
 def _device(cc):
     if cc.device:
@@ -298,7 +351,7 @@ def run(cc: ChangeConfig):
     split = np.where(test_chip[chip], 2, np.where(val_chip[chip], 1, 0))
     rows = {s: np.flatnonzero(split == i) for i, s in enumerate(("train", "val", "test"))}
     col = {yr: j for j, yr in enumerate(years)}
-    clf = cc.labels == "classifier"
+    clf = cc.labels in ("classifier", "model")
     test_year = cc.test_year or (years[-1] if clf else 2020)
     jt = col[test_year]
     gmw = [col[yr] for yr in LABEL_YEARS if yr in col and (clf or yr < test_year)]
@@ -313,7 +366,20 @@ def run(cc: ChangeConfig):
     # readout E_t -> C_t on GMW years before test_year
     ro_tr = torch.from_numpy(pairs(y, rows["train"], gmw, 0)).to(device)
     ro_va = torch.from_numpy(pairs(y, rows["val"], gmw, 0)).to(device)
-    readout = Readout(cc.hidden, cc.dropout).to(device)
+    if cc.labels == "model":
+        from .seg.train import load_checkpoint
+        js = sorted(q for q in Path(cc.label_run).glob("*.json")
+                    if q.with_name(f"{q.stem}_best.pt").exists())
+        if not js:
+            raise SystemExit(f"no checkpoint (*_best.pt) in {cc.label_run}")
+        model, tc = load_checkpoint(js[0], device=str(device))
+        if tc.model != "mlp" or tc.mlp_context:
+            raise SystemExit(f"{cc.label_run}: labels need a per-pixel mlp without context")
+        readout = PixelReadout(model).eval()
+        for prm in readout.parameters():
+            prm.requires_grad_(False)
+    else:
+        readout = Readout(cc.hidden, cc.dropout).to(device)
 
     def classify(P, model=readout):
         return lambda b: (model(X[P[b, 0], P[b, 1]].float()),)
@@ -323,11 +389,16 @@ def run(cc: ChangeConfig):
 
     res = dict(config=asdict(cc), test_year=test_year, years=years, chips=int(len(df)),
                px={s: int(len(r)) for s, r in rows.items()}, methods={})
-    res["readout"] = fit_model(
-        readout, len(ro_tr),
-        lambda b: F.cross_entropy(readout(X[ro_tr[b, 0], ro_tr[b, 1]].float()), Y[ro_tr[b, 0], ro_tr[b, 1]]),
-        lambda: val_iou(predict(classify(ro_va), len(ro_va), bs)[0], Y[ro_va[:, 0], ro_va[:, 1]]),
-        cc, device, "readout")
+    if cc.labels == "model":
+        res["readout"] = dict(label_run=str(cc.label_run), checkpoint=js[0].name,
+                              val_mangrove_iou_gmw=val_iou(predict(classify(ro_va), len(ro_va), bs)[0],
+                                                           Y[ro_va[:, 0], ro_va[:, 1]]))
+    else:
+        res["readout"] = fit_model(
+            readout, len(ro_tr),
+            lambda b: F.cross_entropy(readout(X[ro_tr[b, 0], ro_tr[b, 1]].float()), Y[ro_tr[b, 0], ro_tr[b, 1]]),
+            lambda: val_iou(predict(classify(ro_va), len(ro_va), bs)[0], Y[ro_va[:, 0], ro_va[:, 1]]),
+            cc, device, "readout")
 
     if clf:  # the readout's maps become the labels, every pixel and year
         all_rows = torch.arange(len(y), device=device)
@@ -367,7 +438,7 @@ def run(cc: ChangeConfig):
         prob = logits.float().softmax(1)
         stay = prob.gather(1, prev_idx[:, None])[:, 0]
         return (prob.argmax(1).cpu().numpy(), prob[:, MANGROVE].cpu().numpy(),
-                (1 - stay).cpu().numpy())
+                (1 - stay).cpu().numpy(), prob.cpu().numpy())
 
     def readout_of(E):
         return from_logits(predict(lambda b: (readout(E[b]),), len(E), bs)[0])
@@ -405,7 +476,7 @@ def run(cc: ChangeConfig):
     for m in cc.methods:
         info = {}
         if m == "persistence":
-            preds[m] = (prev, None, None)
+            preds[m] = (prev, None, None, None)
         elif m == "classify_current":
             preds[m] = readout_of(e_now)
         elif m == "classify_true_next":
@@ -413,7 +484,7 @@ def run(cc: ChangeConfig):
         elif m == "transition_table":
             p = markov_probs()
             preds[m] = (p.argmax(1), p[:, MANGROVE],
-                        1 - p[np.arange(len(p)), np.minimum(prev, N_CLASSES - 1)])
+                        1 - p[np.arange(len(p)), np.minimum(prev, N_CLASSES - 1)], p)
         elif m == "extrapolate_embedding":
             if jt < 2:
                 raise ValueError("trend needs two years before test_year")
@@ -456,7 +527,10 @@ def run(cc: ChangeConfig):
         res["methods"][m] = info
 
     out_rows = []
-    for m, (pred, pm, pc) in preds.items():
+    cls_rows, tr_rows_out = [], []
+    for m, (pred, pm, pc, probs) in preds.items():
+        cls_rows += class_scores(m, probs, tgt, prev)
+        tr_rows_out += transitions(m, pred, tgt, prev)
         for r in ["all"] + sorted(set(region)):
             sel = slice(None) if r == "all" else region == r
             s = score(pred[sel], tgt[sel], prev[sel], None if pm is None else pm[sel],
@@ -465,10 +539,13 @@ def run(cc: ChangeConfig):
         res["methods"][m]["test"] = out_rows[-1 - len(set(region))]
     summary = pd.DataFrame(out_rows)
     res["cos_persist"] = cos_persist
-    folder = "_".join(v for v in ("change", "clf" if clf else None, f"k{k}", cc.tag, f"s{cc.seed}") if v)
+    mode = {"classifier": "clf", "model": "model"}.get(cc.labels)
+    folder = "_".join(v for v in ("change", mode, f"k{k}", cc.tag, f"s{cc.seed}") if v)
     run_dir = Path(cc.out_dir) / folder
     run_dir.mkdir(parents=True, exist_ok=True)
     summary.to_csv(run_dir / "summary.csv", index=False)
+    pd.DataFrame(cls_rows).to_csv(run_dir / "classes.csv", index=False)
+    pd.DataFrame(tr_rows_out).to_csv(run_dir / "transitions.csv", index=False)
     (run_dir / "change.json").write_text(json.dumps(res, indent=2, default=float))
     cols = ["method", "mangrove_iou", "miou", "acc", "changed_acc", "change_iou", "change_ap",
             "gain_iou", "loss_iou", "gain_ap", "loss_ap"]

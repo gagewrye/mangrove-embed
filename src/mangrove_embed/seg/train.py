@@ -717,40 +717,50 @@ def _wandb_eval(tc, res, folder, scored):
         print(f"  W&B: logged eval run {group}/{name}/eval")
 
 
+def load_checkpoint(split_json, in_ch=64, px=128, device=None):
+    """Rebuild a train-seg model from <split>.json + <split>_best.pt (eval mode, on device).
+    -> (model, TrainConfig), or (None, tc) for PCA runs (the projection is not saved)."""
+    from dataclasses import fields
+    js = Path(split_json)
+    res = json.loads(js.read_text())
+    names = {f.name for f in fields(TrainConfig)}
+    c = {k: v for k, v in res.get("config", {}).items() if k in names}
+    for k in ("fcn_dilations", "mlp_hidden", "mlp_context", "wandb_tags"):
+        if c.get(k) is not None:
+            c[k] = tuple(c[k])
+    tc = TrainConfig(**{**c, "wandb": False, "device": device})
+    if tc.pca:
+        return None, tc
+    device = _device(tc)
+    model, _, _ = build_model(tc, in_ch, px, [])
+    state = torch.load(js.with_name(f"{js.stem}_best.pt"), map_location=device, weights_only=True)
+    if not any(k.startswith(("core.", "pre.")) for k in state):
+        state = {f"core.{k}": v for k, v in state.items()}  # saved before the Net wrapper
+    model.load_state_dict(state)
+    return model.to(device).eval(), tc
+
+
 def evaluate_runs(chips_dir, run_dirs, out_csv, regions=None, wandb=False):
     """Score saved checkpoints on chips they never saw (e.g. a test region under data/test/chips).
     One row per (run, split, test region), at argmax and at the split's validation-tuned
     threshold. PCA runs are skipped: the projection is refit from training chips, not saved.
     wandb: add test/<region>/... to each split's W&B training run (matched by group, name and
     train_chips), or log a separate eval run when the split was trained without W&B."""
-    from dataclasses import fields
     from ..thresholds import binary_scores
     df = load_index(chips_dir, regions)
     tests = {r: list(g.path) for r, g in df.groupby("region")}
     x0 = np.load(df.path.iloc[0])["x"]
-    names = {f.name for f in fields(TrainConfig)}
     rows = []
     for d in map(Path, run_dirs):
         for js in sorted(d.glob("*.json")):
-            ckpt = js.with_name(f"{js.stem}_best.pt")
-            if not ckpt.exists():
+            if not js.with_name(f"{js.stem}_best.pt").exists():
                 continue
             res = json.loads(js.read_text())
-            c = {k: v for k, v in res.get("config", {}).items() if k in names}
-            for k in ("fcn_dilations", "mlp_hidden", "mlp_context", "wandb_tags"):
-                if c.get(k) is not None:
-                    c[k] = tuple(c[k])
-            tc = TrainConfig(**{**c, "wandb": False, "device": None})
-            if tc.pca:
+            model, tc = load_checkpoint(js, x0.shape[0], x0.shape[-1])
+            if model is None:
                 log.warning("%s/%s: PCA run, skipped", d.name, js.stem)
                 continue
             device, amp = _device(tc), _use_amp(tc, _device(tc))
-            model, _, _ = build_model(tc, x0.shape[0], x0.shape[-1], [])
-            state = torch.load(ckpt, map_location=device, weights_only=True)
-            if not any(k.startswith(("core.", "pre.")) for k in state):
-                state = {f"core.{k}": v for k, v in state.items()}  # saved before the Net wrapper
-            model.load_state_dict(state)
-            model.to(device)
             thr = next((m["threshold"] for m in res["test"].values() if "threshold" in m), None)
             scored = {}
             for r, paths in tests.items():
