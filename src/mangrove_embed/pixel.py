@@ -257,3 +257,63 @@ def run_external(chips_dir, test_chips_dir, out_dir="results/generalization",
     new.to_csv(path, index=False)
     print(f"-> {path}")
     return new
+
+
+def run_pooled(chips_dir="data/chips", out_dir="results/model_comparison", models=("logreg",),
+               n_train_per_region=30_000, n_val=30_000, n_test=100_000, seed=0, regions=None,
+               tag=None, wandb=None):
+    """Pooled protocol with exactly train-seg's chip splits (same block size, fractions and
+    seeds), so scores line up with `train-seg --protocol pooled --seed N` region by region:
+    test = 20% of each region's blocks, val = 10% of the remaining blocks (threshold tuning).
+    Writes <out_dir>/pooled_pixel_<model>[_<tag>]_s<seed>/summary.csv for compare-seg."""
+    from .seg.train import TrainConfig, add_blocks, load_index as seg_index, split_blocks
+    tc = TrainConfig(seed=seed)
+    df = add_blocks(seg_index(chips_dir, regions), tc.block_deg)
+    test = split_blocks(df, 0.2, seed + 1)
+    tr = df[~test]
+    val = split_blocks(tr, tc.val_frac, seed)
+    all_regions = sorted(df.region.unique())
+    Xs, Ys = [], []
+    for g in all_regions:
+        X, Y = sample_pixels(list(tr.path[(tr.region == g).values & ~val]), n_train_per_region, seed)
+        Xs.append(X); Ys.append(Y)
+    Xtr, ytr = np.concatenate(Xs), np.concatenate(Ys)
+    Xva, yva = sample_pixels(list(tr.path[val]), n_val, seed + 1)
+    tests = {r: sample_pixels(list(df.path[test & (df.region == r).values]), n_test, seed + 2)
+             for r in all_regions}
+    tests = {r: t for r, t in tests.items() if len(t[1])}
+    log.info("pooled: train %d px from %d regions, val %d px, test %d regions", len(ytr),
+             len(all_regions), len(yva), len(tests))
+    out = {}
+    for name in models:
+        t0 = time.time()
+        m = make(name, seed).fit(Xtr, ytr)
+        cl = list(m.classes_)
+        pv = m.predict_proba(Xva)
+        vt = yva == MANGROVE
+        vp = pv[:, cl.index(MANGROVE)] if MANGROVE in cl else np.zeros(len(yva))
+        folder = "_".join(x for x in ("pooled_pixel", name, tag, f"s{seed}") if x)
+        run_dir = Path(out_dir) / folder
+        run_dir.mkdir(parents=True, exist_ok=True)
+        res, rows = {}, []
+        for r, (Xte, yte) in tests.items():
+            res[r] = metrics(yte, m.predict_proba(Xte), cl, vt, vp)
+            rows.append(dict(protocol="pooled", region=r,
+                             **{k: v for k, v in res[r].items() if not isinstance(v, dict)}))
+            print(f"[{folder}] {r}: IoU {res[r]['mangrove_iou']:.3f} AP "
+                  f"{res[r]['mangrove_ap']:.3f} | tuned@{res[r]['threshold']:.2f}: IoU "
+                  f"{res[r]['mangrove_iou_tuned']:.3f}")
+        info = dict(model=name, params=n_params(m), receptive_field_m=10, train_px=int(len(ytr)),
+                    val_px=int(len(yva)), train_regions=all_regions,
+                    fit_seconds=round(time.time() - t0, 1))
+        (run_dir / "pooled.json").write_text(json.dumps(
+            dict(tag="pooled", model_info=info, test=res), indent=2))
+        summary = pd.DataFrame(rows)
+        summary.to_csv(run_dir / "summary.csv", index=False)
+        print(f"[{folder}] mean IoU {summary.mangrove_iou.mean():.3f} -> {run_dir}")
+        if wandb:
+            log_run(wandb["project"], wandb.get("entity"), folder, f"{folder}/pooled", "pooled",
+                    dict(info, seed=seed, n_train_per_region=n_train_per_region),
+                    metric_summary(res), tags=["pixel", name, "pooled"])
+        out[name] = summary
+    return out

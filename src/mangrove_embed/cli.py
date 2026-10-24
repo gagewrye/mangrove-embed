@@ -62,6 +62,9 @@ def main(argv=None):
     px.add_argument("--models", nargs="*", default=["knn", "logreg", "mlp"])
     px.add_argument("--holdout", default="all", help="region to hold out, or 'all'")
     px.add_argument("--regions", nargs="*", help="restrict to these regions")
+    px.add_argument("--protocol", choices=["loro", "pooled"], default="loro",
+                    help="pooled: train-seg's pooled chip splits (same seed = same test blocks)")
+    px.add_argument("--tag", help="pooled: folder suffix, e.g. no_mexpac")
     px.add_argument("--test-chips", help="train on all regions, test on these chips instead of "
                     "LORO (writes <results_dir>/generalization/<regions>_pixel.csv)")
     px.add_argument("--n-train", type=int, default=30_000, help="training pixels per region")
@@ -125,6 +128,11 @@ def main(argv=None):
         regs = a.regions or sorted(load_index(a.chips).region.unique())
         evaluate_runs(a.chips, runs, a.out or f"{cfg.results_dir}/generalization/{'_'.join(regs)}.csv",
                       a.regions, wandb=a.wandb)
+    elif a.cmd == "compare-pixel" and a.protocol == "pooled":
+        from .pixel import run_pooled
+        run_pooled(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/model_comparison",
+                   a.models, a.n_train, n_test=a.n_test, seed=a.seed, regions=a.regions,
+                   tag=a.tag, wandb=_wb(a))
     elif a.cmd == "compare-pixel" and a.test_chips:
         from .pixel import run_external
         run_external(a.chips or f"{cfg.data_dir}/chips", a.test_chips,
