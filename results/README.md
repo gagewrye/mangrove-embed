@@ -1,71 +1,89 @@
 # Results
 
-All scores are **held-out mangrove IoU under leave-one-region-out (LORO)**: train on the other
-regions, test on one, for each of Everglades, Jamaica, Mekong and Sundarbans. Model weights
-(`*.pt`) are not versioned. Regenerate the figures with `mangrove plots`.
+**Question:** what model do we need to map mangroves from Google AlphaEarth embeddings (64-band,
+10 m), and does it hold up in a region it has never seen?
 
-| folder | test | produced by |
-|---|---|---|
-| [`model_comparison/`](model_comparison/) | segmentation and per-pixel models on the same LORO chip splits | `mangrove train-seg`, `bench`, `compare-pixel`; table: `compare-seg` |
-| [`receptive_field/`](receptive_field/) | FCN receptive-field sweep (10 m to 1.27 km) | W&B export: `scripts/export_rf_wandb.py` |
-| [`generalization/`](generalization/) | saved checkpoints scored on an unseen test region (`baja_north`: Baja California north of 25.4 N, outside `mexico_pacific`) | `mangrove --config configs/baja_test.yaml chips`, then `mangrove eval-seg --chips data/test/chips` |
-| [`calibration/`](calibration/) | per-region centering / EM prior adaptation; kNN k sweep | `scripts/calibration_probe.py`, `scripts/knn_k_sweep.py` |
-| [`point_diagnostics/`](point_diagnostics/) | Q1-Q4 on sampled points (geometry, transfer, domain gap, mean-pooled context) | `mangrove diagnose` |
-| `synthetic/` | offline smoke test (not versioned) | `mangrove demo` |
+**Answer:** a per-pixel model is enough. Spatial context and large models add nothing.
+Logistic regression and a small regularized MLP tie. The MLP holds up better on a region
+unlike anything in training.
 
-## Model comparison
+## Methods
+- **Data:** 128 x 128 px chips (1.28 km) from 11 regions, labeled with Global Mangrove Watch v3 (2020).
+- **Metric:** mangrove IoU on held-out pixels; AP reported where useful.
+- **Protocols:**
+  - **LORO** (leave one region out): train on 3 regions, test on the 4th (Everglades,
+    Jamaica, Mekong, Sundarbans).
+  - **Pooled:** train on all regions, test on held-out spatial blocks in each.
+  - **Unseen region:** train pooled, test on Baja California north (`baja_north`, 300 chips)
+    with `mexico_pacific` left out of training.
+- **Seeds:** 0-2 for most numbers; SegFormer, logreg and kNN in section 1 are single runs.
+
+## 1. Model comparison (LORO, 4 regions)
 ![model comparison](model_comparison/model_comparison.png)
 
-| run folder | model | runs |
+| model | params | mean IoU |
 |---|---|---|
-| `pixel_mlp`, `_s1`, `_s2` | sklearn MLP 128-64 on sampled chip pixels (`pixel_mlp` = seed 0) | 3 |
-| `loro_fcn_s0`, `_s1`, `_s2`, `loro_fcn_pc` | dilated FCN, 630 m receptive field, ~190k params (`loro_fcn_pc` = seed 42) | 4 |
-| `loro_fcn_rf1_s0`, `_s1`, `_s2` | same FCN with all dilations 0 (1x1, no context, width 184, ~185k params) | 3 |
-| `loro` | SegFormer-B0, 64-band stem | 1 |
-| `pixel_logreg` | logistic regression on sampled chip pixels | 1 |
-| `pixel_knn` | kNN, k=5, cosine | 1 |
-| `loro_mlp_s0`, `_s1`, `_s2` | per-pixel MLP 64-64-11 trained through the chip pipeline (4.9k params) | 3 |
+| dilated FCN, 630 m context | 190k | 0.845 |
+| per-pixel FCN, 10 m (no context) | 185k | 0.834 |
+| SegFormer-B0 | - | 0.832 |
+| logistic regression | 715 | 0.825 |
+| pixel MLP 128-64 | 17.5k | 0.824 |
+| kNN (k=5) | - | 0.758 |
 
-Each folder has `holdout_<region>.json` (full metrics and config per split) and `summary.csv`
-(one row per held-out region). The top models (630 m FCN 0.841, 10 m FCN 0.834, SegFormer
-0.832, logreg 0.825, pixel MLP 0.824) sit within ~0.02, inside the seed-to-seed spread (sd
-0.015-0.043). Spatial context adds nothing measurable: 630 m minus 10 m on matched seeds is
-+0.025, -0.005, +0.014 (seeds 0-2) and -0.031 (seed 42, W&B), mean ~0. Mekong is the least stable region (IoU 0.57-0.84 across runs, with AP
-steady at ~0.97, so the variation is in the threshold, not the ranking); Jamaica is the hardest.
+The top five are within 0.02 of each other, less than the seed-to-seed spread (sd 0.015-0.043).
+Jamaica is the hardest region: logreg 0.575 vs 0.77-0.79 for the nonlinear models.
 
-## Receptive field
+## 2. Spatial context does not help
 ![receptive field](receptive_field/receptive_field.png)
 
-`rf_runs.csv` has one row per (W&B run, held-out region). These runs were trained on another
-machine and exist only in W&B, hence the export. Check `train_chips` before comparing:
-- `rf-sweep`: Mekong only, trained on **9 other regions** (~2,400 chips), 1 seed. Not comparable
-  in level with the 4-region results; within the sweep the spread (0.767-0.808) is smaller than
-  the seed-to-seed spread of one config on Mekong (0.726-0.818).
-- `loro_fcn_rf1_all` (10 m) and `loro_fcn` (630 m): all 4 holdouts, the original 4-region
-  splits (~800 chips), seed 42, identical splits, so they pair up directly. 10 m scored higher
-  on all 4 (mean 0.861 vs 0.830), but the other 630 m runs average 0.841, so the gap is within
-  about one seed's noise.
+- **Matched seeds:** 630 m vs 10 m receptive field differs by +0.025, -0.005, +0.014 and
+  -0.031, a mean of about 0.
+- **Mekong sweep** (10 m to 1.27 km): flat (0.767-0.808), inside one config's seed spread.
 
-## Generalization to an unseen region (Baja California north)
-`baja_north` = `[-113.6, 25.5, -111.3, 27.0]` (San Juanico, Laguna San Ignacio, Loreto, Mulege,
-Bahia Concepcion): 300 chips, 15% mangrove, never used in training. Models are pooled on all chip
-regions; "10 regions" leaves out `mexico_pacific` (Magdalena Bay / La Paz, the nearest Baja
-data), so it is the true out-of-region test. Mangrove IoU, mean over seeds 0-2 (FCN: 0, 1, 42).
+## 3. Unseen region: Baja California north
+Mean IoU over seeds; training excludes `mexico_pacific`.
 
-| model | params | 11 regions | 10 regions (no mexico_pacific) | AP (10) |
-|---|---|---|---|---|
-| per-pixel FCN (1x1 convs, BatchNorm, residual) | 185k | 0.869 (1 run) | 0.852 | 0.968 |
-| MLP 128-64 + BatchNorm + dropout 0.1, Jaccard loss | 17.5k | - | 0.849 | 0.969 |
-| logistic regression | 715 | 0.834 | 0.846 | 0.966 |
-| MLP 128-64, Jaccard loss | 17.5k | - | 0.747 | 0.946 |
-| MLP 128-64, sklearn | 17.5k | 0.870 | 0.636 | 0.947 |
+| model | Baja IoU | AP |
+|---|---|---|
+| per-pixel FCN | 0.852 | 0.968 |
+| **MLP 128-64 + BatchNorm + dropout 0.1** | **0.849** | 0.969 |
+| logistic regression | 0.846 | 0.966 |
+| MLP 128-64, no regularization | 0.636-0.747 | 0.946 |
 
-Files: `generalization/baja_north.csv` (train-seg checkpoints, `mangrove eval-seg`) and
-`generalization/baja_north_pixel.csv` (sklearn models, `compare-pixel --test-chips`).
+Regularization matters: without it the MLP overfits its training regions.
 
-Conclusion: no spatial context or large model is needed. Spatial context did not help under LORO
-or on Baja, and SegFormer and the dilated FCN were no better than per-pixel models. What
-mattered for a new region was regularization: an unregularized MLP overfits its training regions
-(0.64-0.75 on Baja), while BatchNorm + dropout brings it level with logistic regression (~0.85).
-The FCN and SegFormer are dropped from further work; remaining comparison is logistic regression
-vs the regularized per-pixel MLP.
+## 4. Logreg vs regularized MLP (pooled, 10 regions, identical splits)
+| | logreg | MLP + BN + dropout |
+|---|---|---|
+| mean IoU | 0.898 | 0.898 |
+| Jamaica | 0.849 | 0.855 |
+| weakest (Rufiji) | 0.756 | 0.732 |
+
+When a region is in training, the two tie everywhere (all regions within 0.02). Logreg's Jamaica
+weakness only appears when Jamaica is unseen (LORO).
+
+## 5. Side probes
+- **Calibration** (`calibration/`):
+  - Per-region feature centering or EM prior adaptation lowers mean LORO IoU (logreg 0.813 raw
+    vs 0.72-0.77).
+  - The exception is EM on logreg in Jamaica (0.54 -> 0.76).
+- **kNN k sweep:** flat from k=5 to k=200 (0.755-0.763).
+- **Point diagnostics** (`point_diagnostics/`): an earlier probe on sampled points (Q1-Q4:
+  geometry, false-positive sources, domain gap, mean-pooled context).
+
+## Conclusion
+- **Model choice:** use the regularized per-pixel MLP. It ties logistic regression where the
+  region is in training and is safer on a novel one.
+- **Dropped:** FCN and SegFormer.
+- **Weakest regions:** Rufiji, Mekong and Jamaica (0.73-0.86 pooled).
+
+## Files
+| folder | contents | made by |
+|---|---|---|
+| `model_comparison/` | one folder per run: `summary.csv` + per-split JSON | `train-seg`, `compare-pixel`, `compare-seg` |
+| `receptive_field/` | `rf_runs.csv` (W&B export) | `scripts/export_rf_wandb.py` |
+| `generalization/` | Baja scores | `eval-seg`, `compare-pixel --test-chips` |
+| `calibration/` | calibration + kNN sweep | `scripts/calibration_probe.py`, `knn_k_sweep.py` |
+| `point_diagnostics/` | Q1-Q4 | `mangrove diagnose` |
+
+Figures: `mangrove plots`. Model weights (`*.pt`) are not versioned.
