@@ -82,12 +82,18 @@ def allocate(counts, budget):
 
 
 # ------------------------------------------------------------------ Earth Engine graph
-def class_image(cfg: Config, proj):
-    """Exclusive 11-class label image + coastal mask (port of v3 JS, section 2)."""
-    y = cfg.year
-    gmw_extent = (ee.ImageCollection("projects/sat-io/open-datasets/GMW/extent/GMW_V3")
-                  .filter(ee.Filter.eq("system:index", f"gmw_v3_{y}")).first()
-                  .select(0).unmask(0).gt(0))
+def gmw_extent_image(year):
+    return (ee.ImageCollection("projects/sat-io/open-datasets/GMW/extent/GMW_V3")
+            .filter(ee.Filter.eq("system:index", f"gmw_v3_{year}")).first()
+            .select(0).unmask(0).gt(0))
+
+
+def class_image(cfg: Config, proj, year=None, coastal_year=None):
+    """Exclusive 11-class label image + coastal mask (port of v3 JS, section 2).
+    `year` overrides cfg.year; `coastal_year` fixes the coastal zone to that year's GMW extent
+    (so multi-year labels share one mask)."""
+    y = year or cfg.year
+    gmw_extent = gmw_extent_image(y)
     gmw_core = (ee.Image("projects/sat-io/open-datasets/GMW/core/gmw_v3_mng_core")
                 .select(0).unmask(0).eq(1))
     mangrove = gmw_core if cfg.mangrove_label == "core" else gmw_extent
@@ -110,7 +116,8 @@ def class_image(cfg: Config, proj):
     ambiguous = mangrove.Not().And(wc.eq(95).Or(gwl.eq(185)).Or(gmw_extent).Or(gmw_core))
 
     grid = ee.Projection("EPSG:4326").atScale(250)
-    coastal = (mangrove.selfMask()
+    zone = mangrove if coastal_year in (None, y) else gmw_extent_image(coastal_year)
+    coastal = (zone.selfMask()
                .reduceResolution(ee.Reducer.max(), maxPixels=1024)
                .reproject(grid).unmask(0)
                .focalMax(math.ceil(cfg.coast_buffer_m / 250), "circle", "pixels")

@@ -5,10 +5,12 @@
   receptive_field/receptive_field.png    FCN receptive-field sweep (Mekong) and 10 m vs 630 m
                                          on all held-out regions (rf_runs.csv, from W&B)
 """
+import json
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
+import matplotlib.patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -185,9 +187,121 @@ def _fcn630_mekong(model_dir, rf):
     return np.concatenate([local, wb])
 
 
+# change-prediction methods (mangrove_embed.change) -> readable label; learned = MLP forecasters
+CHANGE_LABELS = {
+    "persistence": "Persistence: this year's map",
+    "classify_current": "Persistence, ranked by classifier uncertainty",
+    "transition_table": "Class transition table",
+    "extrapolate_embedding": "Extrapolate embedding trend",
+    "next_class": "Predict next year's class",
+    "next_class_emb_aux": "Predict next class + next-embedding aux loss",
+    "next_embedding": "Predict next embedding, then classify it",
+    "next_class_given_map": "Predict next class, given this year's map",
+    "next_class_given_probs": "Predict next class, given this year's probabilities",
+}
+LEARNED = ["next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map",
+           "next_class_given_probs"]
+BASE_GREY = "#a9a8a2"
+CHANGE_METRICS = [("change_ap", "changed_frac", "Any class change"),
+                  ("gain_ap", "gain_rate", "Mangrove gain"),
+                  ("loss_ap", "loss_rate", "Mangrove loss")]
+
+
+def change_forecast(run_dir, out):
+    """AP for ranking the pixels that change, per method (one run, all test pixels)."""
+    s = pd.read_csv(Path(run_dir) / "summary.csv")
+    info = json.loads((Path(run_dir) / "change.json").read_text())
+    a = s[s.region == "all"].set_index("method")
+    a = a.loc[[m for m in CHANGE_LABELS if m in a.index and a.loc[m, "change_ap"] == a.loc[m, "change_ap"]]]
+    order = a.change_ap.sort_values().index
+    fig, axes = plt.subplots(1, 3, figsize=(15, 0.42 * len(order) + 2.4), sharey=True,
+                             facecolor=SURFACE)
+    y = np.arange(len(order))
+    for ax, (col, rate, title) in zip(axes, CHANGE_METRICS):
+        _style(ax)
+        ax.grid(axis="y", visible=False)
+        v = a.loc[order, col].values
+        colors = [BLUE if m in LEARNED else BASE_GREY for m in order]
+        ax.barh(y, v, height=0.62, color=colors, edgecolor=SURFACE, lw=2)
+        r = float(a[rate].dropna().iloc[0])
+        ax.axvline(r, color=INK2, lw=1, ls=(0, (3, 3)))
+        ax.text(r, -0.62, f" random {r:.3f}", fontsize=8, color=INK2, va="top")
+        best = int(np.nanargmax(v))
+        base = list(order).index("classify_current") if "classify_current" in order else None
+        for i in {best, base} - {None}:
+            ax.text(v[i] + 0.006, i, f"{v[i]:.3f}", va="center", fontsize=9, color=INK)
+        ax.set_xlim(0, max(0.6, np.nanmax(v) * 1.15))
+        ax.set_ylim(-1.05, len(order) - 0.5)
+        ax.set_title(f"{title}: AP", loc="left", color=INK, fontsize=11)
+        ax.set_xlabel("average precision (1 = perfect ranking)", color=INK2, fontsize=9)
+    axes[0].set_yticks(y, [CHANGE_LABELS[m] for m in order], color=INK, fontsize=9.5)
+    axes[0].tick_params(axis="y", length=0)
+    handles = [matplotlib.patches.Patch(color=BLUE, label="learned forecaster (per-pixel MLP)"),
+               matplotlib.patches.Patch(color=BASE_GREY, label="baseline")]
+    k, ty = info["config"]["history"], info["test_year"]
+    src = "classifier maps" if info["config"].get("labels") == "classifier" else "GMW-based labels"
+    fig.suptitle(f"Forecasting {ty} from the {k} prior year{'s' if k > 1 else ''} of embeddings "
+                 f"({src} as targets, {a.px.iloc[0] / 1e6:.2f}M held-out pixels, "
+                 f"{100 * a.changed_frac.iloc[0]:.1f}% change class)", x=0.01, ha="left",
+                 color=INK, fontsize=12)
+    fig.legend(handles=handles, loc="upper right", frameon=False, fontsize=9, ncol=2,
+               labelcolor=INK)
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.savefig(out, dpi=150, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def change_history(run_dirs, out):
+    """AP vs number of prior years of input, one panel per learned forecaster."""
+    rows = []
+    for d in run_dirs:
+        info = json.loads((Path(d) / "change.json").read_text())
+        s = pd.read_csv(Path(d) / "summary.csv")
+        s = s[(s.region == "all") & s.method.isin(LEARNED)].assign(k=info["config"]["history"])
+        rows.append(s)
+    df = pd.concat(rows)
+    ks = sorted(df.k.unique())
+    colors = [BLUE, ORANGE, "#1baf7a"]  # categorical slots 1-3 of the reference palette
+    fig, axes = plt.subplots(1, len(LEARNED), figsize=(16, 3.8), sharey=True, facecolor=SURFACE)
+    for ax, m in zip(axes, LEARNED):
+        _style(ax)
+        g = df[df.method == m].set_index("k").loc[ks]
+        ends = []
+        for (col, _, title), c in zip(CHANGE_METRICS, colors):
+            ax.plot(ks, g[col], color=c, lw=2, marker="o", ms=7, markeredgecolor=SURFACE,
+                    markeredgewidth=1.5, label=title)
+            ends.append([g[col].iloc[-1], title.replace("Mangrove ", "").replace("Any class ", "")])
+        ends.sort()
+        for i in range(1, len(ends)):  # direct labels at the line ends, nudged apart
+            ends[i][0] = max(ends[i][0], ends[i - 1][0] + 0.014)
+        for yv, lab in ends:
+            ax.text(ks[-1] + 0.12, yv, lab, va="center", fontsize=8, color=INK2)
+        ax.set_xticks(ks, [str(k) for k in ks])
+        ax.set_xlim(ks[0] - 0.3, ks[-1] + 0.9)
+        ax.set_xlabel("prior years of embeddings", color=INK2, fontsize=9)
+        ax.set_title(CHANGE_LABELS[m].replace(", given", ",\ngiven").replace(" + ", "\n+ "),
+                     loc="left", color=INK, fontsize=9.5)
+    axes[0].set_ylabel("average precision", color=INK2, fontsize=9)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="upper right", frameon=False,
+               fontsize=9, ncol=3, labelcolor=INK)
+    fig.suptitle("Does more history help?", x=0.01, ha="left", color=INK, fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.9))
+    fig.savefig(out, dpi=150, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def run(results_dir="results"):
     r = Path(results_dir)
     outs = []
+    ch = r / "change"
+    best = ch / "change_clf_k2_s0"
+    if (best / "summary.csv").exists():
+        change_forecast(best, ch / "change_forecast.png")
+        outs.append(ch / "change_forecast.png")
+        hist = sorted(d for d in ch.glob("change_clf_k*_s0") if (d / "summary.csv").exists())
+        if len(hist) > 1:
+            change_history(hist, ch / "change_history.png")
+            outs.append(ch / "change_history.png")
     md = r / "model_comparison"
     if any(md.glob("*/summary.csv")):
         model_comparison(md, md / "model_comparison.png")

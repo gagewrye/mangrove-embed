@@ -32,6 +32,37 @@ def main(argv=None):
     c.add_argument("--regions", nargs="*")
     c.add_argument("--workers", type=int)
 
+    tm = sub.add_parser("temporal-chips",
+                        help="pull matched multi-year embedding + label chips (change prediction)")
+    tm.add_argument("--project", help="Earth Engine Cloud project id")
+    tm.add_argument("--regions", nargs="*")
+    tm.add_argument("--workers", type=int)
+    tm.add_argument("--years", nargs="*", type=int, help="default: 2017-2025")
+    tm.add_argument("--n-change", type=int, default=100,
+                    help="extra chips per region centered on GMW change (default 100)")
+    tm.add_argument("--coastal-year", type=int, default=2020,
+                    help="GMW year that fixes the coastal label zone for all years")
+
+    ch = sub.add_parser("change", help="forecast next year's classes from prior embeddings")
+    ch.add_argument("--temporal", help="temporal chips dir (default: <data_dir>/temporal)")
+    ch.add_argument("--out", help="results dir (default: <results_dir>/change)")
+    ch.add_argument("--regions", nargs="*")
+    ch.add_argument("--methods", nargs="*", help="default: all (see `mangrove_embed.change`)")
+    ch.add_argument("--history", type=int, default=1, help="prior years of embeddings as input")
+    ch.add_argument("--test-year", type=int, help="default 2020 (gmw labels) / 2025 (classifier)")
+    ch.add_argument("--labels", choices=["gmw", "classifier"], default="gmw",
+                    help="targets: GMW-based labels, or our classifier's map for every year")
+    ch.add_argument("--px-per-chip", type=int, default=1000)
+    ch.add_argument("--hidden", nargs="*", type=int, default=[128, 64])
+    ch.add_argument("--dropout", type=float, default=0.1)
+    ch.add_argument("--epochs", type=int, default=10)
+    ch.add_argument("--aux-weight", type=float, default=1.0)
+    ch.add_argument("--no-pseudo", action="store_true",
+                    help="train on GMW transitions only (no pseudo-labeled years)")
+    ch.add_argument("--seed", type=int, default=0)
+    ch.add_argument("--device")
+    ch.add_argument("--tag")
+
     t = sub.add_parser("train-seg", help="train SegFormer on chips (needs the [seg] extra)")
     t.add_argument("--protocol", choices=["loro", "pooled"], default="loro")
     b = sub.add_parser("bench", help="multi-seed LORO comparison of models on the same splits")
@@ -79,7 +110,7 @@ def main(argv=None):
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "train-seg", "bench", "compare-pixel") else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "temporal-chips", "change", "train-seg", "bench", "compare-pixel") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -104,6 +135,18 @@ def main(argv=None):
     elif a.cmd == "chips":
         from .chips import extract_chips
         extract_chips(cfg, a.regions)
+    elif a.cmd == "change":
+        from .change import METHODS, ChangeConfig, run as run_change
+        run_change(ChangeConfig(
+            temporal_dir=a.temporal or f"{cfg.data_dir}/temporal",
+            out_dir=a.out or f"{cfg.results_dir}/change",
+            regions=tuple(a.regions) if a.regions else None,
+            methods=tuple(a.methods or METHODS), history=a.history, test_year=a.test_year,
+            px_per_chip=a.px_per_chip, hidden=tuple(a.hidden), dropout=a.dropout,
+            epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, seed=a.seed, device=a.device, tag=a.tag))
+    elif a.cmd == "temporal-chips":
+        from .temporal import extract_temporal
+        extract_temporal(cfg, a.regions, a.years, a.n_change, a.coastal_year)
     elif a.cmd == "train-seg":
         import os
         # Apple Metal: run any op MPS lacks on CPU instead of erroring (must precede torch import)

@@ -39,13 +39,15 @@ Jamaica is the hardest region: logreg 0.575 vs 0.77-0.79 for the nonlinear model
 - **Matched seeds:** 630 m vs 10 m receptive field differs by +0.025, -0.005, +0.014 and
   -0.031, a mean of about 0.
 - **Mekong sweep** (10 m to 1.27 km): flat (0.767-0.808), inside one config's seed spread.
+- **Regularized MLP + mean-pooled neighbourhood** (30 m to 310 m windows, pooled 10 regions,
+  seeds 0-2): +0.001 to +0.006 IoU in-region, -0.017 to 0.000 on Baja (`context/mlp_context.csv`).
 
 ## 3. Unseen region: Baja California north
 Mean IoU over seeds; training excludes `mexico_pacific`.
 
 | model | Baja IoU | AP |
 |---|---|---|
-| per-pixel FCN | 0.852 | 0.968 |
+| per-pixel FCN | 0.850 | 0.968 |
 | **MLP 128-64 + BatchNorm + dropout 0.1** | **0.849** | 0.969 |
 | logistic regression | 0.846 | 0.966 |
 | MLP 128-64, no regularization | 0.636-0.747 | 0.946 |
@@ -53,13 +55,14 @@ Mean IoU over seeds; training excludes `mexico_pacific`.
 Regularization matters: without it the MLP overfits its training regions.
 
 ## 4. Logreg vs regularized MLP (pooled, 10 regions, identical splits)
-| | logreg | MLP + BN + dropout |
-|---|---|---|
-| mean IoU | 0.898 | 0.898 |
-| Jamaica | 0.849 | 0.855 |
-| weakest (Rufiji) | 0.756 | 0.732 |
+| | logreg | MLP + BN + dropout | per-pixel FCN |
+|---|---|---|---|
+| mean IoU | 0.898 | 0.898 | 0.910 |
+| Jamaica | 0.849 | 0.855 | 0.853 |
+| weakest (Rufiji) | 0.756 | 0.732 | 0.762 (0.61-0.98 by seed) |
 
-When a region is in training, the two tie everywhere (all regions within 0.02). Logreg's Jamaica
+When a region is in training, logreg and the MLP tie everywhere (all regions within 0.02); the
+FCN is ~0.01 higher on average but less stable (Rufiji). Logreg's Jamaica
 weakness only appears when Jamaica is unseen (LORO).
 
 ## 5. Side probes
@@ -70,6 +73,31 @@ weakness only appears when Jamaica is unseen (LORO).
 - **kNN k sweep:** flat from k=5 to k=200 (0.755-0.763).
 - **Point diagnostics** (`point_diagnostics/`): an earlier probe on sampled points (Q1-Q4:
   geometry, false-positive sources, domain gap, mean-pooled context).
+
+## 6. Change prediction: forecasting next year's map
+Matched 10 m pixels for 2017-2025 (400 chips per region, 100 of them centred on GMW change).
+Targets are our classifier's maps (trained on GMW 2017-2020); forecast **2025** on held-out
+blocks from earlier years. 6.3% of pixels change class; 1.6% gain and 2.4% lose mangrove.
+Scored by how well each method ranks the pixels that change (AP; random = the change rate).
+
+![change forecast](change/change_forecast.png)
+
+- **Learned forecasters beat every baseline**, at about 8x random for any change and 22x for
+  mangrove gain / loss. The best: change AP 0.495, gain 0.370, loss 0.518, against 0.41 / 0.28 /
+  0.38 for persistence ranked by classifier uncertainty.
+- **Predicting the class directly is best.** The next-embedding aux loss adds nothing; predicting
+  the embedding first is worse. Giving this year's map adds nothing (it comes from the embedding).
+- **Overall accuracy does not move** (0.94 for all, as persistence), but the best model gets the
+  new class right on 35% of changed pixels.
+- **Caveat:** part of the change is classifier flicker on borderline pixels, not land-cover change.
+
+![change history](change/change_history.png)
+
+Two prior years beat one; three add nothing.
+
+With GMW-based labels instead (forecast 2020), every embedding-only method ranks mangrove
+change near random (gain / loss AP <= 0.05): about 70% of the label change is tidal flat <->
+water flicker in GWL, and GMW's yearly mangrove changes are barely visible in the embeddings.
 
 ## Conclusion
 - **Model choice:** use the regularized per-pixel MLP. It ties logistic regression where the
@@ -85,5 +113,7 @@ weakness only appears when Jamaica is unseen (LORO).
 | `generalization/` | Baja scores | `eval-seg`, `compare-pixel --test-chips` |
 | `calibration/` | calibration + kNN sweep | `scripts/calibration_probe.py`, `knn_k_sweep.py` |
 | `point_diagnostics/` | Q1-Q4 | `mangrove diagnose` |
+| `context/` | regularized MLP + spatial context sweep | `scripts/context_sweep.py` |
+| `change/` | change prediction, one folder per run (`clf` = classifier-map targets, `k` = prior years) | `mangrove temporal-chips`, `mangrove change` |
 
 Figures: `mangrove plots`. Model weights (`*.pt`) are not versioned.
