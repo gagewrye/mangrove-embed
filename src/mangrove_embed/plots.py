@@ -369,10 +369,72 @@ def change_transitions(run_dir, out):
     plt.close(fig)
 
 
+ROBUST_METHODS = [("classify_current", BASE_GREY), ("next_class", BLUE),
+                  ("next_class_emb_aux", ORANGE), ("next_embedding", "#1baf7a")]
+ROBUST_METRICS = [("change_ap", "changed_frac", "Any class change"),
+                  ("durable_ap", "durable_rate", "Durable change (still there next year)"),
+                  ("durable_gain_ap", "durable_gain_rate", "Durable mangrove gain"),
+                  ("durable_loss_ap", "durable_loss_rate", "Durable mangrove loss")]
+
+
+def change_robustness(run_dirs, out_png, out_csv):
+    """Seeds x test years: mean and min-max over seeds per method, metric and test year."""
+    rows = []
+    for d in run_dirs:
+        info = json.loads((Path(d) / "change.json").read_text())
+        s = pd.read_csv(Path(d) / "summary.csv")
+        s = s[s.region == "all"].assign(test_year=info["test_year"], seed=info["config"]["seed"])
+        rows.append(s)
+    df = pd.concat(rows, ignore_index=True)
+    cols = [c for m in ROBUST_METRICS for c in m[:2] if c in df]
+    agg = (df[df.method.isin([m for m, _ in ROBUST_METHODS])]
+           .groupby(["method", "test_year"])[cols].agg(["mean", "std", "min", "max", "count"]))
+    agg.columns = ["_".join(c) for c in agg.columns]
+    agg.reset_index().to_csv(out_csv, index=False)
+
+    metrics = [m for m in ROBUST_METRICS if m[0] in df and df[m[0]].notna().any()]
+    fig, axes = plt.subplots(1, len(metrics), figsize=(3.6 * len(metrics) + 1, 4.4),
+                             facecolor=SURFACE)
+    years = sorted(df.test_year.unique())
+    for ax, (col, rate, title) in zip(np.atleast_1d(axes), metrics):
+        _style(ax)
+        ax.grid(axis="x", visible=False)
+        for i, (m, c) in enumerate(ROBUST_METHODS):
+            g = df[(df.method == m) & df[col].notna()].groupby("test_year")[col]
+            if not len(g):
+                continue
+            x = np.array(g.mean().index) + (i - 1.5) * 0.12
+            ax.errorbar(x, g.mean().values, yerr=[g.mean() - g.min(), g.max() - g.mean()],
+                        fmt="o-", color=c, ms=6, lw=1.6, capsize=0, elinewidth=1.2,
+                        markeredgecolor=SURFACE, label=CHANGE_LABELS[m])
+        r = df[df.method == "next_class"].groupby("test_year")[rate].mean().dropna()
+        ax.plot(r.index, r.values, color=INK2, lw=1, ls=(0, (3, 3)), label="random")
+        ax.set_xticks(years, [str(y) for y in years])
+        ax.set_xlim(years[0] - 0.5, years[-1] + 0.5)
+        ax.set_ylim(0, None)
+        ax.set_title(title, loc="left", color=INK, fontsize=10)
+        ax.set_xlabel("forecast year", color=INK2, fontsize=9)
+    np.atleast_1d(axes)[0].set_ylabel("average precision", color=INK2, fontsize=9)
+    h, l = np.atleast_1d(axes)[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=len(l), frameon=False, fontsize=9, labelcolor=INK)
+    n = df.seed.nunique()
+    fig.suptitle(f"Forecast robustness: {n} seeds x {len(years)} forecast years (dot = mean, "
+                 "bar = seed range). Durable = change still present the next year, so it needs "
+                 "a later year.", x=0.01, ha="left", color=INK, fontsize=11)
+    fig.tight_layout(rect=(0, 0.08, 1, 0.92))
+    fig.savefig(out_png, dpi=150, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def run(results_dir="results"):
     r = Path(results_dir)
     outs = []
     ch = r / "change"
+    for mode in ("logreg", "model"):  # seeds x forecast years, per label source
+        rob = sorted(d for d in ch.glob(f"change_{mode}_k2_y*_s*") if (d / "summary.csv").exists())
+        if len(rob) > 1:
+            change_robustness(rob, ch / f"robustness_{mode}.png", ch / f"robustness_{mode}.csv")
+            outs.append(ch / f"robustness_{mode}.png")
     for d in sorted(ch.glob("change_*")):  # per-run figures where per-class outputs exist
         if (d / "classes.csv").exists():
             change_forecast(d, d / "forecast.png")

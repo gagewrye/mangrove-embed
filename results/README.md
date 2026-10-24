@@ -113,6 +113,23 @@ With GMW-based labels instead (forecast 2020), every embedding-only method ranks
 change near random (gain / loss AP <= 0.05): about 70% of the label change is tidal flat <->
 water flicker in GWL, and GMW's yearly mangrove changes are barely visible in the embeddings.
 
+**Robustness (logreg labels, tidal flat and water merged, 3 seeds x forecast years 2023-2025,
+epochs selected on validation change AP;** `change/robustness_logreg.png`**).** With the
+benchmarked logistic regression as the frozen label source, about 4.8% of pixels change class
+per year. "Durable" = the new class is still there the following year (2.9% of pixels).
+
+| average precision | random | persistence (uncertainty-ranked) | next_class | next_embedding |
+|---|---|---|---|---|
+| any change, 2023 / 2024 / 2025 | 0.05 | 0.41 / 0.43 / 0.42 | 0.46 / 0.50 / 0.49 | 0.42 / 0.45 / 0.43 |
+| durable change, 2023 / 2024 | 0.03 | 0.29 / 0.30 | 0.38 / 0.42 | 0.33 / 0.34 |
+| durable mangrove gain, 2023 / 2024 | 0.02 / 0.01 | 0.36 / 0.27 | 0.39 / 0.34 | 0.34 / 0.31 |
+| durable mangrove loss, 2023 / 2024 | 0.01 / 0.02 | 0.21 / 0.37 | 0.31 / 0.42 | 0.23 / 0.42 |
+
+The forecaster beats persistence in every year, by more on durable change (+0.09 to +0.12)
+than on any change (+0.05 to +0.07), so it is not just predicting tide or classifier noise.
+Seed spread is large for the mangrove-specific scores (up to ±0.09), and the gain/loss margins
+over persistence are within it in some years. The auxiliary embedding loss still adds nothing.
+
 ## Conclusion
 - **Model choice:** use the regularized per-pixel MLP. It ties logistic regression where the
   region is in training and is safer on a novel one.

@@ -1,0 +1,710 @@
+{
+  "config": {
+    "temporal_dir": "data/temporal",
+    "out_dir": "results/change",
+    "regions": null,
+    "methods": [
+      "persistence",
+      "classify_current",
+      "classify_true_next",
+      "transition_table",
+      "extrapolate_embedding",
+      "next_class",
+      "next_class_emb_aux",
+      "next_embedding",
+      "next_class_given_map",
+      "next_class_given_probs"
+    ],
+    "history": 2,
+    "test_year": 2023,
+    "px_per_chip": 1000,
+    "hidden": [
+      128,
+      64
+    ],
+    "dropout": 0.1,
+    "epochs": 10,
+    "batch_size": 8192,
+    "lr": 0.002,
+    "weight_decay": 0.0001,
+    "aux_weight": 1.0,
+    "pseudo": true,
+    "labels": "logreg",
+    "label_run": null,
+    "block_deg": 0.1,
+    "val_frac": 0.1,
+    "seed": 0,
+    "device": null,
+    "tag": null,
+    "select": "change_ap",
+    "merge_tide": true
+  },
+  "test_year": 2023,
+  "years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "chips": 4395,
+  "px": {
+    "train": 2961000,
+    "val": 354000,
+    "test": 1080000
+  },
+  "methods": {
+    "persistence": {
+      "test": {
+        "method": "persistence",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9538081234444248,
+        "miou": 0.7173902866680809,
+        "acc": 0.9511944444444445,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.0,
+        "stable_acc": 1.0,
+        "change_iou": 0.0,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.0,
+        "loss_iou": 0.0,
+        "notide_rate": 0.04880555555555555,
+        "durable_rate": 0.030855747704946333,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966
+      }
+    },
+    "classify_current": {
+      "test": {
+        "method": "classify_current",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9538081234444248,
+        "miou": 0.7173902866680809,
+        "acc": 0.9511944444444445,
+        "mangrove_ap": 0.9973967171275455,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.0,
+        "stable_acc": 1.0,
+        "change_iou": 0.0,
+        "change_ap": 0.40220586644857387,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.0,
+        "loss_iou": 0.0,
+        "gain_ap": 0.44015222369228957,
+        "loss_ap": 0.3053702907987797,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.40220586644857387,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.29032361840051796,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.29032361840051796,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.4059000273353288,
+        "durable_loss_ap": 0.24545271326590312
+      }
+    },
+    "classify_true_next": {
+      "test": {
+        "method": "classify_true_next",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 1.0,
+        "miou": 1.0,
+        "acc": 1.0,
+        "mangrove_ap": 0.9998479003117674,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 1.0,
+        "stable_acc": 1.0,
+        "change_iou": 1.0,
+        "change_ap": 0.9424915446235015,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 1.0,
+        "loss_iou": 1.0,
+        "gain_ap": 0.9445286682680488,
+        "loss_ap": 0.9462861277944826,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.9424915446235015,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.926700161217823,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.926700161217823,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.9552906826255662,
+        "durable_loss_ap": 0.9452138686157044
+      }
+    },
+    "transition_table": {
+      "test": {
+        "method": "transition_table",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9538081234444248,
+        "miou": 0.7174869753937567,
+        "acc": 0.9512046296296296,
+        "mangrove_ap": 0.9834110728428124,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.00020868905331056724,
+        "stable_acc": 1.0,
+        "change_iou": 0.00020868905331056724,
+        "change_ap": 0.23055872270762218,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.0,
+        "loss_iou": 0.0,
+        "gain_ap": 0.10812413446641361,
+        "loss_ap": 0.03558831300318041,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.23055872270762218,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.17740305059770758,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.17740305059770758,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.07289278837893406,
+        "durable_loss_ap": 0.019704345425722768
+      }
+    },
+    "extrapolate_embedding": {
+      "test": {
+        "method": "extrapolate_embedding",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9132223944149377,
+        "miou": 0.61255750257999,
+        "acc": 0.9187287037037037,
+        "mangrove_ap": 0.9929328610187248,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.18666287232024284,
+        "stable_acc": 0.9562908234286326,
+        "change_iou": 0.14887513830266771,
+        "change_ap": 0.23341465470258135,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.07874330881985092,
+        "loss_iou": 0.12627631413084583,
+        "gain_ap": 0.2062992853794523,
+        "loss_ap": 0.16297282840143298,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.23341465470258135,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.14432583378657157,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.14432583378657157,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.1457561771311704,
+        "durable_loss_ap": 0.0910118460221857
+      }
+    },
+    "next_class": {
+      "selected_on": "change AP",
+      "best_val": 0.6580725601975942,
+      "history": [
+        {
+          "epoch": 0,
+          "loss": 0.28168299542442443,
+          "val": 0.6227420001435432
+        },
+        {
+          "epoch": 1,
+          "loss": 0.09439362960900861,
+          "val": 0.6383592289129395
+        },
+        {
+          "epoch": 2,
+          "loss": 0.08900651767736188,
+          "val": 0.6420239469788711
+        },
+        {
+          "epoch": 3,
+          "loss": 0.08604809136527167,
+          "val": 0.6454469936063599
+        },
+        {
+          "epoch": 4,
+          "loss": 0.08389036344489469,
+          "val": 0.6484153731659037
+        },
+        {
+          "epoch": 5,
+          "loss": 0.08233592786782096,
+          "val": 0.654762113440019
+        },
+        {
+          "epoch": 6,
+          "loss": 0.0809115729121814,
+          "val": 0.6555627761017491
+        },
+        {
+          "epoch": 7,
+          "loss": 0.07981079099636068,
+          "val": 0.6565365591939991
+        },
+        {
+          "epoch": 8,
+          "loss": 0.07899470818399054,
+          "val": 0.6573630484954951
+        },
+        {
+          "epoch": 9,
+          "loss": 0.0787365501312459,
+          "val": 0.6580725601975942
+        }
+      ],
+      "params": 25675,
+      "test": {
+        "method": "next_class",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9555855428580032,
+        "miou": 0.7239163513235602,
+        "acc": 0.9523879629629629,
+        "mangrove_ap": 0.9981490539257287,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.26875355719977234,
+        "stable_acc": 0.9874650780208121,
+        "change_iou": 0.24928720630612775,
+        "change_ap": 0.49634095529286676,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.2279482008279376,
+        "loss_iou": 0.26286644951140065,
+        "gain_ap": 0.47650214801745266,
+        "loss_ap": 0.4461011565152532,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.49634169460617267,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.4287547148941625,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.4287561488379351,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.4515842434065368,
+        "durable_loss_ap": 0.4142686459854578
+      }
+    },
+    "next_class_emb_aux": {
+      "selected_on": "change AP",
+      "best_val": 0.6603177017227824,
+      "history": [
+        {
+          "epoch": 0,
+          "loss": 0.3076230081135822,
+          "val": 0.6253547795579278
+        },
+        {
+          "epoch": 1,
+          "loss": 0.11854706624531738,
+          "val": 0.6419425658844473
+        },
+        {
+          "epoch": 2,
+          "loss": 0.11221084385407772,
+          "val": 0.6476435225810327
+        },
+        {
+          "epoch": 3,
+          "loss": 0.10870970185521243,
+          "val": 0.6494219302868416
+        },
+        {
+          "epoch": 4,
+          "loss": 0.10627428726282767,
+          "val": 0.6510236452694672
+        },
+        {
+          "epoch": 5,
+          "loss": 0.10443553388491147,
+          "val": 0.6576470901734001
+        },
+        {
+          "epoch": 6,
+          "loss": 0.10289171776410012,
+          "val": 0.659240184979449
+        },
+        {
+          "epoch": 7,
+          "loss": 0.10164993759841784,
+          "val": 0.6580124338792966
+        },
+        {
+          "epoch": 8,
+          "loss": 0.10080396361660611,
+          "val": 0.6593583852268603
+        },
+        {
+          "epoch": 9,
+          "loss": 0.10048594910137881,
+          "val": 0.6603177017227824
+        }
+      ],
+      "params": 29835,
+      "cos_next": 0.9723874926567078,
+      "test": {
+        "method": "next_class_emb_aux",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9556100884109736,
+        "miou": 0.7247276582952816,
+        "acc": 0.9520842592592592,
+        "mangrove_ap": 0.9981489791249321,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.2600645038892051,
+        "stable_acc": 0.9875916245656047,
+        "change_iou": 0.24400751638480223,
+        "change_ap": 0.4844475972588588,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.2266766179763301,
+        "loss_iou": 0.2543513957307061,
+        "gain_ap": 0.4745540296059988,
+        "loss_ap": 0.44097073867859904,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.48444805856513223,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.41735423857464954,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.4173556490902787,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.44958883647694453,
+        "durable_loss_ap": 0.4166991944367461
+      }
+    },
+    "next_embedding": {
+      "selected_on": "change AP",
+      "best_val": 0.5781343689526908,
+      "history": [
+        {
+          "epoch": 0,
+          "loss": 0.016646798942108507,
+          "val": 0.5734304194154973
+        },
+        {
+          "epoch": 1,
+          "loss": 0.014784900370407793,
+          "val": 0.5745684749785378
+        },
+        {
+          "epoch": 2,
+          "loss": 0.014647854698155728,
+          "val": 0.5778851094931444
+        },
+        {
+          "epoch": 3,
+          "loss": 0.014568795852378207,
+          "val": 0.5781343689526908
+        },
+        {
+          "epoch": 4,
+          "loss": 0.014517702709545017,
+          "val": 0.5749421608098751
+        },
+        {
+          "epoch": 5,
+          "loss": 0.014474061372613471,
+          "val": 0.5747519487599356
+        },
+        {
+          "epoch": 6,
+          "loss": 0.014433969023485555,
+          "val": 0.5761618931256517
+        },
+        {
+          "epoch": 7,
+          "loss": 0.014404959229974479,
+          "val": 0.576031850409809
+        },
+        {
+          "epoch": 8,
+          "loss": 0.01438344976268218,
+          "val": 0.5762749620929659
+        },
+        {
+          "epoch": 9,
+          "loss": 0.014371854329765427,
+          "val": 0.5768112218260933
+        }
+      ],
+      "params": 29120,
+      "cos_next": 0.9734148979187012,
+      "test": {
+        "method": "next_embedding",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.953449518689273,
+        "miou": 0.7175486388264988,
+        "acc": 0.9509601851851852,
+        "mangrove_ap": 0.9971273669989745,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.1808006070954278,
+        "stable_acc": 0.9904768857868762,
+        "change_iou": 0.18110828412782232,
+        "change_ap": 0.4287740178552537,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.19079751341586526,
+        "loss_iou": 0.16062812527414685,
+        "gain_ap": 0.42255340327494023,
+        "loss_ap": 0.3465343183603709,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.4287740178552537,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.3503906173567861,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.3503906173567861,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.41110721296999353,
+        "durable_loss_ap": 0.31199462366218794
+      }
+    },
+    "next_class_given_map": {
+      "selected_on": "change AP",
+      "best_val": 0.6644547536677549,
+      "history": [
+        {
+          "epoch": 0,
+          "loss": 0.13468318236612944,
+          "val": 0.6218410708700913
+        },
+        {
+          "epoch": 1,
+          "loss": 0.09034177798938606,
+          "val": 0.6402315124488112
+        },
+        {
+          "epoch": 2,
+          "loss": 0.08620800361368391,
+          "val": 0.6449542369975637
+        },
+        {
+          "epoch": 3,
+          "loss": 0.08382765780013383,
+          "val": 0.6508122389262707
+        },
+        {
+          "epoch": 4,
+          "loss": 0.08193844807941097,
+          "val": 0.6534338942324418
+        },
+        {
+          "epoch": 5,
+          "loss": 0.08047566962624594,
+          "val": 0.6589632908806996
+        },
+        {
+          "epoch": 6,
+          "loss": 0.079205432676033,
+          "val": 0.6615291751844599
+        },
+        {
+          "epoch": 7,
+          "loss": 0.07827663709381794,
+          "val": 0.6602246491269149
+        },
+        {
+          "epoch": 8,
+          "loss": 0.07761733356455378,
+          "val": 0.6644547536677549
+        },
+        {
+          "epoch": 9,
+          "loss": 0.0772395733165121,
+          "val": 0.6637325785374487
+        }
+      ],
+      "params": 27084,
+      "test": {
+        "method": "next_class_given_map",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9556124875239418,
+        "miou": 0.7265571237661883,
+        "acc": 0.9525509259259259,
+        "mangrove_ap": 0.9980981178441093,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.22327831531018782,
+        "stable_acc": 0.9899697261727458,
+        "change_iou": 0.2146665820293903,
+        "change_ap": 0.4711394678352354,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.2110601046226113,
+        "loss_iou": 0.21619943222143365,
+        "gain_ap": 0.45504154077973025,
+        "loss_ap": 0.42764944109406416,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.4711398425731321,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.4031099858069429,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.40311042951704584,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.42927118456430047,
+        "durable_loss_ap": 0.40491524663926126
+      }
+    },
+    "next_class_given_probs": {
+      "selected_on": "change AP",
+      "best_val": 0.6724281073579352,
+      "history": [
+        {
+          "epoch": 0,
+          "loss": 0.1271598140008745,
+          "val": 0.6388888636262424
+        },
+        {
+          "epoch": 1,
+          "loss": 0.08564424647253456,
+          "val": 0.649095902261384
+        },
+        {
+          "epoch": 2,
+          "loss": 0.0818015481471331,
+          "val": 0.6528076494774809
+        },
+        {
+          "epoch": 3,
+          "loss": 0.07964764220182736,
+          "val": 0.6586920490497313
+        },
+        {
+          "epoch": 4,
+          "loss": 0.07799168827687918,
+          "val": 0.6644704528122597
+        },
+        {
+          "epoch": 5,
+          "loss": 0.0766590660091833,
+          "val": 0.6686173718660279
+        },
+        {
+          "epoch": 6,
+          "loss": 0.07547293401012063,
+          "val": 0.6683052842740649
+        },
+        {
+          "epoch": 7,
+          "loss": 0.07460341738527267,
+          "val": 0.671321382851226
+        },
+        {
+          "epoch": 8,
+          "loss": 0.07394859274439777,
+          "val": 0.6724281073579352
+        },
+        {
+          "epoch": 9,
+          "loss": 0.07358598084833846,
+          "val": 0.6720362723469547
+        }
+      ],
+      "params": 27084,
+      "test": {
+        "method": "next_class_given_probs",
+        "region": "all",
+        "px": 1080000,
+        "mangrove_iou": 0.9555791134652284,
+        "miou": 0.721879916606494,
+        "acc": 0.9523592592592592,
+        "mangrove_ap": 0.9981575145986527,
+        "changed_px": 52710,
+        "changed_frac": 0.04880555555555555,
+        "changed_acc": 0.2374691709353064,
+        "stable_acc": 0.989040095786,
+        "change_iou": 0.22715690412543577,
+        "change_ap": 0.47420090310122576,
+        "gain_px": 15432,
+        "loss_px": 9103,
+        "gain_iou": 0.20291522823168393,
+        "loss_iou": 0.24227192762000502,
+        "gain_ap": 0.4653362490095937,
+        "loss_ap": 0.4316792285812046,
+        "gain_rate": 0.02734822197569283,
+        "loss_rate": 0.017650982506078855,
+        "notide_rate": 0.04880555555555555,
+        "notide_ap": 0.47420058876993326,
+        "durable_rate": 0.030855747704946333,
+        "durable_ap": 0.402520857267863,
+        "durable_notide_rate": 0.030855747704946333,
+        "durable_notide_ap": 0.4025197891230806,
+        "durable_gain_rate": 0.018964851570096666,
+        "durable_loss_rate": 0.010616047104314966,
+        "durable_gain_ap": 0.44278875456080885,
+        "durable_loss_ap": 0.3960178731864198
+      }
+    }
+  },
+  "readout": {
+    "val_mangrove_iou_gmw": 0.9139976136154713,
+    "label_model": "logreg",
+    "fit_px": 330000,
+    "classes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "fit_seconds": 6.4
+  },
+  "pairs": {
+    "train": 11844000,
+    "val": 1416000,
+    "test": 1080000,
+    "train_gmw_targets": [
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "train_pseudo_targets": []
+  },
+  "cos_persist": 0.9713613390922546
+}

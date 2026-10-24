@@ -62,9 +62,31 @@ def test_change_end_to_end(tmp_path):
     assert set(allr.index) == set(METHODS)
     assert allr.loc["persistence", "changed_acc"] == 0
     assert (tmp_path / "out" / "change_k2_s0" / "change.json").exists()
+    tr = pd.read_csv(tmp_path / "out" / "change_k2_s0" / "transitions.csv")   # tide merged
+    assert "water" not in set(tr.src) | set(tr.dst) and "tidal_flat_water" in set(tr.src) | set(tr.dst)
 
     # classifier maps as targets: forecast 2025; classifying the true 2025 embedding is exact
     s = run(ChangeConfig(**{**cc.__dict__, "labels": "classifier"}))
     allr = s[s.region == "all"].set_index("method")
     assert allr.loc["classify_true_next", "acc"] == 1.0
     assert (tmp_path / "out" / "change_clf_k2_s0" / "change.json").exists()
+
+    # logistic regression labels (frozen linear readout)
+    s = run(ChangeConfig(**{**cc.__dict__, "labels": "logreg"}))
+    assert s[s.region == "all"].set_index("method").loc["classify_true_next", "acc"] == 1.0
+    assert (tmp_path / "out" / "change_logreg_k2_y2025_s0" / "change.json").exists()
+
+
+def test_score_durable_and_tide():
+    from mangrove_embed.change import score
+    # prev -> tgt -> nxt: durable gain, reverting gain, tidal flip, stable
+    prev = np.array([1, 1, 2, 0])
+    tgt = np.array([0, 0, 3, 0])
+    nxt = np.array([0, 1, 3, 0])
+    probs = np.eye(11)[[0, 1, 2, 0]] * 0.9 + 0.01           # forecaster: only pixel 0 changes
+    p_change = 1 - probs[np.arange(4), prev]
+    s = score(probs.argmax(1), tgt, prev, probs[:, 0], p_change, probs, nxt)
+    assert s["notide_rate"] == 0.5                         # the tidal flip is not change
+    assert abs(s["durable_rate"] - 2 / 3) < 1e-9          # reverting gain left out; tidal flip kept
+    assert abs(s["durable_notide_rate"] - 1 / 3) < 1e-9 and s["durable_notide_ap"] == 1.0
+    assert s["durable_gain_ap"] == 1.0

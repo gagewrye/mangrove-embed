@@ -41,7 +41,11 @@ included. Training / val targets are the years before test_year (default 2025), 
 on test blocks. GMW/GWL label noise drops out; persistence = classify_current, and
 classify_true_next is exact by construction (kept as a check). `pseudo` is ignored.
 labels="model": as "classifier", but the readout is a saved train-seg per-pixel MLP (label_run),
-e.g. the regularized MLP, frozen.
+e.g. the regularized MLP, frozen. labels="logreg": as "classifier", with the benchmarked logistic
+regression (fit on GMW train-block pixels) as the frozen readout.
+
+merge_tide (default on): water is folded into tidal flat ("tidal_flat_water") in the labels and
+the readout, because flats and open water swap with tide stage between annual composites.
 
 Per-class outputs (classes.csv, transitions.csv): for every class c, enter_ap ranks the pixels
 not c this year by P(c next year) and exit_ap ranks the pixels in c by 1 - P(c); transitions
@@ -71,6 +75,7 @@ log = logging.getLogger(__name__)
 IGNORE = 255
 N_CLASSES = len(CLASS_NAMES)
 MANGROVE = 0  # class 1 -> index 0
+TIDAL_FLAT, WATER = 2, 3  # merged for tide-free change: flats flip with tide stage
 METHODS = ("persistence", "classify_current", "classify_true_next", "transition_table", "extrapolate_embedding", "next_class", "next_class_emb_aux", "next_embedding",
            "next_class_given_map", "next_class_given_probs")
 TRAINED = ("next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map", "next_class_given_probs")
@@ -102,6 +107,9 @@ class ChangeConfig:
     seed: int = 0
     device: str | None = None
     tag: str | None = None
+    select: str = "change_ap"     # forecaster epoch selection on val: change_ap | mangrove_iou
+    merge_tide: bool = True       # water -> tidal flat everywhere (labels and readout), so tide-stage
+                                  # flips between the two are not change
 
 
 # ------------------------------------------------------------------ data
@@ -179,6 +187,30 @@ class PixelReadout(nn.Module):
         return self.model(e[:, :, None, None]).flatten(1)
 
 
+def fit_logreg_readout(x, y, pairs_tr, cc, device, n=330_000):
+    """The benchmarked logistic regression (pixel.make("logreg"): multinomial, raw embeddings)
+    fit on a random sample of GMW-labeled train-block pixel-years, as a frozen nn.Linear."""
+    from .pixel import make
+    rng = np.random.default_rng(cc.seed)
+    pick = pairs_tr[rng.choice(len(pairs_tr), min(n, len(pairs_tr)), replace=False)]
+    t0 = time.time()
+    lr = make("logreg", cc.seed).fit(x[pick[:, 0], pick[:, 1]].astype(np.float32),
+                                     y[pick[:, 0], pick[:, 1]])
+    lin = nn.Linear(64, N_CLASSES)
+    with torch.no_grad():
+        lin.weight.zero_()
+        lin.bias.fill_(-1e4)                      # classes absent from the sample: never chosen
+        for row, c in enumerate(lr.classes_):
+            lin.weight[int(c)] = torch.from_numpy(lr.coef_[row]).float()
+            lin.bias[int(c)] = float(lr.intercept_[row])
+    lin = lin.to(device).eval()
+    for prm in lin.parameters():
+        prm.requires_grad_(False)
+    log.info("logreg labels: %d px, %d classes, %.0fs", len(pick), len(lr.classes_), time.time() - t0)
+    return lin, dict(label_model="logreg", fit_px=int(len(pick)), classes=[int(c) for c in lr.classes_],
+                     fit_seconds=round(time.time() - t0, 1))
+
+
 class Forecaster(nn.Module):
     """E_{t-k+1..t} [B, k, 64] -> (class logits | None, next embedding | None). The embedding
     head is a residual on E_t, renormalized (AlphaEarth embeddings are unit vectors). With
@@ -221,7 +253,7 @@ def predict(fn, n, bs):
                  for i in range(len(outs[0])))
 
 
-def fit_model(model, train_n, loss_fn, val_fn, cc, device, name):
+def fit_model(model, train_n, loss_fn, val_fn, cc, device, name, metric="mangrove IoU"):
     """AdamW, warmup + cosine, best epoch by val_fn() (higher is better)."""
     model.to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cc.lr, weight_decay=cc.weight_decay)
@@ -243,13 +275,13 @@ def fit_model(model, train_n, loss_fn, val_fn, cc, device, name):
         model.eval()
         v = val_fn()
         hist.append(dict(epoch=ep, loss=tot / max(n, 1), val=v))
-        log.info("%s ep %02d loss %.4f val mangrove IoU %.3f (%.0fs)", name, ep, tot / max(n, 1), v,
+        log.info("%s ep %02d loss %.4f val %s %.3f (%.0fs)", name, ep, tot / max(n, 1), metric, v,
                  time.time() - t0)
-        if v > best:
+        if v > best or best_state is None:  # NaN val score: keep the latest epoch
             best, best_state = v, {k: t.detach().clone() for k, t in model.state_dict().items()}
     model.load_state_dict(best_state)
     model.eval()
-    return dict(best_val_mangrove_iou=best, history=hist)
+    return dict(selected_on=metric, best_val=best, history=hist)
 
 
 # ------------------------------------------------------------------ metrics
@@ -257,9 +289,23 @@ def _iou(t, p):
     return float((t & p).sum() / max((t | p).sum(), 1))
 
 
-def score(pred, tgt, prev, p_mangrove=None, p_change=None):
+def _merge_tide(a):
+    a = np.asarray(a).copy()
+    a[a == WATER] = TIDAL_FLAT
+    return a
+
+
+def _ap(pos, score):
+    return float(average_precision_score(pos, score)) if pos.any() and (~pos).any() else float("nan")
+
+
+def score(pred, tgt, prev, p_mangrove=None, p_change=None, probs=None, nxt=None):
     """Next-year map metrics + change metrics vs this year's true map (numpy, class indices),
-    on pixels labeled in both years (so every method is scored on the same pixels)."""
+    on pixels labeled in both years (so every method is scored on the same pixels).
+    probs (all class probabilities) adds notide_* scores: tidal flat and water merged, so tidal
+    flips are not change. nxt (the true map the year after) adds durable_* scores: positives are
+    changes still present a year later, negatives are pixels that did not change; changes that
+    revert are left out. *_rate = share of positives = the AP of a random ranking."""
     v = (tgt != IGNORE) & (prev != IGNORE)
     t, p = tgt[v].astype(int), pred[v].astype(int)
     cm = np.bincount(t * N_CLASSES + p, minlength=N_CLASSES ** 2).reshape(N_CLASSES, N_CLASSES)
@@ -291,16 +337,68 @@ def score(pred, tgt, prev, p_mangrove=None, p_change=None):
             out["loss_ap"] = float(average_precision_score(~now[l], 1 - p_mangrove[l]))
         out["gain_rate"] = float(now[g].mean()) if g.any() else float("nan")   # = random AP
         out["loss_rate"] = float((~now[l]).mean()) if l.any() else float("nan")
+    mp, mt = _merge_tide(prev), _merge_tide(tgt)
+    ch_m = c & (mp != mt)
+    out["notide_rate"] = float(ch_m.sum() / max(c.sum(), 1))
+    if probs is not None:
+        pr = probs.copy()
+        pr[:, TIDAL_FLAT] += pr[:, WATER]
+        p_change_m = 1 - pr[np.arange(len(pr)), np.minimum(mp, N_CLASSES - 1)]
+        out["notide_ap"] = _ap(ch_m[c], p_change_m[c])
+    if nxt is not None:
+        d = c & (nxt != IGNORE)
+        ev = d & (~changed | (nxt == tgt))                  # durable changes + no change
+        dur = changed & (nxt == tgt)
+        out["durable_rate"] = float(dur[ev].mean()) if ev.any() else float("nan")
+        if p_change is not None:
+            out["durable_ap"] = _ap(dur[ev], p_change[ev])
+        mn = _merge_tide(nxt)
+        ev_m = d & (~ch_m | (mn == mt))
+        dur_m = ch_m & (mn == mt)
+        out["durable_notide_rate"] = float(dur_m[ev_m].mean()) if ev_m.any() else float("nan")
+        if probs is not None:
+            out["durable_notide_ap"] = _ap(dur_m[ev_m], p_change_m[ev_m])
+        stays = nxt == MANGROVE
+        gd = d & ~was & (~now | stays)                      # durable gains + no gain
+        ld = d & was & (now | ~stays)                       # durable losses + no loss
+        out["durable_gain_rate"] = float(now[gd].mean()) if gd.any() else float("nan")
+        out["durable_loss_rate"] = float((~now[ld]).mean()) if ld.any() else float("nan")
+        if p_mangrove is not None:
+            out["durable_gain_ap"] = _ap(now[gd], p_mangrove[gd])
+            out["durable_loss_ap"] = _ap(~now[ld], 1 - p_mangrove[ld])
     return out
 
 
-def class_scores(method, probs, tgt, prev):
+def class_names(merge_tide):
+    names = list(CLASS_NAMES)
+    if merge_tide:
+        names[TIDAL_FLAT] = "tidal_flat_water"
+    return names
+
+
+class TideMerged(nn.Module):
+    """Readout with water folded into tidal flat: P(tidal_flat_water) = P(tidal) + P(water)."""
+    def __init__(self, readout):
+        super().__init__()
+        self.readout = readout
+
+    def forward(self, e):
+        z = self.readout(e)
+        z = z.clone()
+        z[:, TIDAL_FLAT] = torch.logsumexp(z[:, [TIDAL_FLAT, WATER]], 1)
+        z[:, WATER] = -1e4
+        return z
+
+
+def class_scores(method, probs, tgt, prev, names=CLASS_NAMES):
     """Per class c: AP for ranking the pixels that become c (among those not c now) by P(c),
     and the pixels that stop being c (among those c now) by 1 - P(c). rate = random AP."""
     v = (tgt != IGNORE) & (prev != IGNORE)
     t, p0 = tgt[v], prev[v]
     rows = []
-    for c, name in enumerate(CLASS_NAMES):
+    for c, name in enumerate(names):
+        if not ((p0 == c).any() or (t == c).any()):
+            continue
         g, l = p0 != c, p0 == c
         row = dict(method=method, cls=name, now_px=int(l.sum()), enter_px=int((g & (t == c)).sum()),
                    exit_px=int((l & (t != c)).sum()))
@@ -316,7 +414,7 @@ def class_scores(method, probs, tgt, prev):
     return rows
 
 
-def transitions(method, pred, tgt, prev):
+def transitions(method, pred, tgt, prev, names=CLASS_NAMES):
     """Every from -> to pair (from != to): true count, predicted count, correctly predicted."""
     v = (tgt != IGNORE) & (prev != IGNORE)
     p0, t, q = prev[v].astype(int), tgt[v].astype(int), pred[v].astype(int)
@@ -324,7 +422,7 @@ def transitions(method, pred, tgt, prev):
     true = np.bincount(p0 * n + t, minlength=n * n).reshape(n, n)
     pr = np.bincount(p0 * n + q, minlength=n * n).reshape(n, n)
     hit = np.bincount((p0 * n + t)[q == t], minlength=n * n).reshape(n, n)
-    return [dict(method=method, src=CLASS_NAMES[a], dst=CLASS_NAMES[b], true_px=int(true[a, b]),
+    return [dict(method=method, src=names[a], dst=names[b], true_px=int(true[a, b]),
                  pred_px=int(pr[a, b]), hit_px=int(hit[a, b]))
             for a in range(n) for b in range(n) if a != b and (true[a, b] or pr[a, b])]
 
@@ -351,7 +449,7 @@ def run(cc: ChangeConfig):
     split = np.where(test_chip[chip], 2, np.where(val_chip[chip], 1, 0))
     rows = {s: np.flatnonzero(split == i) for i, s in enumerate(("train", "val", "test"))}
     col = {yr: j for j, yr in enumerate(years)}
-    clf = cc.labels in ("classifier", "model")
+    clf = cc.labels in ("classifier", "model", "logreg")
     test_year = cc.test_year or (years[-1] if clf else 2020)
     jt = col[test_year]
     gmw = [col[yr] for yr in LABEL_YEARS if yr in col and (clf or yr < test_year)]
@@ -378,27 +476,34 @@ def run(cc: ChangeConfig):
         readout = PixelReadout(model).eval()
         for prm in readout.parameters():
             prm.requires_grad_(False)
+    elif cc.labels == "logreg":
+        readout, lr_info = fit_logreg_readout(x, y, ro_tr.cpu().numpy(), cc, device)
     else:
         readout = Readout(cc.hidden, cc.dropout).to(device)
 
-    def classify(P, model=readout):
-        return lambda b: (model(X[P[b, 0], P[b, 1]].float()),)
+    def classify(P, model=None):  # model resolved at call time (readout may be wrapped later)
+        return lambda b: ((model or readout)(X[P[b, 0], P[b, 1]].float()),)
 
     def val_iou(logits, tgt):
         return _iou((tgt == MANGROVE).cpu().numpy(), (logits.argmax(1) == MANGROVE).cpu().numpy())
 
     res = dict(config=asdict(cc), test_year=test_year, years=years, chips=int(len(df)),
                px={s: int(len(r)) for s, r in rows.items()}, methods={})
-    if cc.labels == "model":
-        res["readout"] = dict(label_run=str(cc.label_run), checkpoint=js[0].name,
-                              val_mangrove_iou_gmw=val_iou(predict(classify(ro_va), len(ro_va), bs)[0],
+    if cc.labels in ("model", "logreg"):
+        res["readout"] = dict(val_mangrove_iou_gmw=val_iou(predict(classify(ro_va), len(ro_va), bs)[0],
                                                            Y[ro_va[:, 0], ro_va[:, 1]]))
+        res["readout"].update(dict(label_run=str(cc.label_run), checkpoint=js[0].name)
+                              if cc.labels == "model" else lr_info)
     else:
         res["readout"] = fit_model(
             readout, len(ro_tr),
             lambda b: F.cross_entropy(readout(X[ro_tr[b, 0], ro_tr[b, 1]].float()), Y[ro_tr[b, 0], ro_tr[b, 1]]),
             lambda: val_iou(predict(classify(ro_va), len(ro_va), bs)[0], Y[ro_va[:, 0], ro_va[:, 1]]),
             cc, device, "readout")
+    if cc.merge_tide:  # labels and readout: water folded into tidal flat
+        readout = TideMerged(readout).eval()
+        Y[Y == WATER] = TIDAL_FLAT
+        y = np.where(y == WATER, TIDAL_FLAT, y).astype(y.dtype)
 
     if clf:  # the readout's maps become the labels, every pixel and year
         all_rows = torch.arange(len(y), device=device)
@@ -427,6 +532,7 @@ def run(cc: ChangeConfig):
 
     tgt = y[te_np[:, 0], te_np[:, 1]]
     prev = y[te_np[:, 0], te_np[:, 1] - 1]
+    nxt = y[te_np[:, 0], jt + 1] if jt + 1 < len(years) else None   # for durable change
     region = df.region.values[chip[te_np[:, 0]]]
     e_now, e_next = (X[te[:, 0], te[:, 1] - 1].float(), X[te[:, 0], te[:, 1]].float())
     cos_persist = float((e_now * e_next).sum(1).mean())
@@ -472,6 +578,15 @@ def run(cc: ChangeConfig):
             out[sel] = t[prev[sel]]
         return out
 
+    va_prev, va_tgt = Y[va[:, 0], va[:, 1] - 1], Y[va[:, 0], va[:, 1]]
+    va_ok = ((va_prev != IGNORE) & (va_tgt != IGNORE)).cpu().numpy()
+    va_changed = (va_prev != va_tgt).cpu().numpy()[va_ok]
+
+    def val_change_ap(logits):
+        """AP of P(change) = 1 - P(this year's class) for the val pixels that change class."""
+        stay = logits.float().softmax(1).gather(1, va_prev.clamp(max=N_CLASSES - 1)[:, None])[:, 0]
+        return _ap(va_changed, (1 - stay).cpu().numpy()[va_ok])
+
     preds = {}
     for m in cc.methods:
         info = {}
@@ -514,9 +629,12 @@ def run(cc: ChangeConfig):
                 logits, e = predict(fwd(va), len(va), bs)
                 if m == "next_embedding":
                     logits = predict(lambda b: (readout(e[b]),), len(e), bs)[0]
-                return val_iou(logits, Y[va[:, 0], va[:, 1]])
+                if cc.select == "mangrove_iou":
+                    return val_iou(logits, Y[va[:, 0], va[:, 1]])
+                return val_change_ap(logits)
 
-            info = fit_model(net, len(tr), loss_fn, val_fn, cc, device, m)
+            info = fit_model(net, len(tr), loss_fn, val_fn, cc, device, m,
+                             "change AP" if cc.select == "change_ap" else "mangrove IoU")
             info["params"] = sum(p.numel() for p in net.parameters())
             logits, e = predict(fwd(te), len(te), bs)
             if e is not None:
@@ -529,18 +647,20 @@ def run(cc: ChangeConfig):
     out_rows = []
     cls_rows, tr_rows_out = [], []
     for m, (pred, pm, pc, probs) in preds.items():
-        cls_rows += class_scores(m, probs, tgt, prev)
-        tr_rows_out += transitions(m, pred, tgt, prev)
+        cls_rows += class_scores(m, probs, tgt, prev, class_names(cc.merge_tide))
+        tr_rows_out += transitions(m, pred, tgt, prev, class_names(cc.merge_tide))
         for r in ["all"] + sorted(set(region)):
             sel = slice(None) if r == "all" else region == r
             s = score(pred[sel], tgt[sel], prev[sel], None if pm is None else pm[sel],
-                      None if pc is None else pc[sel])
+                      None if pc is None else pc[sel], None if probs is None else probs[sel],
+                      None if nxt is None else nxt[sel])
             out_rows.append(dict(method=m, region=r, **s))
         res["methods"][m]["test"] = out_rows[-1 - len(set(region))]
     summary = pd.DataFrame(out_rows)
     res["cos_persist"] = cos_persist
-    mode = {"classifier": "clf", "model": "model"}.get(cc.labels)
-    folder = "_".join(v for v in ("change", mode, f"k{k}", cc.tag, f"s{cc.seed}") if v)
+    mode = {"classifier": "clf", "model": "model", "logreg": "logreg"}.get(cc.labels)
+    yr = f"y{test_year}" if cc.labels in ("model", "logreg") else None
+    folder = "_".join(v for v in ("change", mode, f"k{k}", yr, cc.tag, f"s{cc.seed}") if v)
     run_dir = Path(cc.out_dir) / folder
     run_dir.mkdir(parents=True, exist_ok=True)
     summary.to_csv(run_dir / "summary.csv", index=False)
