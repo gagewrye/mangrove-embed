@@ -27,6 +27,7 @@ from sklearn.preprocessing import StandardScaler
 
 from . import CLASS_NAMES, MANGROVE
 from .thresholds import tuned_metrics
+from .wb import log_run, metric_summary
 
 log = logging.getLogger(__name__)
 IGNORE = 255
@@ -131,7 +132,8 @@ def metrics(y, proba, classes, val_t=None, val_p=None):
 def run(chips_dir="data/chips", out_dir="results/model_comparison",
         models=("knn", "logreg", "mlp"),
         holdout="all", n_train_per_region=30_000, n_val=30_000, n_test=100_000,
-        block_deg=0.1, val_frac=0.15, seed=0, regions=None):
+        block_deg=0.1, val_frac=0.15, seed=0, regions=None, wandb=None):
+    """wandb: None, or dict(project=, entity=) to log one W&B run per (model, held-out region)."""
     df = load_index(chips_dir, block_deg)
     if regions:
         df = df[df.region.isin(regions)].reset_index(drop=True)
@@ -173,6 +175,14 @@ def run(chips_dir="data/chips", out_dir="results/model_comparison",
             row = dict(protocol="loro", region=r,
                        **{k: v for k, v in res.items() if not isinstance(v, dict)})
             rows[name].append(row)
+            if wandb:
+                summ = metric_summary({r: res})
+                # region-agnostic keys too, as train-seg logs for a single held-out region
+                summ.update({f"test/{k}": v for k, v in res.items() if not isinstance(v, dict)})
+                log_run(wandb["project"], wandb.get("entity"), folder[name],
+                        f"{folder[name]}/holdout_{r}", "loro",
+                        dict(info, holdout=r, seed=seed, n_train_per_region=n_train_per_region,
+                             block_deg=block_deg, val_frac=val_frac), summ, tags=["pixel", name])
             print(f"[{folder[name]}] {r}: IoU {res['mangrove_iou']:.3f} F1 {res['mangrove_f1']:.3f} "
                   f"AP {res['mangrove_ap']:.3f} | tuned@{res['threshold']:.2f}: IoU "
                   f"{res['mangrove_iou_tuned']:.3f} ({res['fit_seconds']}s)")
@@ -184,3 +194,66 @@ def run(chips_dir="data/chips", out_dir="results/model_comparison",
             new = pd.concat([prev[~prev.region.isin(new.region)], new], ignore_index=True)
         new.to_csv(path, index=False)
     return {n: pd.DataFrame(r) for n, r in rows.items()}
+
+
+def run_external(chips_dir, test_chips_dir, out_dir="results/generalization",
+                 models=("logreg", "mlp"), n_train_per_region=30_000, n_val=30_000,
+                 n_test=100_000, block_deg=0.1, val_frac=0.15, seed=0, regions=None, wandb=None):
+    """Train on every region in chips_dir (minus validation blocks), test on each region in
+    test_chips_dir. Writes <out_dir>/<test regions>_pixel.csv, one row per (model, seed, test
+    region); rerunning replaces matching rows, so seeds accumulate. wandb: None, or
+    dict(project=, entity=) to log one W&B run per (model, seed)."""
+    df = load_index(chips_dir, block_deg)
+    if regions:
+        df = df[df.region.isin(regions)].reset_index(drop=True)
+    te = load_index(test_chips_dir, block_deg)
+    train_regions = sorted(df.region.unique())
+    val = split_val_blocks(df, val_frac, seed)
+    Xs, Ys = [], []
+    for g in train_regions:
+        X, Y = sample_pixels(list(df.path[(df.region == g).values & ~val]), n_train_per_region, seed)
+        Xs.append(X); Ys.append(Y)
+    Xtr, ytr = np.concatenate(Xs), np.concatenate(Ys)
+    Xva, yva = sample_pixels(list(df.path[val]), n_val, seed + 1)
+    tests = {r: sample_pixels(list(g.path), n_test, seed + 2) for r, g in te.groupby("region")}
+    log.info("train %d px from %d regions, val %d px, test %s", len(ytr), len(train_regions),
+             len(yva), {r: len(t[1]) for r, t in tests.items()})
+    rows = []
+    for name in models:
+        t0 = time.time()
+        m = make(name, seed).fit(Xtr, ytr)
+        cl = list(m.classes_)
+        pv = m.predict_proba(Xva)
+        vt = yva == MANGROVE
+        vp = pv[:, cl.index(MANGROVE)] if MANGROVE in cl else np.zeros(len(yva))
+        scored = {}
+        for r, (Xte, yte) in tests.items():
+            res = metrics(yte, m.predict_proba(Xte), cl, vt, vp)
+            scored[r] = res
+            rows.append(dict(run=f"pixel_{name}", split=f"all_{len(train_regions)}", model=name,
+                             seed=seed, train_regions=" ".join(train_regions), test_region=r,
+                             params=n_params(m), fit_seconds=round(time.time() - t0, 1),
+                             **{k: v for k, v in res.items() if not isinstance(v, dict)}))
+            print(f"[pixel_{name} s{seed}, {len(train_regions)} regions] -> {r}: IoU "
+                  f"{res['mangrove_iou']:.3f} AP {res['mangrove_ap']:.3f} | tuned@"
+                  f"{res['threshold']:.2f}: IoU {res['mangrove_iou_tuned']:.3f}")
+        if wandb:
+            split = f"all_{len(train_regions)}"
+            log_run(wandb["project"], wandb.get("entity"), f"pixel_{name}_{split}",
+                    f"pixel_{name} {split} s{seed}", "generalization",
+                    dict(model=name, seed=seed, params=n_params(m), train_regions=train_regions,
+                         train_px=int(len(ytr)), val_px=int(len(yva)),
+                         n_train_per_region=n_train_per_region, block_deg=block_deg,
+                         val_frac=val_frac, receptive_field_m=10),
+                    metric_summary(scored), tags=["pixel", name, "generalization"])
+    new = pd.DataFrame(rows)
+    path = Path(out_dir) / f"{'_'.join(sorted(tests))}_pixel.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        prev = pd.read_csv(path)
+        key = ["run", "split", "seed", "test_region"]
+        prev = prev[~prev.set_index(key).index.isin(new.set_index(key).index)]
+        new = pd.concat([prev, new], ignore_index=True)
+    new.to_csv(path, index=False)
+    print(f"-> {path}")
+    return new

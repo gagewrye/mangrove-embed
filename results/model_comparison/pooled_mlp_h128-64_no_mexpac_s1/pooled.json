@@ -1,0 +1,622 @@
+{
+  "tag": "pooled",
+  "best_epoch": 32,
+  "val_mangrove_iou": 0.9530143613710823,
+  "history": [
+    {
+      "epoch": 0,
+      "loss": 2.6034059992542975,
+      "val_mangrove_iou": 0.63681086542433,
+      "val_miou": 0.12270428038334807
+    },
+    {
+      "epoch": 1,
+      "loss": 1.7946168299074525,
+      "val_mangrove_iou": 0.88180335463215,
+      "val_miou": 0.27112749368287103
+    },
+    {
+      "epoch": 2,
+      "loss": 1.1901631823292484,
+      "val_mangrove_iou": 0.8658962362152995,
+      "val_miou": 0.40318699067944147
+    },
+    {
+      "epoch": 3,
+      "loss": 1.0023388531472948,
+      "val_mangrove_iou": 0.9309077950150072,
+      "val_miou": 0.4078977802598114
+    },
+    {
+      "epoch": 4,
+      "loss": 0.921240116931774,
+      "val_mangrove_iou": 0.9385984649036332,
+      "val_miou": 0.4639650500847767
+    },
+    {
+      "epoch": 5,
+      "loss": 0.8762568548873618,
+      "val_mangrove_iou": 0.9418777864983435,
+      "val_miou": 0.46780288525451214
+    },
+    {
+      "epoch": 6,
+      "loss": 0.8567107262434783,
+      "val_mangrove_iou": 0.9446651130866703,
+      "val_miou": 0.46492801971442027
+    },
+    {
+      "epoch": 7,
+      "loss": 0.836612504058414,
+      "val_mangrove_iou": 0.9380549165081365,
+      "val_miou": 0.47599295920055096
+    },
+    {
+      "epoch": 8,
+      "loss": 0.823667452511964,
+      "val_mangrove_iou": 0.9418716282829992,
+      "val_miou": 0.48300620707621855
+    },
+    {
+      "epoch": 9,
+      "loss": 0.8159623658215558,
+      "val_mangrove_iou": 0.9415609329210396,
+      "val_miou": 0.4836727006320583
+    },
+    {
+      "epoch": 10,
+      "loss": 0.8101773513687982,
+      "val_mangrove_iou": 0.9483248197642721,
+      "val_miou": 0.49046439216814997
+    },
+    {
+      "epoch": 11,
+      "loss": 0.8005145306940432,
+      "val_mangrove_iou": 0.9444687607732122,
+      "val_miou": 0.49140295913187776
+    },
+    {
+      "epoch": 12,
+      "loss": 0.7900833973178157,
+      "val_mangrove_iou": 0.9489990558948768,
+      "val_miou": 0.5065792440388512
+    },
+    {
+      "epoch": 13,
+      "loss": 0.7899079512666773,
+      "val_mangrove_iou": 0.9477575449830975,
+      "val_miou": 0.491511316584619
+    },
+    {
+      "epoch": 14,
+      "loss": 0.7834428553228026,
+      "val_mangrove_iou": 0.9492878448766157,
+      "val_miou": 0.504848722089745
+    },
+    {
+      "epoch": 15,
+      "loss": 0.7809105864277592,
+      "val_mangrove_iou": 0.9504637100193766,
+      "val_miou": 0.5030537369439284
+    },
+    {
+      "epoch": 16,
+      "loss": 0.777166050893289,
+      "val_mangrove_iou": 0.9511658245635803,
+      "val_miou": 0.49916306019918405
+    },
+    {
+      "epoch": 17,
+      "loss": 0.7740175507686756,
+      "val_mangrove_iou": 0.9511912301045012,
+      "val_miou": 0.5112738728719114
+    },
+    {
+      "epoch": 18,
+      "loss": 0.7695445135787681,
+      "val_mangrove_iou": 0.9502688250883081,
+      "val_miou": 0.5131463752054443
+    },
+    {
+      "epoch": 19,
+      "loss": 0.7691881581589027,
+      "val_mangrove_iou": 0.9516854229330203,
+      "val_miou": 0.5171568415264116
+    },
+    {
+      "epoch": 20,
+      "loss": 0.7639244128156591,
+      "val_mangrove_iou": 0.949030043848543,
+      "val_miou": 0.5088848574875796
+    },
+    {
+      "epoch": 21,
+      "loss": 0.7618946212309378,
+      "val_mangrove_iou": 0.9505111757777887,
+      "val_miou": 0.5076750663897589
+    },
+    {
+      "epoch": 22,
+      "loss": 0.7592590301125138,
+      "val_mangrove_iou": 0.9445685391944127,
+      "val_miou": 0.5154978108074257
+    },
+    {
+      "epoch": 23,
+      "loss": 0.7576744150232386,
+      "val_mangrove_iou": 0.9485405495850215,
+      "val_miou": 0.5109835021048222
+    },
+    {
+      "epoch": 24,
+      "loss": 0.7563162905198556,
+      "val_mangrove_iou": 0.9529295100838527,
+      "val_miou": 0.5219996587223426
+    },
+    {
+      "epoch": 25,
+      "loss": 0.752889531188541,
+      "val_mangrove_iou": 0.9501597590781301,
+      "val_miou": 0.5222422328934059
+    },
+    {
+      "epoch": 26,
+      "loss": 0.750752020765234,
+      "val_mangrove_iou": 0.9521909985216014,
+      "val_miou": 0.5245978145719907
+    },
+    {
+      "epoch": 27,
+      "loss": 0.7533193089343884,
+      "val_mangrove_iou": 0.9515866570140302,
+      "val_miou": 0.5235583567765771
+    },
+    {
+      "epoch": 28,
+      "loss": 0.7495569838417901,
+      "val_mangrove_iou": 0.9529145954123871,
+      "val_miou": 0.5302399032292588
+    },
+    {
+      "epoch": 29,
+      "loss": 0.749352835725855,
+      "val_mangrove_iou": 0.9527314218332877,
+      "val_miou": 0.525217761247764
+    },
+    {
+      "epoch": 30,
+      "loss": 0.7494641330507067,
+      "val_mangrove_iou": 0.9521067111139583,
+      "val_miou": 0.5286543321212238
+    },
+    {
+      "epoch": 31,
+      "loss": 0.7497666200002034,
+      "val_mangrove_iou": 0.9523176845729121,
+      "val_miou": 0.5248957198415938
+    },
+    {
+      "epoch": 32,
+      "loss": 0.7487972096160606,
+      "val_mangrove_iou": 0.9530143613710823,
+      "val_miou": 0.5239806177724723
+    },
+    {
+      "epoch": 33,
+      "loss": 0.7451805300182767,
+      "val_mangrove_iou": 0.9523190769552788,
+      "val_miou": 0.52512067008366
+    },
+    {
+      "epoch": 34,
+      "loss": 0.745090263861197,
+      "val_mangrove_iou": 0.9523880082742108,
+      "val_miou": 0.5236676964250406
+    },
+    {
+      "epoch": 35,
+      "loss": 0.7458336587305422,
+      "val_mangrove_iou": 0.9522587854727246,
+      "val_miou": 0.5248693659142641
+    },
+    {
+      "epoch": 36,
+      "loss": 0.7451511391886958,
+      "val_mangrove_iou": 0.9524405639348195,
+      "val_miou": 0.5247370060423729
+    },
+    {
+      "epoch": 37,
+      "loss": 0.7458580440945095,
+      "val_mangrove_iou": 0.9525122848028258,
+      "val_miou": 0.5251607670122534
+    },
+    {
+      "epoch": 38,
+      "loss": 0.7469544587311922,
+      "val_mangrove_iou": 0.952571567984809,
+      "val_miou": 0.5254278306993128
+    },
+    {
+      "epoch": 39,
+      "loss": 0.7456622887540747,
+      "val_mangrove_iou": 0.9525586924289794,
+      "val_miou": 0.5254313463909795
+    }
+  ],
+  "train_chips": 2167,
+  "val_chips": 223,
+  "train_class_px": {
+    "mangrove": 15927291,
+    "salt_marsh": 55862,
+    "tidal_flat": 1423205,
+    "water": 5410575,
+    "seasonal_water": 937007,
+    "built_up": 318038,
+    "barren": 70307,
+    "coastal_forest": 4926390,
+    "cropland": 691729,
+    "herbaceous_wetland": 595762,
+    "other_land": 1341679
+  },
+  "model_info": {
+    "mlp_hidden": [
+      128,
+      64
+    ],
+    "receptive_field_px": 1,
+    "receptive_field_m": 10,
+    "params": 17291,
+    "model_in_channels": 64,
+    "pretrained": false,
+    "device": "cuda",
+    "amp": true
+  },
+  "config": {
+    "chips_dir": "data/chips",
+    "out_dir": "results/model_comparison",
+    "weights": "nvidia/segformer-b0-finetuned-ade-512-512",
+    "stem_stride": 2,
+    "epochs": 40,
+    "batch_size": 16,
+    "lr_backbone": 6e-05,
+    "lr_new": 0.0006,
+    "weight_decay": 0.01,
+    "alpha": 0.5,
+    "block_deg": 0.1,
+    "val_frac": 0.1,
+    "workers": 4,
+    "seed": 1,
+    "max_chips_per_region": null,
+    "device": null,
+    "model": "mlp",
+    "pca": null,
+    "input_proj": null,
+    "fcn_width": 64,
+    "fcn_dilations": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "mlp_hidden": [
+      128,
+      64
+    ],
+    "name_seed": true,
+    "from_scratch": false,
+    "amp": null,
+    "wandb": true,
+    "wandb_project": "mangrove-embed",
+    "wandb_entity": null,
+    "wandb_name": "mlp 128-64 jaccard pooled 10 (no mexico_pacific) s1",
+    "wandb_group": null,
+    "wandb_tags": [],
+    "wandb_notes": null
+  },
+  "test": {
+    "everglades": {
+      "mangrove_iou": 0.9291902282440326,
+      "mangrove_precision": 0.9906799423764158,
+      "mangrove_recall": 0.9373844479672255,
+      "mangrove_f1": 0.9632955989931489,
+      "mangrove_ap": 0.9969219038322951,
+      "miou": 0.286545605450675,
+      "overall_acc": 0.8712842442592419,
+      "mangrove_px": 531146,
+      "valid_px": 768888,
+      "per_class_iou": {
+        "mangrove": 0.9291902282440326,
+        "salt_marsh": 0.03432119011362305,
+        "tidal_flat": 0.11077912469409823,
+        "water": 0.8100884299563342,
+        "seasonal_water": 0.22449286703184254,
+        "barren": 0.010309278350515464,
+        "coastal_forest": 0.028279654359780047,
+        "herbaceous_wetland": 0.43090855076472334,
+        "other_land": 0.0005411255411255411
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9253294815964587,
+      "mangrove_f1_tuned": 0.9612167584211999,
+      "mangrove_precision_tuned": 0.9911863415234928,
+      "mangrove_recall_tuned": 0.9330063109996884,
+      "chips": 54
+    },
+    "jamaica": {
+      "mangrove_iou": 0.8699997682395476,
+      "mangrove_precision": 0.9596101613676307,
+      "mangrove_recall": 0.9030684661277906,
+      "mangrove_f1": 0.9304811508704961,
+      "mangrove_ap": 0.9786279272066283,
+      "miou": 0.47348799852472856,
+      "overall_acc": 0.9230516390739324,
+      "mangrove_px": 166272,
+      "valid_px": 900539,
+      "per_class_iou": {
+        "mangrove": 0.8699997682395476,
+        "tidal_flat": 0.2954497174661172,
+        "water": 0.9682632707151984,
+        "seasonal_water": 0.19448640483383686,
+        "built_up": 0.5239517705844015,
+        "barren": 0.16786649214659685,
+        "coastal_forest": 0.8850466554083064,
+        "cropland": 0.0,
+        "herbaceous_wetland": 0.22166143773018687,
+        "other_land": 0.6081544681230949
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.8722676346922253,
+      "mangrove_f1_tuned": 0.9317766525784269,
+      "mangrove_precision_tuned": 0.9653179190751445,
+      "mangrove_recall_tuned": 0.9004879890000269,
+      "chips": 59
+    },
+    "mahakam": {
+      "mangrove_iou": 0.7815462619609153,
+      "mangrove_precision": 0.9554668138805048,
+      "mangrove_recall": 0.8110918676616662,
+      "mangrove_f1": 0.877379699475984,
+      "mangrove_ap": 0.9689028088740537,
+      "miou": 0.3597721278253296,
+      "overall_acc": 0.8001931232117191,
+      "mangrove_px": 392630,
+      "valid_px": 1123635,
+      "per_class_iou": {
+        "mangrove": 0.7815462619609153,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.2654265356126961,
+        "water": 0.7865648704529815,
+        "seasonal_water": 0.2032631128071337,
+        "built_up": 0.5903219192126307,
+        "barren": 0.22636103151862463,
+        "coastal_forest": 0.6021689340213582,
+        "cropland": 0.12232620320855615,
+        "herbaceous_wetland": 0.013691931540342298,
+        "other_land": 0.3658226057433866
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.7842840848186678,
+      "mangrove_f1_tuned": 0.8791022589862674,
+      "mangrove_precision_tuned": 0.9523888990871618,
+      "mangrove_recall_tuned": 0.8162885831164002,
+      "chips": 91
+    },
+    "matang": {
+      "mangrove_iou": 0.9850794944965349,
+      "mangrove_precision": 0.9856822353661023,
+      "mangrove_recall": 0.9993796269490053,
+      "mangrove_f1": 0.9924836735532098,
+      "mangrove_ap": 0.9998710528801834,
+      "miou": 0.4612898967753466,
+      "overall_acc": 0.9299823793210367,
+      "mangrove_px": 72537,
+      "valid_px": 264462,
+      "per_class_iou": {
+        "mangrove": 0.9850794944965349,
+        "tidal_flat": 0.47071583514099785,
+        "water": 0.9889773614363778,
+        "seasonal_water": 0.37275541795665634,
+        "built_up": 0.4664175435146032,
+        "barren": 0.14368092263334936,
+        "coastal_forest": 0.7234149212092151,
+        "cropland": 0.08048433048433049,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.38137314088140056
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9836999496801093,
+      "mangrove_f1_tuned": 0.991783006133302,
+      "mangrove_precision_tuned": 0.9847440856346137,
+      "mangrove_recall_tuned": 0.998923279071465,
+      "chips": 17
+    },
+    "mekong": {
+      "mangrove_iou": 0.8477864309268224,
+      "mangrove_precision": 0.9441910850648197,
+      "mangrove_recall": 0.8925107351613044,
+      "mangrove_f1": 0.9176238300457541,
+      "mangrove_ap": 0.9747870647512495,
+      "miou": 0.38730421280490934,
+      "overall_acc": 0.781411086669808,
+      "mangrove_px": 297853,
+      "valid_px": 844654,
+      "per_class_iou": {
+        "mangrove": 0.8477864309268224,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.7779060482746015,
+        "water": 0.7299199749507747,
+        "seasonal_water": 0.48944370317150776,
+        "built_up": 0.32790697674418606,
+        "barren": 0.08194174757281554,
+        "coastal_forest": 0.3052109181141439,
+        "cropland": 0.5446677810624089,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.15556276003674285
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.8480570611870668,
+      "mangrove_f1_tuned": 0.9177823336713774,
+      "mangrove_precision_tuned": 0.9449101616489394,
+      "mangrove_recall_tuned": 0.892168683243734,
+      "chips": 57
+    },
+    "niger_delta": {
+      "mangrove_iou": 0.9553726966937776,
+      "mangrove_precision": 0.9812539948399498,
+      "mangrove_recall": 0.9731339140090919,
+      "mangrove_f1": 0.9771770857894866,
+      "mangrove_ap": 0.9979313889156568,
+      "miou": 0.401213565208195,
+      "overall_acc": 0.9372590235175333,
+      "mangrove_px": 432255,
+      "valid_px": 677452,
+      "per_class_iou": {
+        "mangrove": 0.9553726966937776,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.4301723406061635,
+        "water": 0.8873828004193915,
+        "seasonal_water": 0.3617041831707081,
+        "built_up": 0.26996805111821087,
+        "barren": 0.1787190082644628,
+        "coastal_forest": 0.8397036557598734,
+        "cropland": 0.0,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.49032648125755746
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9555400622117344,
+      "mangrove_f1_tuned": 0.9772646244137894,
+      "mangrove_precision_tuned": 0.9774446107667109,
+      "mangrove_recall_tuned": 0.9770847043339287,
+      "chips": 48
+    },
+    "papua": {
+      "mangrove_iou": 0.9582102456949348,
+      "mangrove_precision": 0.9918603534607249,
+      "mangrove_recall": 0.9658048509925208,
+      "mangrove_f1": 0.9786592096548679,
+      "mangrove_ap": 0.9983453701915936,
+      "miou": 0.2931071230570723,
+      "overall_acc": 0.9419846289477296,
+      "mangrove_px": 1101589,
+      "valid_px": 1719596,
+      "per_class_iou": {
+        "mangrove": 0.9582102456949348,
+        "salt_marsh": 0.0,
+        "tidal_flat": 0.5440203466819329,
+        "water": 0.06891106166104372,
+        "seasonal_water": 0.3102986739372909,
+        "built_up": 0.04838709677419355,
+        "barren": 0.0,
+        "coastal_forest": 0.9293783623962508,
+        "herbaceous_wetland": 0.0,
+        "other_land": 0.07186544342507645
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9623350269533428,
+      "mangrove_f1_tuned": 0.980806043550507,
+      "mangrove_precision_tuned": 0.9910505619321853,
+      "mangrove_recall_tuned": 0.970771153996406,
+      "chips": 113
+    },
+    "para": {
+      "mangrove_iou": 0.9527486194560634,
+      "mangrove_precision": 0.9924554934561453,
+      "mangrove_recall": 0.9596993963598334,
+      "mangrove_f1": 0.9758026301628632,
+      "mangrove_ap": 0.9970907738649737,
+      "miou": 0.4148871419301692,
+      "overall_acc": 0.8955526278342402,
+      "mangrove_px": 632993,
+      "valid_px": 1033037,
+      "per_class_iou": {
+        "mangrove": 0.9527486194560634,
+        "salt_marsh": 0.1713917525773196,
+        "tidal_flat": 0.46981549328316335,
+        "water": 0.6769288215904409,
+        "seasonal_water": 0.007910796353499585,
+        "built_up": 0.7058084772370486,
+        "barren": 0.11679884643114635,
+        "coastal_forest": 0.8478177188203245,
+        "cropland": 0.0,
+        "herbaceous_wetland": 0.06391137622496805,
+        "other_land": 0.5506266592578872
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9528840453781376,
+      "mangrove_f1_tuned": 0.9758736547961611,
+      "mangrove_precision_tuned": 0.9927662526650648,
+      "mangrove_recall_tuned": 0.959546316891273,
+      "chips": 67
+    },
+    "rufiji": {
+      "mangrove_iou": 0.7119476268412439,
+      "mangrove_precision": 0.9520411076220383,
+      "mangrove_recall": 0.7384308805077866,
+      "mangrove_f1": 0.8317399617590823,
+      "mangrove_ap": 0.9059735116211693,
+      "miou": 0.29373935371580995,
+      "overall_acc": 0.7495663881889285,
+      "mangrove_px": 54196,
+      "valid_px": 427802,
+      "per_class_iou": {
+        "mangrove": 0.7119476268412439,
+        "tidal_flat": 0.1209318259677972,
+        "water": 0.0,
+        "seasonal_water": 0.2004139128112691,
+        "built_up": 0.40588235294117647,
+        "barren": 0.01568627450980392,
+        "coastal_forest": 0.617879493368077,
+        "cropland": 0.0,
+        "herbaceous_wetland": 0.10585042219541617,
+        "other_land": 0.7588016285233159
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.6951121641762525,
+      "mangrove_f1_tuned": 0.8201370727748218,
+      "mangrove_precision_tuned": 0.9582740635372214,
+      "mangrove_recall_tuned": 0.716807881773399,
+      "chips": 30
+    },
+    "sundarbans": {
+      "mangrove_iou": 0.978400309071919,
+      "mangrove_precision": 0.9970168902136115,
+      "mangrove_recall": 0.9812728955078662,
+      "mangrove_f1": 0.9890822444633494,
+      "mangrove_ap": 0.9993740458406722,
+      "miou": 0.46300233250796297,
+      "overall_acc": 0.9568344333842151,
+      "mangrove_px": 818119,
+      "valid_px": 1162825,
+      "per_class_iou": {
+        "mangrove": 0.978400309071919,
+        "tidal_flat": 0.24157272924344245,
+        "water": 0.9010604577530734,
+        "seasonal_water": 0.14707686017988553,
+        "built_up": 0.21591804570527975,
+        "barren": 0.26347607052896727,
+        "coastal_forest": 0.5936482673804528,
+        "cropland": 0.8188723679349834,
+        "other_land": 0.0069958847736625515
+      },
+      "threshold": 0.41,
+      "val_mangrove_iou_tuned": 0.953887884267631,
+      "mangrove_iou_tuned": 0.9773767212207632,
+      "mangrove_f1_tuned": 0.9885589435050747,
+      "mangrove_precision_tuned": 0.9973865767050596,
+      "mangrove_recall_tuned": 0.9798862019914651,
+      "chips": 74
+    }
+  }
+}

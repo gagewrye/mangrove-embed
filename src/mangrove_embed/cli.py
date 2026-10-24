@@ -46,6 +46,15 @@ def main(argv=None):
     cs.add_argument("--metric", default="mangrove_iou")
     cs.add_argument("--region", help="only this held-out region (e.g. mekong)")
 
+    ev = sub.add_parser("eval-seg", help="score saved train-seg checkpoints on unseen chips")
+    ev.add_argument("--chips", required=True, help="chips dir to test on (e.g. data/test/chips)")
+    ev.add_argument("--runs", nargs="*",
+                    help="run folders (default: every <results_dir>/model_comparison run with checkpoints)")
+    ev.add_argument("--regions", nargs="*", help="only these test regions")
+    ev.add_argument("--out", help="CSV (default: <results_dir>/generalization/<regions>.csv)")
+    ev.add_argument("--wandb", action="store_true",
+                    help="add the scores to each split's W&B run (or log an eval run)")
+
     px = sub.add_parser("compare-pixel",
                         help="per-pixel knn/logreg/mlp on chip pixels, scored like train-seg")
     px.add_argument("--chips", help="chips dir (default: <data_dir>/chips)")
@@ -53,9 +62,14 @@ def main(argv=None):
     px.add_argument("--models", nargs="*", default=["knn", "logreg", "mlp"])
     px.add_argument("--holdout", default="all", help="region to hold out, or 'all'")
     px.add_argument("--regions", nargs="*", help="restrict to these regions")
+    px.add_argument("--test-chips", help="train on all regions, test on these chips instead of "
+                    "LORO (writes <results_dir>/generalization/<regions>_pixel.csv)")
     px.add_argument("--n-train", type=int, default=30_000, help="training pixels per region")
     px.add_argument("--n-test", type=int, default=100_000, help="test pixels (held-out region)")
     px.add_argument("--seed", type=int, default=0)
+    px.add_argument("--wandb", action="store_true", help="log each fit to Weights & Biases")
+    px.add_argument("--wandb-project", default="mangrove-embed")
+    px.add_argument("--wandb-entity", help="W&B team/user (default: your default entity)")
 
     sub.add_parser("plots", help="summary figures for model comparison and receptive field")
 
@@ -103,11 +117,24 @@ def main(argv=None):
     elif a.cmd == "compare-seg":
         from .seg.train import compare
         compare(a.out or f"{cfg.results_dir}/model_comparison", a.metric, a.region)
+    elif a.cmd == "eval-seg":
+        from pathlib import Path
+        from .seg.train import evaluate_runs, load_index
+        runs = a.runs or sorted(str(d) for d in Path(f"{cfg.results_dir}/model_comparison").iterdir()
+                                if any(d.glob("*_best.pt")))
+        regs = a.regions or sorted(load_index(a.chips).region.unique())
+        evaluate_runs(a.chips, runs, a.out or f"{cfg.results_dir}/generalization/{'_'.join(regs)}.csv",
+                      a.regions, wandb=a.wandb)
+    elif a.cmd == "compare-pixel" and a.test_chips:
+        from .pixel import run_external
+        run_external(a.chips or f"{cfg.data_dir}/chips", a.test_chips,
+                     a.out or f"{cfg.results_dir}/generalization", a.models, a.n_train,
+                     n_test=a.n_test, seed=a.seed, regions=a.regions, wandb=_wb(a))
     elif a.cmd == "compare-pixel":
         from .pixel import run as run_pixel
         run_pixel(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/model_comparison",
                   a.models, a.holdout, a.n_train, n_test=a.n_test, seed=a.seed,
-                  regions=a.regions)
+                  regions=a.regions, wandb=_wb(a))
     elif a.cmd == "plots":
         from .plots import run as run_plots
         run_plots(cfg.results_dir)
@@ -116,6 +143,10 @@ def main(argv=None):
         from .diagnostics import run
         data = synthetic.make(f"{cfg.data_dir}/synthetic")
         run(data, f"{cfg.results_dir}/synthetic", ("knn", "logreg"), anchor="jamaica")
+
+
+def _wb(a):
+    return dict(project=a.wandb_project, entity=a.wandb_entity) if a.wandb else None
 
 
 def _train_args(t):
@@ -136,6 +167,8 @@ def _train_args(t):
                    help="fp16 mixed precision (default: on for CUDA, off for MPS)")
     t.add_argument("--model", choices=["segformer", "fcn", "mlp"], help="default segformer")
     t.add_argument("--mlp-hidden", help="mlp hidden widths, comma-separated (default 64)")
+    t.add_argument("--mlp-norm", action="store_true", help="BatchNorm after each mlp hidden layer")
+    t.add_argument("--mlp-dropout", type=float, help="dropout after each mlp hidden layer")
     t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
     t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
     t.add_argument("--fcn-dilations", help="fcn dilations, comma- or dash-separated, one block "
@@ -163,7 +196,8 @@ def _train_config(a, cfg):
         tc.seed, tc.name_seed = a.seed, True
     dil = (tuple(int(x) for x in a.fcn_dilations.replace("-", ",").split(",") if x != "")
            if a.fcn_dilations else None)
-    for k, v in dict(fcn_dilations=dil, mlp_hidden=mlp, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
+    for k, v in dict(fcn_dilations=dil, mlp_hidden=mlp, mlp_norm=a.mlp_norm or None,
+                     mlp_dropout=a.mlp_dropout, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
                      batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
                      max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,
                      device=a.device, model=a.model, pca=a.pca,

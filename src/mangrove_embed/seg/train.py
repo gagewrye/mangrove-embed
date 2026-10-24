@@ -62,6 +62,8 @@ class TrainConfig:
     fcn_width: int = 64
     fcn_dilations: tuple = (1, 2, 4, 8, 16)  # one residual block per entry; 0 = 1x1 (no context)
     mlp_hidden: tuple = (64,)     # per-pixel MLP hidden widths
+    mlp_norm: bool = False        # BatchNorm after each mlp hidden layer
+    mlp_dropout: float = 0.0      # dropout after each mlp hidden layer
     name_seed: bool = False       # include the seed in the results folder name (set by --seed)
     from_scratch: bool = False    # segformer with random init (same architecture)
     amp: bool | None = None       # mixed precision; None = on for CUDA, off for MPS/CPU
@@ -231,12 +233,18 @@ class TinyFCN(torch.nn.Module):
 
 class PixelMLP(torch.nn.Sequential):
     """Per-pixel MLP: 1x1 convs = the same small MLP applied to every pixel's 64-d embedding.
-    No spatial context, no normalization layers. Default 64 -> 64 -> 11 is ~4.9k params; small
-    enough to run as matrix ops on array images inside Earth Engine."""
-    def __init__(self, c_in, n_classes, hidden=(64,)):
+    No spatial context. Default 64 -> 64 -> 11 is ~4.9k params, no normalization; small enough to
+    run as matrix ops on array images inside Earth Engine. norm adds BatchNorm and dropout adds
+    (per-pixel) dropout after each hidden layer, as regularization."""
+    def __init__(self, c_in, n_classes, hidden=(64,), norm=False, dropout=0.0):
         layers, c = [], c_in
         for h in hidden:
-            layers += [torch.nn.Conv2d(c, h, 1), torch.nn.ReLU(inplace=True)]
+            layers.append(torch.nn.Conv2d(c, h, 1, bias=not norm))
+            if norm:
+                layers.append(torch.nn.BatchNorm2d(h))
+            layers.append(torch.nn.ReLU(inplace=True))
+            if dropout:
+                layers.append(torch.nn.Dropout(dropout))
             c = h
         super().__init__(*layers, torch.nn.Conv2d(c, n_classes, 1))
         self.hidden = tuple(hidden)
@@ -296,9 +304,11 @@ def build_model(tc, in_ch, px, train_paths):
         info["receptive_field_px"] = core.receptive_field
         info["receptive_field_m"] = core.receptive_field * 10
     elif tc.model == "mlp":
-        core = PixelMLP(k, N_CLASSES, hidden=tc.mlp_hidden)
+        core = PixelMLP(k, N_CLASSES, hidden=tc.mlp_hidden, norm=tc.mlp_norm,
+                        dropout=tc.mlp_dropout)
         new = [core, pre]
         info["mlp_hidden"] = list(core.hidden)
+        info["mlp_norm"], info["mlp_dropout"] = tc.mlp_norm, tc.mlp_dropout
         info["receptive_field_px"], info["receptive_field_m"] = 1, 10
     else:
         raise ValueError(f"model must be segformer, fcn or mlp, got {tc.model!r}")
@@ -505,8 +515,13 @@ def run_name(tc, protocol):
         parts.append(tc.model)
     if tc.model == "fcn" and tuple(tc.fcn_dilations) != (1, 2, 4, 8, 16):
         parts.append(f"rf{receptive_field(tc.fcn_dilations)}")
-    elif tc.model == "mlp" and tuple(tc.mlp_hidden) != (64,):
-        parts.append("h" + "-".join(str(h) for h in tc.mlp_hidden))
+    elif tc.model == "mlp":
+        if tuple(tc.mlp_hidden) != (64,):
+            parts.append("h" + "-".join(str(h) for h in tc.mlp_hidden))
+        if tc.mlp_norm:
+            parts.append("bn")
+        if tc.mlp_dropout:
+            parts.append(f"do{tc.mlp_dropout:g}")
     elif tc.from_scratch and tc.model == "segformer":
         parts.append("scratch")
     if tc.pca:
@@ -654,3 +669,88 @@ def bench(tc: TrainConfig, models=("mlp", "fcn", "segformer"), seeds=(0, 1, 2), 
             done.append(folder.name)
     agg = compare(tc.out_dir, metric, None if holdout == "all" else holdout)
     return agg.loc[agg.index.isin(done)]
+
+
+def _wandb_eval(tc, res, folder, scored):
+    from ..wb import log_run, metric_summary, update_summary
+    group = tc.wandb_group or folder
+    name = f"{tc.wandb_name}/{res['tag']}" if tc.wandb_name else f"{group}/{res['tag']}"
+    summ = metric_summary(scored)
+    hit = res["config"].get("wandb") and update_summary(tc.wandb_project, tc.wandb_entity, group, name, summ,
+                                      match={"train_chips": res.get("train_chips")})
+    if hit:
+        print(f"  W&B: updated {hit}")
+    else:
+        log_run(tc.wandb_project, tc.wandb_entity, group, f"{name}/eval", "eval",
+                {**asdict(tc), "train_chips": res.get("train_chips"), "split": res["tag"]}, summ,
+                tags=["eval", tc.model])
+        print(f"  W&B: logged eval run {group}/{name}/eval")
+
+
+def evaluate_runs(chips_dir, run_dirs, out_csv, regions=None, wandb=False):
+    """Score saved checkpoints on chips they never saw (e.g. a test region under data/test/chips).
+    One row per (run, split, test region), at argmax and at the split's validation-tuned
+    threshold. PCA runs are skipped: the projection is refit from training chips, not saved.
+    wandb: add test/<region>/... to each split's W&B training run (matched by group, name and
+    train_chips), or log a separate eval run when the split was trained without W&B."""
+    from dataclasses import fields
+    from ..thresholds import binary_scores
+    df = load_index(chips_dir, regions)
+    tests = {r: list(g.path) for r, g in df.groupby("region")}
+    x0 = np.load(df.path.iloc[0])["x"]
+    names = {f.name for f in fields(TrainConfig)}
+    rows = []
+    for d in map(Path, run_dirs):
+        for js in sorted(d.glob("*.json")):
+            ckpt = js.with_name(f"{js.stem}_best.pt")
+            if not ckpt.exists():
+                continue
+            res = json.loads(js.read_text())
+            c = {k: v for k, v in res.get("config", {}).items() if k in names}
+            for k in ("fcn_dilations", "mlp_hidden", "wandb_tags"):
+                if c.get(k) is not None:
+                    c[k] = tuple(c[k])
+            tc = TrainConfig(**{**c, "wandb": False, "device": None})
+            if tc.pca:
+                log.warning("%s/%s: PCA run, skipped", d.name, js.stem)
+                continue
+            device, amp = _device(tc), _use_amp(tc, _device(tc))
+            model, _, _ = build_model(tc, x0.shape[0], x0.shape[-1], [])
+            state = torch.load(ckpt, map_location=device, weights_only=True)
+            if not any(k.startswith(("core.", "pre.")) for k in state):
+                state = {f"core.{k}": v for k, v in state.items()}  # saved before the Net wrapper
+            model.load_state_dict(state)
+            model.to(device)
+            thr = next((m["threshold"] for m in res["test"].values() if "threshold" in m), None)
+            scored = {}
+            for r, paths in tests.items():
+                m, tt, tp = evaluate(model, _loader(paths, tc, False, device), device, amp,
+                                     return_scores=True)
+                row = dict(run=d.name, split=res["tag"], model=tc.model, seed=tc.seed,
+                           train_chips=res.get("train_chips"), test_region=r, chips=len(paths),
+                           **_flat(m))
+                tuned = ""
+                if thr is not None:
+                    s = binary_scores(tt, tp, thr)
+                    row.update(threshold=thr, mangrove_iou_tuned=s["iou"], mangrove_f1_tuned=s["f1"])
+                    tuned = f" | tuned@{thr:.2f}: IoU {s['iou']:.3f}"
+                rows.append(row)
+                scored[r] = {k: v for k, v in row.items()
+                             if k.startswith(("mangrove", "miou", "overall", "threshold"))}
+                print(f"{d.name}/{res['tag']} -> {r}: IoU {m['mangrove_iou']:.3f} "
+                      f"AP {m['mangrove_ap']:.3f}{tuned}")
+            if wandb:
+                _wandb_eval(tc, res, d.name, scored)
+    if not rows:
+        raise SystemExit("No checkpoints (*_best.pt next to a split json) in the given runs.")
+    out = pd.DataFrame(rows)
+    Path(out_csv).parent.mkdir(parents=True, exist_ok=True)
+    if Path(out_csv).exists():  # keep rows of runs not re-scored this time
+        prev = pd.read_csv(out_csv)
+        out = pd.concat([prev[~prev.run.isin(out.run)], out], ignore_index=True)
+    out.to_csv(out_csv, index=False)
+    cols = [c for c in ("mangrove_iou", "mangrove_ap", "mangrove_iou_tuned") if c in out]
+    print("\n" + out.groupby(["run", "test_region"])[cols].agg(["mean", "count"]).round(3)
+          .to_string())
+    print(f"\n-> {out_csv}")
+    return out

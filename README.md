@@ -115,6 +115,20 @@ complete (so it resumes), then prints `compare-seg` plus a seed-aggregated table
 over held-out regions; per variant, mean ± std over seeds. `compare-seg` prints that table
 whenever any variant has 2+ seeds (an unsuffixed folder counts as one seed).
 
+## Generalization to an unseen region
+```bash
+mangrove --config configs/baja_test.yaml chips            # test-only chips -> data/test/chips
+mangrove train-seg --protocol pooled --model mlp --mlp-hidden 128,64 --mlp-norm --mlp-dropout 0.1
+mangrove eval-seg --chips data/test/chips --wandb         # score every saved checkpoint
+mangrove compare-pixel --models logreg mlp --test-chips data/test/chips --wandb
+```
+Test regions live under their own `data_dir`, so no training run picks them up. `eval-seg`
+rebuilds each split from its saved config, applies its validation-tuned threshold, writes
+`results/generalization/<region>.csv`, and with `--wandb` adds `test/<region>/...` to the split's
+W&B training run. `compare-pixel --test-chips` trains on every region in `--chips` (or
+`--regions`) and tests on the test chips. `--mlp-norm` / `--mlp-dropout` add BatchNorm / dropout
+after each MLP hidden layer. Findings: `results/README.md`.
+
 ## Receptive-field sweep (FCN)
 Five residual blocks in every run (fixed depth); only the dilations change. A dilation of 0 is a
 1x1 block, so `0,0,0,0,0` is a per-pixel MLP with no spatial context.
