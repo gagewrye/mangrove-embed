@@ -177,6 +177,8 @@ def _train_args(t):
     t.add_argument("--mlp-hidden", help="mlp hidden widths, comma-separated (default 64)")
     t.add_argument("--mlp-norm", action="store_true", help="BatchNorm after each mlp hidden layer")
     t.add_argument("--mlp-dropout", type=float, help="dropout after each mlp hidden layer")
+    t.add_argument("--mlp-context", help="radii (px) of mean-pooled neighbourhoods added to the "
+                   "mlp input, comma-separated, e.g. 1,3,7 (3x3, 7x7, 15x15); default none")
     t.add_argument("--pca", type=int, help="fixed PCA 64 -> k (fit on training regions only)")
     t.add_argument("--input-proj", type=int, help="learned 1x1 projection 64 -> k")
     t.add_argument("--fcn-dilations", help="fcn dilations, comma- or dash-separated, one block "
@@ -204,7 +206,9 @@ def _train_config(a, cfg):
         tc.seed, tc.name_seed = a.seed, True
     dil = (tuple(int(x) for x in a.fcn_dilations.replace("-", ",").split(",") if x != "")
            if a.fcn_dilations else None)
-    for k, v in dict(fcn_dilations=dil, mlp_hidden=mlp, mlp_norm=a.mlp_norm or None,
+    ctx = (tuple(int(x) for x in a.mlp_context.replace("-", ",").split(",") if x != "")
+           if a.mlp_context else None)
+    for k, v in dict(fcn_dilations=dil, mlp_hidden=mlp, mlp_context=ctx, mlp_norm=a.mlp_norm or None,
                      mlp_dropout=a.mlp_dropout, fcn_width=a.fcn_width, weights=a.weights, stem_stride=a.stem_stride, epochs=a.epochs,
                      batch_size=a.batch_size, lr_backbone=a.lr_backbone, lr_new=a.lr_new,
                      max_chips_per_region=a.max_chips_per_region, workers=a.loader_workers,

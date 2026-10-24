@@ -64,6 +64,8 @@ class TrainConfig:
     mlp_hidden: tuple = (64,)     # per-pixel MLP hidden widths
     mlp_norm: bool = False        # BatchNorm after each mlp hidden layer
     mlp_dropout: float = 0.0      # dropout after each mlp hidden layer
+    mlp_context: tuple = ()       # radii (px) of masked mean-pooled neighbourhoods concatenated to
+                                  # each pixel's embedding before the mlp; () = per-pixel
     name_seed: bool = False       # include the seed in the results folder name (set by --seed)
     from_scratch: bool = False    # segformer with random init (same architecture)
     amp: bool | None = None       # mixed precision; None = on for CUDA, off for MPS/CPU
@@ -250,6 +252,27 @@ class PixelMLP(torch.nn.Sequential):
         self.hidden = tuple(hidden)
 
 
+class ContextPool(torch.nn.Module):
+    """[x, mean_r1(x), mean_r2(x), ...]: for each radius r, the mean embedding over the
+    (2r+1)x(2r+1) window around every pixel. Pixels with no embedding (all-zero, e.g. outside the
+    image) are excluded from the mean, so chip edges and no-data don't dilute it. Parameter-free;
+    Earth Engine equivalent: image.reduceNeighborhood(ee.Reducer.mean(), ee.Kernel.square(r)).
+    Mean pooling sees composition, not layout; that is the point (cheap, deployable context)."""
+    def __init__(self, radii):
+        super().__init__()
+        self.radii = tuple(int(r) for r in radii)
+
+    def forward(self, x):
+        m = (x.abs().sum(1, keepdim=True) > 0).to(x.dtype)
+        out = [x]
+        for r in self.radii:
+            k = 2 * r + 1
+            num = torch.nn.functional.avg_pool2d(x * m, k, stride=1, padding=r)
+            den = torch.nn.functional.avg_pool2d(m, k, stride=1, padding=r)
+            out.append(num / den.clamp_min(1e-6))
+        return torch.cat(out, 1)
+
+
 class Net(torch.nn.Module):
     def __init__(self, pre, core):
         super().__init__()
@@ -304,12 +327,17 @@ def build_model(tc, in_ch, px, train_paths):
         info["receptive_field_px"] = core.receptive_field
         info["receptive_field_m"] = core.receptive_field * 10
     elif tc.model == "mlp":
-        core = PixelMLP(k, N_CLASSES, hidden=tc.mlp_hidden, norm=tc.mlp_norm,
+        ctx = tuple(tc.mlp_context or ())
+        core = PixelMLP(k * (1 + len(ctx)), N_CLASSES, hidden=tc.mlp_hidden, norm=tc.mlp_norm,
                         dropout=tc.mlp_dropout)
-        new = [core, pre]
         info["mlp_hidden"] = list(core.hidden)
         info["mlp_norm"], info["mlp_dropout"] = tc.mlp_norm, tc.mlp_dropout
-        info["receptive_field_px"], info["receptive_field_m"] = 1, 10
+        info["mlp_context"] = list(ctx)
+        rf = 2 * max(ctx) + 1 if ctx else 1
+        info["receptive_field_px"], info["receptive_field_m"] = rf, rf * 10
+        if ctx:
+            core = torch.nn.Sequential(ContextPool(ctx), core)
+        new = [core, pre]
     else:
         raise ValueError(f"model must be segformer, fcn or mlp, got {tc.model!r}")
     model = Net(pre, core)
@@ -522,6 +550,8 @@ def run_name(tc, protocol):
             parts.append("bn")
         if tc.mlp_dropout:
             parts.append(f"do{tc.mlp_dropout:g}")
+        if tc.mlp_context:
+            parts.append("ctx" + "-".join(str(r) for r in tc.mlp_context))
     elif tc.from_scratch and tc.model == "segformer":
         parts.append("scratch")
     if tc.pca:
@@ -707,7 +737,7 @@ def evaluate_runs(chips_dir, run_dirs, out_csv, regions=None, wandb=False):
                 continue
             res = json.loads(js.read_text())
             c = {k: v for k, v in res.get("config", {}).items() if k in names}
-            for k in ("fcn_dilations", "mlp_hidden", "wandb_tags"):
+            for k in ("fcn_dilations", "mlp_hidden", "mlp_context", "wandb_tags"):
                 if c.get(k) is not None:
                     c[k] = tuple(c[k])
             tc = TrainConfig(**{**c, "wandb": False, "device": None})

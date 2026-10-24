@@ -129,6 +129,21 @@ W&B training run. `compare-pixel --test-chips` trains on every region in `--chip
 `--regions`) and tests on the test chips. `--mlp-norm` / `--mlp-dropout` add BatchNorm / dropout
 after each MLP hidden layer. Findings: `results/README.md`.
 
+## Spatial context for the regularized MLP
+```bash
+mangrove train-seg --model mlp --mlp-hidden 128,64 --mlp-norm --mlp-dropout 0.1 --mlp-context 1,3,7
+python scripts/context_sweep.py --wandb     # ctx none/1/3/7/15/1,3,7 x seeds 0-2, pooled + Baja
+```
+`--mlp-context r1,r2,...` concatenates, for each radius r, the mean embedding over the
+(2r+1)x(2r+1) window to every pixel's own embedding before the MLP (no-data pixels excluded from
+the mean). The model stays per-pixel apart from these parameter-free pooled features, so it is
+still deployable in Earth Engine (`reduceNeighborhood(ee.Reducer.mean(), ee.Kernel.square(r))`).
+Only the first layer widens (64 x (1 + #radii) inputs). Folder suffix `_ctx1-3-7`.
+
+`context_sweep.py` reuses the pooled 10-region splits of the `*_no_mexpac` runs (same seed =
+same test blocks), skips finished runs, scores every checkpoint on Baja north, and writes
+`results/context/mlp_context.csv` plus paired (same-seed) deltas against the per-pixel MLP.
+
 ## Receptive-field sweep (FCN)
 Five residual blocks in every run (fixed depth); only the dilations change. A dilation of 0 is a
 1x1 block, so `0,0,0,0,0` is a per-pixel MLP with no spatial context.

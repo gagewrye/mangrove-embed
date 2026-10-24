@@ -295,3 +295,31 @@ def test_seed_summary():
     s = seed_summary(agg)
     assert s.loc["loro_mlp", "seeds"] == 2 and abs(s.loc["loro_mlp", "mean"] - 0.81) < 1e-9
     assert seed_summary(agg.iloc[[0, 2]]) is None
+
+
+def test_context_pool_masked_mean():
+    import torch
+    from mangrove_embed.seg.train import ContextPool
+    x = torch.zeros(1, 2, 5, 5)
+    x[0, :, 1:4, 1:4] = 1.0          # 3x3 valid block of ones, no-data elsewhere
+    x[0, :, 2, 2] = 10.0             # center
+    out = ContextPool((1,))(x)
+    assert out.shape == (1, 4, 5, 5)
+    assert torch.allclose(out[0, :2], x[0])                      # first block = raw pixel
+    assert torch.isclose(out[0, 2, 2, 2], torch.tensor(18 / 9))  # (8*1 + 10)/9
+    assert torch.isclose(out[0, 2, 1, 1], torch.tensor(13 / 4))  # corner: 4 valid px, no-data ignored
+
+
+def test_mlp_context_run(tmp_path):
+    import json
+    from mangrove_embed.seg.train import TrainConfig, run
+    _synthetic_chips(tmp_path / "chips", n=4)
+    tc = TrainConfig(chips_dir=str(tmp_path / "chips"), out_dir=str(tmp_path / "out"), weights=W,
+                     epochs=1, batch_size=4, workers=0, block_deg=0.3, device="cpu", model="mlp",
+                     mlp_hidden=(128, 64), mlp_norm=True, mlp_dropout=0.1, mlp_context=(1, 3))
+    s = run(tc, "loro", "a")
+    assert s.mangrove_iou.between(0, 1).all()
+    info = json.loads((tmp_path / "out" / "loro_mlp_h128-64_bn_do0.1_ctx1-3" / "holdout_a.json")
+                      .read_text())["model_info"]
+    assert info["receptive_field_m"] == 70 and info["mlp_context"] == [1, 3]
+    assert info["params"] == (64 * 3 * 128 + 128 * 2) + (128 * 64 + 64 * 2) + (64 * 11 + 11)
