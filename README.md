@@ -162,6 +162,56 @@ Add `--seed N` for repeats (folder gets `_sN`).
 The sweep runs so far live in W&B; `python scripts/export_rf_wandb.py` copies them to
 `results/receptive_field/rf_runs.csv`.
 
+## Deployable change models
+The classifier (logreg) and the `next_class` forecaster are shipped together as one bundle,
+because the forecaster's targets are that classifier's maps. Save it from the benchmarked run (the
+weights scored in that run's `change.json`; nothing is retrained):
+```bash
+pip install -e ".[seg,deploy]"
+mangrove change --labels logreg --history 2 --methods persistence classify_current next_class \
+    --save-bundle models/change_logreg_k2.pt
+```
+On load, the bundle checks itself against reference logits stored at training time and refuses to
+run if they no longer match.
+
+Inputs: one 64-band AlphaEarth GeoTIFF per year, all on the same grid (or a `gdalbuildvrt` VRT if
+Earth Engine split the export into several files). Bands are matched by name (`A00`..`A63`) if
+the file has band descriptions, else taken in order. Export from Earth Engine:
+```python
+import ee; ee.Initialize(project="intricate-web-334523")
+BANDS = [f"A{i:02d}" for i in range(64)]
+region = ee.Geometry.Rectangle([lon_min, lat_min, lon_max, lat_max])
+col = ee.ImageCollection("GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL").filterBounds(region)
+p = col.first().select(0).projection().getInfo()          # native UTM 10 m grid, shared by all years
+for y in (2023, 2024, 2025):
+    img = col.filterDate(f"{y}-01-01", f"{y + 1}-01-01").mosaic().select(BANDS).toFloat()
+    ee.batch.Export.image.toDrive(img, description=f"emb_{y}", region=region, crs=p["crs"],
+                                  crsTransform=p["transform"], maxPixels=1e10).start()
+```
+
+**Forecast** next year's map (inputs oldest first; the bundle states how many years it needs):
+```bash
+mangrove change-predict --bundle models/change_logreg_k2.pt --inputs emb_2024.tif emb_2025.tif --out out/f2026
+```
+`f2026_classes.tif` (uint8): this year's class, forecast class. `f2026_probs.tif` (float32):
+`p_change` = 1 - P(next class = this year's class), `p_mangrove` next year; `--probs` adds
+P(class) for every class. Codes 1-11 as in Classes (3 = tidal flat + water, 4 unused); 255 / NaN = no data.
+
+**Detect** what changed between two observed years:
+```bash
+mangrove change-detect --bundle models/change_logreg_k2.pt --before emb_2023.tif --after emb_2025.tif --out out/d23_25
+```
+Embedding similarity alone (the dot product) says whether a pixel moved, not what it became. This
+classifies both years with the bundled classifier and reports the class pair:
+- `d23_25_classes.tif`: class before, class after.
+- `d23_25_probs.tif`: `p_change` = 1 - Σ P_before(c) P_after(c), the probability the two classes
+  differ; `p_mangrove_gain`, `p_mangrove_loss`; `cosine` (the embedding-only score, for reference).
+- `d23_25_transitions.csv`: area (ha) per from → to pair; `d23_25_classes.csv`: per-class area
+  before / after, gain, loss, net. Both count only pixels whose class changes with
+  `p_change >= --min-p` (default 0.5), which drops borderline flicker.
+
+Both commands stream the rasters in `--block` tiles (default 512 px) and run on CUDA / MPS / CPU.
+
 ## Figures
 ```bash
 mangrove plots    # results/model_comparison/model_comparison.png, results/receptive_field/receptive_field.png
