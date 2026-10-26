@@ -110,6 +110,7 @@ class ChangeConfig:
     select: str = "change_ap"     # forecaster epoch selection on val: change_ap | mangrove_iou
     merge_tide: bool = True       # water -> tidal flat everywhere (labels and readout), so tide-stage
                                   # flips between the two are not change
+    save_bundle: str | None = None  # labels="logreg": write the logreg + next_class pair (deploy.py)
 
 
 # ------------------------------------------------------------------ data
@@ -450,6 +451,8 @@ def run(cc: ChangeConfig):
     rows = {s: np.flatnonzero(split == i) for i, s in enumerate(("train", "val", "test"))}
     col = {yr: j for j, yr in enumerate(years)}
     clf = cc.labels in ("classifier", "model", "logreg")
+    if cc.save_bundle and (cc.labels != "logreg" or "next_class" not in cc.methods):
+        raise SystemExit("--save-bundle needs --labels logreg and the next_class method")
     test_year = cc.test_year or (years[-1] if clf else 2020)
     jt = col[test_year]
     gmw = [col[yr] for yr in LABEL_YEARS if yr in col and (clf or yr < test_year)]
@@ -478,6 +481,7 @@ def run(cc: ChangeConfig):
             prm.requires_grad_(False)
     elif cc.labels == "logreg":
         readout, lr_info = fit_logreg_readout(x, y, ro_tr.cpu().numpy(), cc, device)
+        base_readout = readout
     else:
         readout = Readout(cc.hidden, cc.dropout).to(device)
 
@@ -587,7 +591,7 @@ def run(cc: ChangeConfig):
         stay = logits.float().softmax(1).gather(1, va_prev.clamp(max=N_CLASSES - 1)[:, None])[:, 0]
         return _ap(va_changed, (1 - stay).cpu().numpy()[va_ok])
 
-    preds = {}
+    preds, nets = {}, {}
     for m in cc.methods:
         info = {}
         if m == "persistence":
@@ -636,6 +640,7 @@ def run(cc: ChangeConfig):
             info = fit_model(net, len(tr), loss_fn, val_fn, cc, device, m,
                              "change AP" if cc.select == "change_ap" else "mangrove IoU")
             info["params"] = sum(p.numel() for p in net.parameters())
+            nets[m] = net
             logits, e = predict(fwd(te), len(te), bs)
             if e is not None:
                 info["cos_next"] = float((e * e_next).sum(1).mean())
@@ -666,6 +671,15 @@ def run(cc: ChangeConfig):
     summary.to_csv(run_dir / "summary.csv", index=False)
     pd.DataFrame(cls_rows).to_csv(run_dir / "classes.csv", index=False)
     pd.DataFrame(tr_rows_out).to_csv(run_dir / "transitions.csv", index=False)
+    if cc.save_bundle:
+        from .deploy import save_bundle
+        pick = torch.randperm(len(te), generator=torch.Generator().manual_seed(cc.seed))[:512].to(device)
+        res["bundle"] = str(save_bundle(
+            cc.save_bundle, base_readout, nets["next_class"], k, cc.hidden, cc.dropout, cc.merge_tide,
+            gather(X, te[pick], k)[0],
+            dict(config=asdict(cc), years=years, test_year=test_year, regions=sorted(set(df.region)),
+                 readout=res["readout"], val_best=res["methods"]["next_class"].get("best_val"),
+                 test=res["methods"]["next_class"]["test"], results_dir=str(run_dir))))
     (run_dir / "change.json").write_text(json.dumps(res, indent=2, default=float))
     cols = ["method", "mangrove_iou", "miou", "acc", "changed_acc", "change_iou", "change_ap",
             "gain_iou", "loss_iou", "gain_ap", "loss_ap"]

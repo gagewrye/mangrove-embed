@@ -68,6 +68,29 @@ def main(argv=None):
     ch.add_argument("--seed", type=int, default=0)
     ch.add_argument("--device")
     ch.add_argument("--tag")
+    ch.add_argument("--save-bundle", metavar="PATH",
+                    help="with --labels logreg: save the classifier + next_class forecaster for "
+                         "change-predict / change-detect")
+
+    cp = sub.add_parser("change-predict",
+                        help="forecast next year's map from embedding GeoTIFFs with a saved bundle")
+    cp.add_argument("--bundle", required=True, help="file from `mangrove change --save-bundle`")
+    cp.add_argument("--inputs", nargs="+", required=True,
+                    help="64-band AlphaEarth GeoTIFFs (or VRTs), one per year, oldest first, same grid")
+    cp.add_argument("--out", required=True, help="output prefix: <out>_classes.tif, <out>_probs.tif")
+    cp.add_argument("--probs", action="store_true", help="also write P(class) for every class")
+    cd = sub.add_parser("change-detect",
+                        help="classifier-driven change (from -> to classes) between two observed years")
+    cd.add_argument("--bundle", required=True, help="file from `mangrove change --save-bundle`")
+    cd.add_argument("--before", required=True, help="64-band AlphaEarth GeoTIFF (or VRT), earlier year")
+    cd.add_argument("--after", required=True, help="same grid, later year")
+    cd.add_argument("--out", required=True,
+                    help="output prefix: <out>_classes.tif, _probs.tif, _transitions.csv, _classes.csv")
+    cd.add_argument("--min-p", type=float, default=0.5,
+                    help="p_change needed to count a pixel in the area tables (default 0.5)")
+    for q in (cp, cd):
+        q.add_argument("--block", type=int, default=512, help="tile size in pixels (default 512)")
+        q.add_argument("--device")
 
     t = sub.add_parser("train-seg", help="train SegFormer on chips (needs the [seg] extra)")
     t.add_argument("--protocol", choices=["loro", "pooled"], default="loro")
@@ -116,7 +139,7 @@ def main(argv=None):
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "temporal-chips", "change", "train-seg", "bench", "compare-pixel") else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "temporal-chips", "change", "change-predict", "change-detect", "train-seg", "bench", "compare-pixel") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -149,7 +172,16 @@ def main(argv=None):
             regions=tuple(a.regions) if a.regions else None,
             methods=tuple(a.methods or METHODS), history=a.history, test_year=a.test_year,
             px_per_chip=a.px_per_chip, hidden=tuple(a.hidden), dropout=a.dropout,
-            epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, label_run=a.label_run, select=a.select, merge_tide=not a.no_merge_tide, seed=a.seed, device=a.device, tag=a.tag))
+            epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, label_run=a.label_run, select=a.select, merge_tide=not a.no_merge_tide, seed=a.seed, device=a.device, tag=a.tag,
+            save_bundle=a.save_bundle))
+    elif a.cmd == "change-predict":
+        from .deploy import predict_rasters
+        for p in predict_rasters(a.bundle, a.inputs, a.out, a.block, a.probs, a.device):
+            print(p)
+    elif a.cmd == "change-detect":
+        from .deploy import detect_rasters
+        for p in detect_rasters(a.bundle, a.before, a.after, a.out, a.block, a.min_p, a.device):
+            print(p)
     elif a.cmd == "temporal-chips":
         from .temporal import extract_temporal
         extract_temporal(cfg, a.regions, a.years, a.n_change, a.coastal_year)
