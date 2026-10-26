@@ -32,6 +32,9 @@ Methods (one call scores all of them on the same pixels):
                           learned persistence bias on the logits): learns deviations from no change
   next_class_given_probs  as next_class_given_map, with this year's class probabilities from the
                           classifier in place of the map (needs no labels at prediction time)
+  next_class_hazard       two heads: P(change) and P(new class | change), with this year's class
+                          from the classifier (no labels at prediction time); P(next = this year's
+                          class) = 1 - P(change), so the change head is trained on change directly
 On train blocks, label years >= test_year are replaced by readout pseudo-labels, so the test
 year's labels never enter training, not even as C_t for the following year.
 
@@ -46,6 +49,19 @@ regression (fit on GMW train-block pixels) as the frozen readout.
 
 merge_tide (default on): water is folded into tidal flat ("tidal_flat_water") in the labels and
 the readout, because flats and open water swap with tide stage between annual composites.
+
+Training variants (learned forecasters; the run folder gets a suffix naming them, so a variant
+never overwrites the baseline run):
+  loss="jaccard"    alpha * CE + (1 - alpha) * (1 - soft IoU), the IoU pooled over the batch's
+                    pixels: one per class present in the batch plus one for change (P(change) vs
+                    pixels whose class changes), averaged. Like train-seg's JaccardLoss, but per
+                    pixel batches instead of chips, and with the change term.
+  change_weight     CE weight on pairs whose class changes (stable pairs weigh 1).
+  mask_uncertain    drop training pairs where the classifier's top probability is below this in
+                    either year: borderline pixels whose "change" is classifier flicker.
+  mask_flicker      drop training pairs whose change reverts the next year (C_t != C_{t+1} and
+                    C_{t+2} = C_t), checked only where year t+2 is itself a training target year.
+Validation and test pairs are never masked, so every variant is scored on the same pixels.
 
 Per-class outputs (classes.csv, transitions.csv): for every class c, enter_ap ranks the pixels
 not c this year by P(c next year) and exit_ap ranks the pixels in c by 1 - P(c); transitions
@@ -77,8 +93,10 @@ N_CLASSES = len(CLASS_NAMES)
 MANGROVE = 0  # class 1 -> index 0
 TIDAL_FLAT, WATER = 2, 3  # merged for tide-free change: flats flip with tide stage
 METHODS = ("persistence", "classify_current", "classify_true_next", "transition_table", "extrapolate_embedding", "next_class", "next_class_emb_aux", "next_embedding",
-           "next_class_given_map", "next_class_given_probs")
-TRAINED = ("next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map", "next_class_given_probs")
+           "next_class_given_map", "next_class_given_probs", "next_class_hazard")
+TRAINED = ("next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map", "next_class_given_probs",
+           "next_class_hazard")
+LOSSES = ("ce", "jaccard")
 PRIOR = ("next_class_given_map", "next_class_given_probs")
 
 
@@ -111,6 +129,25 @@ class ChangeConfig:
     merge_tide: bool = True       # water -> tidal flat everywhere (labels and readout), so tide-stage
                                   # flips between the two are not change
     save_bundle: str | None = None  # labels="logreg": write the logreg + next_class pair (deploy.py)
+    loss: str = "ce"              # forecaster loss: ce | jaccard (see module docstring)
+    jaccard_alpha: float = 0.5    # loss="jaccard": weight on CE
+    change_weight: float = 1.0    # CE weight on pairs whose class changes
+    mask_uncertain: float = 0.0   # drop training pairs with classifier top probability below this
+    mask_flicker: bool = False    # drop training pairs whose change reverts the next year
+
+
+def variant(cc: ChangeConfig):
+    """Run-folder suffix for the training variant, None for the baseline."""
+    parts = []
+    if cc.loss != "ce":
+        parts.append(cc.loss + ("" if cc.jaccard_alpha == 0.5 else f"{cc.jaccard_alpha:g}"))
+    if cc.change_weight != 1:
+        parts.append(f"cw{cc.change_weight:g}")
+    if cc.mask_uncertain:
+        parts.append(f"conf{cc.mask_uncertain:g}")
+    if cc.mask_flicker:
+        parts.append("noflicker")
+    return "_".join(parts) or None
 
 
 # ------------------------------------------------------------------ data
@@ -155,6 +192,16 @@ def pairs(y, rows, target_cols, k):
     out = [np.c_[rows[y[rows, j] != IGNORE], np.full((y[rows, j] != IGNORE).sum(), j)]
            for j in target_cols if j >= k]
     return np.concatenate(out) if out else np.zeros((0, 2), np.int64)
+
+
+def flicker(y, P, allowed):
+    """Pairs P [n, 2] (pixel, target column) whose change reverts the year after:
+    C_t != C_{t+1} and C_{t+2} = C_t. Year t+2 counts only if its column is in `allowed` (the
+    training target columns), so no other labels are read."""
+    i, j = P[:, 0], P[:, 1]
+    a, b = y[i, j - 1], y[i, j]
+    after = np.where(np.isin(j + 1, list(allowed)), y[i, np.minimum(j + 1, y.shape[1] - 1)], IGNORE)
+    return (a != IGNORE) & (b != IGNORE) & (a != b) & (after == a)
 
 
 # ------------------------------------------------------------------ models
@@ -233,6 +280,53 @@ class Forecaster(nn.Module):
             logits = logits + self.persist * prior
         e = F.normalize(xh[:, -1] + self.emb(z), dim=-1) if self.emb is not None else None
         return logits, e
+
+
+class HazardForecaster(nn.Module):
+    """E_{t-k+1..t} [B, k, 64] + this year's class [B] -> (log P(next class) [B, 11], None).
+    A change head gives h = logit P(change); a class head gives P(new class | change) over the
+    other classes. log P(this year's class) = log(1 - sigmoid(h)), log P(c) = log sigmoid(h) +
+    log P(c | change). The output is log-probabilities, so softmax / CE treat it as logits."""
+    def __init__(self, k, hidden, dropout, rate=0.05):
+        super().__init__()
+        self.body, c = trunk(64 * k, hidden, dropout)
+        self.change = nn.Linear(c, 1)
+        self.cls = nn.Linear(c, N_CLASSES)
+        nn.init.constant_(self.change.bias, float(np.log(rate / (1 - rate))))  # start at the base rate
+
+    def forward(self, xh, prev):
+        z = self.body(xh.flatten(1))
+        h = self.change(z)[:, 0]
+        prev = prev.clamp(max=N_CLASSES - 1)[:, None]
+        g = self.cls(z).scatter(1, prev, -1e4).log_softmax(1)
+        return (F.logsigmoid(h)[:, None] + g).scatter(1, prev, F.logsigmoid(-h)[:, None]), None
+
+
+def change_loss(logits, tgt, prev, cc):
+    """Forecaster loss on logits [B, C], targets [B] and this year's classes [B] (IGNORE allowed
+    in both): CE with change_weight on changing pairs; loss="jaccard" mixes in 1 - soft IoU
+    pooled over the batch (classes present, plus change)."""
+    ok = tgt != IGNORE
+    if not ok.any():
+        return logits.sum() * 0
+    lg, t, p = logits[ok].float(), tgt[ok], prev[ok]
+    known = p != IGNORE
+    changed = known & (t != p)
+    w = 1 + (cc.change_weight - 1) * changed.to(lg.dtype)
+    ce = (F.cross_entropy(lg, t, reduction="none") * w).sum() / w.sum()
+    if cc.loss == "ce":
+        return ce
+    prob = lg.softmax(1)
+    oh = F.one_hot(t, N_CLASSES).float()
+    inter = (prob * oh).sum(0)
+    union = (prob + oh).sum(0) - inter
+    ious = [((inter + 1e-6) / (union + 1e-6))[oh.sum(0) > 0]]
+    if changed.any():
+        pc = (1 - prob.gather(1, p.clamp(max=N_CLASSES - 1)[:, None])[:, 0])[known]
+        ch = changed[known].float()
+        i_c = (pc * ch).sum()
+        ious.append(((i_c + 1e-6) / ((pc + ch).sum() - i_c + 1e-6))[None])
+    return cc.jaccard_alpha * ce + (1 - cc.jaccard_alpha) * (1 - torch.cat(ious).mean())
 
 
 def gather(X, P, k):
@@ -453,6 +547,8 @@ def run(cc: ChangeConfig):
     clf = cc.labels in ("classifier", "model", "logreg")
     if cc.save_bundle and (cc.labels != "logreg" or "next_class" not in cc.methods):
         raise SystemExit("--save-bundle needs --labels logreg and the next_class method")
+    if cc.loss not in LOSSES:
+        raise SystemExit(f"loss must be one of {LOSSES}")
     test_year = cc.test_year or (years[-1] if clf else 2020)
     jt = col[test_year]
     gmw = [col[yr] for yr in LABEL_YEARS if yr in col and (clf or yr < test_year)]
@@ -509,11 +605,18 @@ def run(cc: ChangeConfig):
         Y[Y == WATER] = TIDAL_FLAT
         y = np.where(y == WATER, TIDAL_FLAT, y).astype(y.dtype)
 
-    if clf:  # the readout's maps become the labels, every pixel and year
+    conf = None  # classifier top probability per pixel and year, for mask_uncertain
+    if clf or cc.mask_uncertain:
         all_rows = torch.arange(len(y), device=device)
+        conf = torch.zeros(Y.shape, device=device)
         for j in range(len(years)):
             P = torch.stack([all_rows, torch.full_like(all_rows, j)], 1)
-            Y[:, j] = predict(classify(P), len(P), bs)[0].argmax(1)
+            prob = predict(classify(P), len(P), bs)[0].float().softmax(1)
+            conf[:, j] = prob.max(1).values
+            if clf:  # the readout's maps become the labels, every pixel and year
+                Y[:, j] = prob.argmax(1)
+        conf = conf.cpu().numpy()
+    if clf:
         y = Y.cpu().numpy().astype(np.uint8)
         gmw = [j for j, yr in enumerate(years) if yr < test_year]   # target years from here on
 
@@ -525,14 +628,31 @@ def run(cc: ChangeConfig):
         P = torch.stack([tr_rows, torch.full_like(tr_rows, j)], 1)
         Yt[tr_rows, j] = predict(classify(P), len(P), bs)[0].argmax(1)
     y_t = Yt.cpu().numpy()
-    tr = torch.from_numpy(pairs(y_t, rows["train"], gmw + pseudo, k)).to(device)
+    tr_np = pairs(y_t, rows["train"], gmw + pseudo, k)
+    n_tr = len(tr_np)
+    masked = {}
+    if cc.mask_uncertain:  # borderline in either year: its change is likely classifier flicker
+        i, j = tr_np[:, 0], tr_np[:, 1]
+        sure = (conf[i, j] >= cc.mask_uncertain) & (conf[i, j - 1] >= cc.mask_uncertain)
+        masked["uncertain"] = int((~sure).sum())
+        tr_np = tr_np[sure]
+    if cc.mask_flicker:
+        rev = flicker(y_t, tr_np, gmw + pseudo)
+        masked["flicker"] = int(rev.sum())
+        tr_np = tr_np[~rev]
+    tr = torch.from_numpy(tr_np).to(device)
     va = torch.from_numpy(pairs(y, rows["val"], gmw, k)).to(device)
     te_np = pairs(y, rows["test"], [jt], k)
     te = torch.from_numpy(te_np).to(device)
+    tr_prev, tr_tgt = Yt[tr[:, 0], tr[:, 1] - 1], Yt[tr[:, 0], tr[:, 1]]
+    tr_known = (tr_prev != IGNORE) & (tr_tgt != IGNORE)
+    tr_rate = float(((tr_prev != tr_tgt) & tr_known).sum() / max(int(tr_known.sum()), 1))
     res["pairs"] = dict(train=int(len(tr)), val=int(len(va)), test=int(len(te)),
+                        train_before_masks=n_tr, train_masked=masked, train_change_rate=tr_rate,
                         train_gmw_targets=[years[j] for j in gmw if j >= k],
                         train_pseudo_targets=[years[j] for j in pseudo if j >= k])
-    log.info("pairs: train %d, val %d, test %d", len(tr), len(va), len(te))
+    log.info("pairs: train %d (of %d; masked %s, %.1f%% change), val %d, test %d", len(tr), n_tr,
+             masked or "none", 100 * tr_rate, len(va), len(te))
 
     tgt = y[te_np[:, 0], te_np[:, 1]]
     prev = y[te_np[:, 0], te_np[:, 1] - 1]
@@ -562,6 +682,11 @@ def run(cc: ChangeConfig):
                 return readout(X[i, j].float()).softmax(1)
         c = labels[i, j]
         return F.one_hot(c.clamp(max=N_CLASSES - 1), N_CLASSES).float() * (c != IGNORE)[:, None]
+
+    @torch.no_grad()
+    def this_year(P):
+        """The classifier's class for E_t: next_class_hazard's input (no labels needed)."""
+        return readout(X[P[:, 0], P[:, 1] - 1].float()).argmax(1)
 
     def markov_probs():
         """Transition table from train-block GMW pairs; per region, shrunk to the global one."""
@@ -611,19 +736,26 @@ def run(cc: ChangeConfig):
             preds[m] = readout_of(F.normalize(2 * e_now - e_prev, dim=-1))
         elif m in TRAINED:
             torch.manual_seed(cc.seed)
-            net = Forecaster(k, cc.hidden, cc.dropout, cls=m != "next_embedding", emb=m in ("next_class_emb_aux", "next_embedding"),
-                             prior=m in PRIOR).to(device)
+            if m == "next_class_hazard":
+                net = HazardForecaster(k, cc.hidden, cc.dropout, min(max(tr_rate, 1e-3), 0.5)).to(device)
+            else:
+                net = Forecaster(k, cc.hidden, cc.dropout, cls=m != "next_embedding", emb=m in ("next_class_emb_aux", "next_embedding"),
+                                 prior=m in PRIOR).to(device)
+
+            def extra(m, P, labels):  # second input: this year's class or prior, else None
+                if m == "next_class_hazard":
+                    return this_year(P)
+                return prior_of(m, P, labels) if m in PRIOR else None
 
             def fwd(P, net=net, m=m):
-                return lambda b: net(gather(X, P[b], k)[0],
-                                     prior_of(m, P[b], Y) if m in PRIOR else None)
+                return lambda b: net(gather(X, P[b], k)[0], extra(m, P[b], Y))
 
             def loss_fn(b, net=net, m=m):
                 xh, en = gather(X, tr[b], k)
-                logits, e = net(xh, prior_of(m, tr[b], Yt) if m in PRIOR else None)
+                logits, e = net(xh, extra(m, tr[b], Yt))
                 loss = 0.0
                 if logits is not None:
-                    loss = F.cross_entropy(logits, Yt[tr[b, 0], tr[b, 1]], ignore_index=IGNORE)
+                    loss = change_loss(logits, tr_tgt[b], tr_prev[b], cc)
                 if e is not None:
                     w = 1.0 if m == "next_embedding" else cc.aux_weight
                     loss = loss + w * (1 - (e * en).sum(1)).mean()
@@ -665,7 +797,7 @@ def run(cc: ChangeConfig):
     res["cos_persist"] = cos_persist
     mode = {"classifier": "clf", "model": "model", "logreg": "logreg"}.get(cc.labels)
     yr = f"y{test_year}" if cc.labels in ("model", "logreg") else None
-    folder = "_".join(v for v in ("change", mode, f"k{k}", yr, cc.tag, f"s{cc.seed}") if v)
+    folder = "_".join(v for v in ("change", mode, f"k{k}", yr, variant(cc), cc.tag, f"s{cc.seed}") if v)
     run_dir = Path(cc.out_dir) / folder
     run_dir.mkdir(parents=True, exist_ok=True)
     summary.to_csv(run_dir / "summary.csv", index=False)

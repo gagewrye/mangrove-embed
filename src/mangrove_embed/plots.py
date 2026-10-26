@@ -6,6 +6,7 @@
                                          on all held-out regions (rf_runs.csv, from W&B)
 """
 import json
+import re
 from pathlib import Path
 
 import matplotlib
@@ -440,7 +441,8 @@ def run(results_dir="results"):
     outs = []
     ch = r / "change"
     for mode in ("logreg", "model"):  # seeds x forecast years, per label source
-        rob = sorted(d for d in ch.glob(f"change_{mode}_k2_y*_s*") if (d / "summary.csv").exists())
+        rob = sorted(d for d in ch.glob(f"change_{mode}_k2_y*_s*")  # baseline runs only, no variants
+                     if re.fullmatch(rf"change_{mode}_k2_y\d+_s\d+", d.name) and (d / "summary.csv").exists())
         if len(rob) > 1:
             change_robustness(rob, ch / f"robustness_{mode}.png", ch / f"robustness_{mode}.csv")
             outs.append(ch / f"robustness_{mode}.png")

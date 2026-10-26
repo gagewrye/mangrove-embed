@@ -68,6 +68,17 @@ def main(argv=None):
     ch.add_argument("--seed", type=int, default=0)
     ch.add_argument("--device")
     ch.add_argument("--tag")
+    ch.add_argument("--loss", choices=["ce", "jaccard"], default="ce",
+                    help="forecaster loss; jaccard = alpha * CE + (1 - alpha) * batch-pooled soft IoU "
+                         "(classes + change)")
+    ch.add_argument("--jaccard-alpha", type=float, default=0.5, help="--loss jaccard: weight on CE")
+    ch.add_argument("--change-weight", type=float, default=1.0,
+                    help="CE weight on training pairs whose class changes (default 1)")
+    ch.add_argument("--mask-uncertain", type=float, default=0.0, metavar="P",
+                    help="drop training pairs where the classifier's top probability is below P "
+                         "in either year")
+    ch.add_argument("--mask-flicker", action="store_true",
+                    help="drop training pairs whose change reverts the next year")
     ch.add_argument("--save-bundle", metavar="PATH",
                     help="with --labels logreg: save the classifier + next_class forecaster for "
                          "change-predict / change-detect")
@@ -173,7 +184,8 @@ def main(argv=None):
             methods=tuple(a.methods or METHODS), history=a.history, test_year=a.test_year,
             px_per_chip=a.px_per_chip, hidden=tuple(a.hidden), dropout=a.dropout,
             epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, label_run=a.label_run, select=a.select, merge_tide=not a.no_merge_tide, seed=a.seed, device=a.device, tag=a.tag,
-            save_bundle=a.save_bundle))
+            save_bundle=a.save_bundle, loss=a.loss, jaccard_alpha=a.jaccard_alpha,
+            change_weight=a.change_weight, mask_uncertain=a.mask_uncertain, mask_flicker=a.mask_flicker))
     elif a.cmd == "change-predict":
         from .deploy import predict_rasters
         for p in predict_rasters(a.bundle, a.inputs, a.out, a.block, a.probs, a.device):
