@@ -11,9 +11,6 @@ regions:
   smaller than the seed-to-seed spread. kNN, the earlier baseline, scores 0.76.
 - **Spatial context adds nothing.** Receptive fields from 10 m to 1.27 km score the same within
   noise. The embeddings already encode their surroundings.
-- **Regularization is what transfers.** On Baja California, a region left out of training, a
-  per-pixel MLP with BatchNorm and dropout reaches IoU 0.85, the same as logistic regression.
-  Without regularization the MLP drops to 0.64-0.75.
 - **Embeddings forecast change.** From the two prior years, a per-pixel MLP ranks next year's class
   changes at AP 0.46-0.50, against 0.41-0.43 for persistence and 0.05 for random. It ranks
   durable change (still there a year later) at 0.38-0.42, against 0.29-0.30.
