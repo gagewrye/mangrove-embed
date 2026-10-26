@@ -201,6 +201,13 @@ CHANGE_LABELS = {
 }
 LEARNED = ["next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map",
            "next_class_given_probs"]
+# change --labels -> what the forecasters were trained to predict
+LABEL_SOURCES = {
+    "gmw": "GMW-based labels",
+    "classifier": "MLP classifier maps",
+    "model": "regularized-MLP maps",
+    "logreg": "logistic-regression maps",
+}
 BASE_GREY = "#a9a8a2"
 CHANGE_METRICS = [("change_ap", "changed_frac", "Any class change"),
                   ("gain_ap", "gain_rate", "Mangrove gain"),
@@ -239,7 +246,7 @@ def change_forecast(run_dir, out):
     handles = [matplotlib.patches.Patch(color=BLUE, label="learned forecaster (per-pixel MLP)"),
                matplotlib.patches.Patch(color=BASE_GREY, label="baseline")]
     k, ty = info["config"]["history"], info["test_year"]
-    src = "classifier maps" if info["config"].get("labels") == "classifier" else "GMW-based labels"
+    src = LABEL_SOURCES[info["config"].get("labels", "gmw")]
     fig.suptitle(f"Forecasting {ty} from the {k} prior year{'s' if k > 1 else ''} of embeddings "
                  f"({src} as targets, {a.px.iloc[0] / 1e6:.2f}M held-out pixels, "
                  f"{100 * a.changed_frac.iloc[0]:.1f}% change class)", x=0.01, ha="left",
@@ -361,8 +368,9 @@ def change_transitions(run_dir, out):
     fig.legend(*ax.get_legend_handles_labels(), frameon=False, fontsize=9, loc="lower right",
                ncol=3, labelcolor=INK, bbox_to_anchor=(0.97, 0.0))
     info = json.loads((d / "change.json").read_text())
-    fig.suptitle(f"Forecasting {info['test_year']}: class transitions ({a.px.iloc[0] / 1e6:.2f}M "
-                 f"held-out pixels, {100 * a.changed_frac.iloc[0]:.1f}% change class)",
+    src = LABEL_SOURCES[info["config"].get("labels", "gmw")]
+    fig.suptitle(f"Forecasting {info['test_year']}: class transitions ({src} as targets, "
+                 f"{a.px.iloc[0] / 1e6:.2f}M held-out pixels, {100 * a.changed_frac.iloc[0]:.1f}% change class)",
                  x=0.01, ha="left", color=INK, fontsize=12)
     fig.subplots_adjust(left=0.08, right=0.98, bottom=0.22, top=0.86)
     fig.savefig(out, dpi=150, facecolor=SURFACE)
@@ -385,6 +393,7 @@ def change_robustness(run_dirs, out_png, out_csv):
         s = pd.read_csv(Path(d) / "summary.csv")
         s = s[s.region == "all"].assign(test_year=info["test_year"], seed=info["config"]["seed"])
         rows.append(s)
+    src = LABEL_SOURCES[info["config"].get("labels", "gmw")]
     df = pd.concat(rows, ignore_index=True)
     cols = [c for m in ROBUST_METRICS for c in m[:2] if c in df]
     agg = (df[df.method.isin([m for m, _ in ROBUST_METHODS])]
@@ -418,8 +427,8 @@ def change_robustness(run_dirs, out_png, out_csv):
     h, l = np.atleast_1d(axes)[0].get_legend_handles_labels()
     fig.legend(h, l, loc="lower center", ncol=len(l), frameon=False, fontsize=9, labelcolor=INK)
     n = df.seed.nunique()
-    fig.suptitle(f"Forecast robustness: {n} seeds x {len(years)} forecast years (dot = mean, "
-                 "bar = seed range). Durable = change still present the next year, so it needs "
+    fig.suptitle(f"Forecast robustness ({src} as targets): {n} seeds x {len(years)} forecast years "
+                 "(dot = mean, bar = seed range). Durable = change still present the next year, so it needs "
                  "a later year.", x=0.01, ha="left", color=INK, fontsize=11)
     fig.tight_layout(rect=(0, 0.08, 1, 0.92))
     fig.savefig(out_png, dpi=150, facecolor=SURFACE)

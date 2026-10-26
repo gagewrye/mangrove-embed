@@ -31,10 +31,28 @@ hardest region and the one where logistic regression falls behind.*
 ## 1. Data and methods
 - **Inputs:** AlphaEarth annual embeddings on each region's native UTM 10 m grid.
 - **Labels:** 11 exclusive classes, a Python port of the v3 Code Editor script
-  (`legacy/mangrove_training_knn.js`): Global Mangrove Watch (GMW) v3 2020 mangroves plus hard
-  negatives, an ambiguity mask, and sampling limited to 5 km of mangrove.
-  Classes: 1 mangrove · 2 salt marsh · 3 tidal flat · 4 water · 5 seasonal water · 6 built-up ·
-  7 barren · 8 coastal forest · 9 cropland · 10 herbaceous wetland · 11 other land.
+  (`legacy/mangrove_training_knn.js`), built from existing global products:
+
+  | class | source |
+  |---|---|
+  | 1 mangrove | Global Mangrove Watch (GMW) v3 extent |
+  | 2 salt marsh | GWL_FCS30 wetland map (186) and ESA WorldCover (90) |
+  | 3 tidal flat | GWL_FCS30 (187) and WorldCover (60 / 80 / 90) |
+  | 4 water, 5 seasonal water | JRC Global Surface Water: ≥ 10 / 1-9 months a year |
+  | 6 built-up | WorldCover (50) or GHSL built-up ≥ 50% |
+  | 7 barren, 8 coastal forest, 9 cropland | WorldCover (60, 10, 40) |
+  | 10 herbaceous wetland, 11 other land | WorldCover (90; 20 / 30 / 70 / 100) |
+
+  Pixels that WorldCover or GWL_FCS30 call mangrove but the label does not are masked as ambiguous. Non-mangrove
+  classes are only sampled within 5 km of mangrove.
+- **Training labels per experiment:**
+  - **Mapping (2.1-2.3):** these labels for **2020**, the last GMW v3 year.
+  - **Change (2.4):** a classifier is first fit on these labels for **2017-2020** (the GMW v3
+    years that have embeddings). Its map for every year from 2017 to 2025 is then the target the
+    forecasters learn. Three classifiers are used: an MLP trained inside the change run (Fig. 3),
+    logistic regression (Fig. 4 and the shipped model) and a regularized per-pixel MLP trained
+    with `train-seg` on all 11 regions (Fig. 5). Training forecasters directly on the labels
+    fails (see 2.4).
 - **Regions:** Sundarbans, Mekong, Mahakam, Matang, Niger Delta, Pará, Papua, Everglades, Rufiji,
   Jamaica, Mexico Pacific (`configs/default.yaml`), plus Baja California north as an unseen test region.
 - **Samples:** 128 × 128 px chips (1.28 km), 300 per region, half centred on mangrove.
@@ -44,8 +62,7 @@ hardest region and the one where logistic regression falls behind.*
   - Unseen region: pooled training without Mexico Pacific, tested on Baja north.
 - **Metric:** mangrove IoU; average precision (AP) when ranking. Seeds 0-2 unless noted.
 - **Change:** matched pixels for 2017-2025 (400 chips per region, 100 centred on GMW change).
-  Targets are a frozen classifier's yearly maps. Forecasters see the embeddings of the k prior
-  years and are tested on held-out blocks.
+  Forecasters see the embeddings of the k prior years and are tested on held-out blocks.
 
 ## 2. Results
 ### 2.1 Model choice
@@ -79,22 +96,28 @@ Adding mean-pooled neighbourhoods (30-310 m) to the regularized MLP changes IoU 
 
 ### 2.4 Forecasting change
 ![Change forecast](results/change/change_forecast.png)
-*Figure 3. Forecasting 2025 from 2023-2024: how well each method ranks the pixels that change.
-Learned forecasters (blue) beat every baseline (grey).*
+*Figure 3. Forecasting 2025 from 2023-2024, with MLP-classifier maps as targets: how well each
+method ranks the pixels that change. Learned forecasters (blue) beat every baseline (grey).*
 
 - **Predict the class directly.** Predicting the embedding first is worse; an auxiliary
   next-embedding loss, or giving the model this year's map, adds nothing.
 - **Two prior years beat one; three add nothing.**
+- **The labels themselves cannot be forecast.** Trained directly on the yearly labels
+  (forecasting 2020), every method ranks mangrove change near random (AP ≤ 0.05). About 70% of
+  that label change is tidal flat ↔ water flicker in GWL_FCS30, and GMW's yearly mangrove
+  changes are barely visible in the embeddings. Hence the classifier maps as targets.
 - **Accuracy does not move** (0.94, same as persistence). What improves is *where* change is
   expected: the forecaster gets the new class right on 35% of changed pixels.
 
 ![Robustness](results/change/robustness_logreg.png)
-*Figure 4. Three seeds × three forecast years, with water and tidal flat merged. The forecaster
+*Figure 4. Logistic-regression maps as targets, water and tidal flat merged, three seeds × three
+forecast years. The forecaster
 (blue) beats persistence (grey) every year, by more on durable change. The mangrove-specific
 margins are within seed spread in some years.*
 
 ![Class transitions](results/change/change_model_k2_s0/transitions.png)
-*Figure 5. Left: what changing pixels become. Tidal flat → water alone is 21% of change.
+*Figure 5. Regularized-MLP maps as targets. Left: what changing pixels become. Tidal flat → water
+alone is 21% of change.
 Right: forecasting helps most for barren, other land, tidal flat and mangrove, and not at all for
 water, salt marsh or cropland.*
 
