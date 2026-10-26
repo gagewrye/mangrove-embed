@@ -168,9 +168,11 @@ because the forecaster's targets are that classifier's maps. Save it from the be
 weights scored in that run's `change.json`; nothing is retrained):
 ```bash
 pip install -e ".[seg,deploy]"
-mangrove change --labels logreg --history 2 --methods persistence classify_current next_class \
-    --save-bundle models/change_logreg_k2.pt
+mangrove change --labels logreg --history 2 --save-bundle models/change_logreg_k2.pt
 ```
+This is the full benchmark run (`results/change/change_logreg_k2_y2025_s0/`), so keep the default
+`--methods`: a narrower list writes to the same folder and replaces its results. The shipped
+`models/change_logreg_k2.pt` scores change AP 0.49, mangrove IoU 0.95 on the 2025 holdout.
 On load, the bundle checks itself against reference logits stored at training time and refuses to
 run if they no longer match.
 
