@@ -149,6 +149,7 @@ with `EE_PROJECT`).
 | 2.2 spatial context | `mangrove train-seg --model fcn --fcn-dilations ...`, `python scripts/context_sweep.py` |
 | 2.3 unseen region | `mangrove --config configs/baja_test.yaml chips`, `mangrove eval-seg --chips data/test/chips` |
 | 2.4 change | `mangrove temporal-chips`, `mangrove change --labels logreg --history 2` |
+| change-model variants (loss, target masking; no results yet) | `python scripts/change_sweep.py` |
 | figures | `mangrove plots` |
 
 Every command has `--help`. Runs resume, and each variant writes its own results folder.
