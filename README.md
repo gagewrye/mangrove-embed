@@ -14,6 +14,9 @@ regions:
 - **Embeddings forecast change.** From the two prior years, a per-pixel MLP ranks next year's class
   changes at AP 0.46-0.50, against 0.41-0.43 for persistence and 0.05 for random. It ranks
   durable change (still there a year later) at 0.38-0.42, against 0.29-0.30.
+- **Cleaner targets and change-focused losses don't help.** Dropping uncertain or reverting
+  training pixels, upweighting change, a Jaccard loss and a separate change head all match or trail
+  the plain cross-entropy forecaster.
 - **But much of the change is not land cover.** A fifth of detected change is tidal flat to water,
   caused by tide stage. Global Mangrove Watch's own year-to-year changes are barely visible in the
   embeddings (AP ≤ 0.05).
@@ -118,10 +121,41 @@ alone is 21% of change.
 Right: forecasting helps most for barren, other land, tidal flat and mangrove, and not at all for
 water, salt marsh or cropland.*
 
+**Training variants.** We tested whether noisy targets or the rarity of change hold the forecaster
+back (logistic-regression targets, 3 seeds × 2023-2025, compared on matching seed and year):
+
+| variant | next_class change AP vs base | two-head model change AP vs base |
+|---|---|---|
+| drop changes that revert the next year | +0.003 | +0.005 |
+| drop pixels the classifier is unsure of (top probability < 0.6) | −0.007 | −0.075 |
+| drop both | −0.004 | −0.070 |
+| Jaccard loss (0.5 CE + 0.5 batch-pooled soft IoU) | −0.017 | −0.004 |
+| Jaccard + drop both | −0.020 | −0.089 |
+| change weight 5 | −0.046 | −0.008 |
+
+Base: next_class 0.482, two-head 0.416, persistence 0.417.
+
+![Training variants](results/change/variants.png)
+*Figure 6. Each variant minus plain cross-entropy, one dot per seed × year. Nothing moves
+next_class by more than its seed-to-seed spread (sd up to 0.06), except change weighting, which is worse in every
+pair.*
+
+- **Plain cross-entropy stays best.** The flicker mask is the only variant that isn't worse, and
+  its gain is well inside the seed spread.
+- **A separate change head does no better than persistence.** The two-head model (P(change), then
+  the new class) ranks change like the classifier's own uncertainty (0.416 vs 0.417).
+- **Dropping uncertain pixels hurts the two-head model badly.** Most test-year change happens on
+  pixels the classifier is unsure of, so dropping them likely removes the cases its change head
+  needs to learn from.
+- **So target noise is not what limits the forecaster.** The next things to try are new inputs:
+  spatial context, a summary of each pixel's past flips, and drivers such as elevation and
+  distance to settlements.
+
 ## 3. Limitations
 - LORO covers 4 regions; SegFormer, logistic regression and kNN in Table 2.1 are single runs.
 - Change targets are classifier maps, so some "change" is flicker on borderline pixels.
-  Merging water with tidal flat and scoring durable change reduce this but do not remove it.
+  Merging water with tidal flat and scoring durable change reduce this but do not remove it;
+  dropping uncertain or reverting pixels from training does not improve the forecaster.
 - Mangrove thresholds tuned on training regions do not transfer, so we report argmax.
 
 ## 4. Conclusion
@@ -146,7 +180,7 @@ with `EE_PROJECT`).
 | 2.2 spatial context | `mangrove train-seg --model fcn --fcn-dilations ...`, `python scripts/context_sweep.py` |
 | 2.3 unseen region | `mangrove --config configs/baja_test.yaml chips`, `mangrove eval-seg --chips data/test/chips` |
 | 2.4 change | `mangrove temporal-chips`, `mangrove change --labels logreg --history 2` |
-| change-model variants (loss, target masking; no results yet) | `python scripts/change_sweep.py` |
+| 2.4 training variants | `python scripts/change_sweep.py` |
 | figures | `mangrove plots` |
 
 Every command has `--help`. Runs resume, and each variant writes its own results folder.

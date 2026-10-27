@@ -199,6 +199,7 @@ CHANGE_LABELS = {
     "next_embedding": "Predict next embedding, then classify it",
     "next_class_given_map": "Predict next class, given this year's map",
     "next_class_given_probs": "Predict next class, given this year's probabilities",
+    "next_class_hazard": "Two heads: P(change), then new class",
 }
 LEARNED = ["next_class", "next_class_emb_aux", "next_embedding", "next_class_given_map",
            "next_class_given_probs"]
@@ -436,6 +437,56 @@ def change_robustness(run_dirs, out_png, out_csv):
     plt.close(fig)
 
 
+VARIANT_LABELS = {  # scripts/change_sweep.py variant -> label
+    "noflicker": "Drop changes that revert",
+    "conf": "Drop uncertain pixels",
+    "clean": "Drop both",
+    "jaccard": "Jaccard loss",
+    "jaccard_clean": "Jaccard + drop both",
+    "cw5": "Change weight 5",
+}
+
+
+def change_variants(csv, out):
+    """Training variants minus base, paired by seed and forecast year (variants.csv from
+    scripts/change_sweep.py): one dot per pair, bar = mean, per forecaster."""
+    df = pd.read_csv(csv)
+    key = ["test_year", "seed", "method"]
+    metrics = [("change_ap", "Any class change: AP"),
+               ("durable_ap", "Durable change: AP (needs the next year: 2023-2024 only)")]
+    base = df[df.variant == "base"].set_index(key)
+    d = df[(df.variant != "base") & df.method.isin(["next_class", "next_class_hazard"])].set_index(key)
+    order = [v for v in VARIANT_LABELS if v in set(d.variant)]
+    methods = [("next_class", BLUE), ("next_class_hazard", ORANGE)]
+    fig, axes = plt.subplots(1, len(metrics), figsize=(11, 4.2), facecolor=SURFACE, sharey=True)
+    for ax, (col, title) in zip(axes, metrics):
+        _style(ax)
+        ax.grid(axis="y", visible=False)
+        ax.axvline(0, color=INK2, lw=1)
+        for i, v in enumerate(order):
+            for j, (m, c) in enumerate(methods):
+                s = d[(d.variant == v)].xs(m, level="method")
+                delta = (s[col] - base.xs(m, level="method")[col].reindex(s.index)).dropna()
+                y = i + (j - 0.5) * 0.32
+                ax.scatter(delta, np.full(len(delta), y), s=14, color=c, alpha=0.45, lw=0)
+                ax.plot([delta.mean()] * 2, [y - 0.13, y + 0.13], color=c, lw=2.6,
+                        label=CHANGE_LABELS[m] if i == 0 else None)
+        ax.set_yticks(range(len(order)), [VARIANT_LABELS[v] for v in order], color=INK, fontsize=9.5)
+        ax.tick_params(axis="y", length=0)
+        ax.set_title(title, loc="left", color=INK, fontsize=11)
+        ax.set_xlabel("minus base (same seed and forecast year)", color=INK2, fontsize=9)
+    axes[0].invert_yaxis()  # shared y: once
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=2, frameon=False, fontsize=9, labelcolor=INK)
+    n = df.groupby(["test_year", "seed"]).ngroups
+    fig.suptitle(f"Training variants vs plain cross-entropy (logistic-regression maps as targets; "
+                 f"{n} seed x year pairs, dot = one pair, bar = mean). Right of 0 = better.",
+                 x=0.01, ha="left", color=INK, fontsize=11)
+    fig.tight_layout(rect=(0, 0.07, 1, 0.93))
+    fig.savefig(out, dpi=150, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def run(results_dir="results"):
     r = Path(results_dir)
     outs = []
@@ -446,6 +497,9 @@ def run(results_dir="results"):
         if len(rob) > 1:
             change_robustness(rob, ch / f"robustness_{mode}.png", ch / f"robustness_{mode}.csv")
             outs.append(ch / f"robustness_{mode}.png")
+    if (ch / "variants.csv").exists():
+        change_variants(ch / "variants.csv", ch / "variants.png")
+        outs.append(ch / "variants.png")
     for d in sorted(ch.glob("change_*")):  # per-run figures where per-class outputs exist
         if (d / "classes.csv").exists():
             change_forecast(d, d / "forecast.png")

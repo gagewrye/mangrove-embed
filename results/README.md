@@ -130,6 +130,35 @@ than on any change (+0.05 to +0.07), so it is not just predicting tide or classi
 Seed spread is large for the mangrove-specific scores (up to ±0.09), and the gain/loss margins
 over persistence are within it in some years. The auxiliary embedding loss still adds nothing.
 
+**Training variants (`change/variants.csv`, `change/variants.png`; `scripts/change_sweep.py`).**
+Same setup as the robustness runs (logreg targets, k = 2, 3 seeds x forecast years 2023-2025),
+10 epochs. Each variant trains next_class and next_class_hazard (two heads: P(change), then
+P(new class | change)). Differences are paired with base by seed and year; durable scores
+cover 2023-2024 only.
+
+| variant | next_class change AP | durable AP | pairs better | hazard change AP | durable AP |
+|---|---|---|---|---|---|
+| base (plain CE) | 0.482 | 0.399 | | 0.416 | 0.318 |
+| drop reverting changes | +0.003 | −0.005 | 6 / 9 | +0.005 | +0.001 |
+| drop uncertain (top p < 0.6) | −0.007 | −0.009 | 4 / 9 | −0.075 | −0.054 |
+| drop both | −0.004 | −0.005 | 4 / 9 | −0.070 | −0.050 |
+| Jaccard (0.5 CE + 0.5 soft IoU) | −0.017 | −0.017 | 1 / 9 | −0.004 | +0.000 |
+| Jaccard + drop both | −0.020 | −0.017 | 2 / 9 | −0.089 | −0.072 |
+| change weight 5 | −0.046 | −0.052 | 0 / 9 | −0.008 | −0.010 |
+
+Persistence (uncertainty-ranked): change AP 0.417, durable 0.297. Base next_class seed sd within
+a year: 0.04 (2023), 0.06 (2024), 0.003 (2025).
+
+- No variant improves next_class beyond seed noise; change weighting is worse in all 9 pairs
+  and also lowers mangrove IoU (−0.008; −0.027 for the hazard model).
+- The hazard model matches persistence and no more: its change head adds nothing over the
+  classifier's uncertainty.
+- Dropping uncertain pixels costs the hazard model ~0.07 AP in every pair, likely because most
+  test-year change is on exactly those pixels.
+- With target cleaning and loss reshaping ruled out, the forecaster's limit is probably its inputs.
+- `notide_ap` equals `change_ap` here: with tide merged in the targets there is no tidal change
+  left to remove.
+
 ## Conclusion
 - **Model choice:** use the regularized per-pixel MLP. It ties logistic regression where the
   region is in training and is safer on a novel one.
@@ -145,6 +174,6 @@ over persistence are within it in some years. The auxiliary embedding loss still
 | `calibration/` | calibration + kNN sweep | `scripts/calibration_probe.py`, `knn_k_sweep.py` |
 | `point_diagnostics/` | Q1-Q4 | `mangrove diagnose` |
 | `context/` | regularized MLP + spatial context sweep | `scripts/context_sweep.py` |
-| `change/` | change prediction, one folder per run (`clf` = classifier-map targets, `k` = prior years) | `mangrove temporal-chips`, `mangrove change` |
+| `change/` | change prediction, one folder per run (`clf` = classifier-map targets, `k` = prior years); `variants.csv` = training-variant sweep | `mangrove temporal-chips`, `mangrove change`, `scripts/change_sweep.py` |
 
 Figures: `mangrove plots`. Model weights (`*.pt`) are not versioned.
