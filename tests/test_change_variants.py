@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import pytest
 import torch
 import torch.nn.functional as F
 
@@ -14,6 +15,7 @@ def test_variant_names():
     cc = ChangeConfig(loss="jaccard", change_weight=5, mask_uncertain=0.6, mask_flicker=True)
     assert variant(cc) == "jaccard_cw5_conf0.6_noflicker"
     assert variant(ChangeConfig(loss="jaccard", jaccard_alpha=0.2)) == "jaccard0.2"
+    assert variant(ChangeConfig(context=(3, 15))) == "ctx3-15"
 
 
 def test_flicker_only_masks_reverting_change():
@@ -116,3 +118,47 @@ def test_variants_end_to_end(tmp_path):
     a0, a1 = (s[s.region == "all"].set_index("method") for s in (s0, s1))
     assert (a0.px == a1.px).all() and (a0.changed_px == a1.changed_px).all()
     assert np.isfinite(a1.loc[["next_class", "next_class_hazard"], "change_ap"]).all()
+
+
+class _OneHot(torch.nn.Module):
+    """Readout whose class is the argmax of the first 11 embedding dims (near one-hot probs)."""
+    def forward(self, e):
+        return 50 * e[:, :N_CLASSES]
+
+
+def test_context_features_masked_mean(tmp_path):
+    from mangrove_embed.change import context_features
+    rng = np.random.default_rng(0)
+    t, h, w = 2, 8, 8
+    cls = rng.integers(0, N_CLASSES, (t, h, w))
+    x = np.zeros((t, 64, h, w), np.float16)
+    x[np.arange(t)[:, None, None], cls, np.arange(h)[None, :, None], np.arange(w)[None, None, :]] = 1
+    x[:, :, 0, 0] = 0                                      # no-data pixel: left out of the mean
+    np.savez(tmp_path / "c.npz", x=x)
+    hw = np.array([[0, 1], [4, 4], [7, 7]], np.int16)
+    out = context_features([tmp_path / "c.npz"], np.zeros(3, np.int32), hw, _OneHot(), (1,), "cpu")
+    assert out.shape == (3, t, N_CLASSES)
+    for n, (r, c) in enumerate(hw):
+        for yr in range(t):
+            win = [(i, j) for i in range(r - 1, r + 2) for j in range(c - 1, c + 2)
+                   if 0 <= i < h and 0 <= j < w and (i, j) != (0, 0)]
+            want = np.bincount([cls[yr, i, j] for i, j in win], minlength=N_CLASSES) / len(win)
+            assert np.abs(out[n, yr] / 255 - want).max() < 2 / 255
+
+
+def test_context_end_to_end(tmp_path):
+    from mangrove_embed.change import run
+    _data(tmp_path)
+    base = dict(temporal_dir=str(tmp_path), out_dir=str(tmp_path / "out"), px_per_chip=20, epochs=2,
+                batch_size=64, hidden=(16,), device="cpu", history=2, labels="logreg",
+                methods=("classify_current", "next_class", "next_class_emb_aux", "next_class_hazard"))
+    s = run(ChangeConfig(**base, context=(1, 2)))
+    assert (tmp_path / "out" / "change_logreg_k2_y2025_ctx1-2_s0" / "change.json").exists()
+    allr = s[s.region == "all"].set_index("method")
+    assert np.isfinite(allr.loc[["next_class", "next_class_emb_aux", "next_class_hazard"], "change_ap"]).all()
+    cache = list((tmp_path / "_cache").glob("ctx_*_r1-2_*.npz"))
+    assert len(cache) == 1 and np.load(cache[0])["ctx"].shape[2] == 2 * N_CLASSES
+    run(ChangeConfig(**base, context=(1, 2)))                       # same classifier: cache reused
+    assert len(list((tmp_path / "_cache").glob("ctx_*.npz"))) == 1
+    with pytest.raises(SystemExit):
+        run(ChangeConfig(**base, context=(1,), save_bundle=str(tmp_path / "b.pt")))

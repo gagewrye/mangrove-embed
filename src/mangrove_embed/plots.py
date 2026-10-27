@@ -444,6 +444,9 @@ VARIANT_LABELS = {  # scripts/change_sweep.py variant -> label
     "jaccard": "Jaccard loss",
     "jaccard_clean": "Jaccard + drop both",
     "cw5": "Change weight 5",
+    "ctx3": "Context 70 m",
+    "ctx15": "Context 310 m",
+    "ctx3-15": "Context 70 + 310 m",
 }
 
 

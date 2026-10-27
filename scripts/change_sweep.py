@@ -12,6 +12,9 @@ baseline to beat.
   noflicker     drop training pairs whose change reverts the next year
   clean         conf + noflicker
   jaccard_clean jaccard + conf + noflicker
+  ctx3          + neighbourhood class makeup, 7 x 7 window (70 m)
+  ctx15         + neighbourhood class makeup, 31 x 31 window (310 m)
+  ctx3-15       both windows
 
 Runs are tagged "sweep" (change_logreg_k2_y<year>[_<variant>]_sweep_s<seed>), so they never
 overwrite the benchmark runs. Resumes: runs whose change.json exists are skipped.
@@ -39,14 +42,16 @@ def variants(conf):
     clean = dict(mask_uncertain=conf, mask_flicker=True)
     return {"base": {}, "cw5": dict(change_weight=5.0), "jaccard": dict(loss="jaccard"),
             "conf": dict(mask_uncertain=conf), "noflicker": dict(mask_flicker=True),
-            "clean": clean, "jaccard_clean": dict(loss="jaccard", **clean)}
+            "clean": clean, "jaccard_clean": dict(loss="jaccard", **clean),
+            "ctx3": dict(context=(3,)), "ctx15": dict(context=(15,)), "ctx3-15": dict(context=(3, 15))}
 
 
 def flags(kw):
     """ChangeConfig fields -> `mangrove change` flags."""
     out = []
     for k, v in kw.items():
-        out += [f"--{k.replace('_', '-')}"] + ([] if v is True else [str(v)])
+        vals = [] if v is True else [str(a) for a in v] if isinstance(v, tuple) else [str(v)]
+        out += [f"--{k.replace('_', '-')}"] + vals
     return out
 
 

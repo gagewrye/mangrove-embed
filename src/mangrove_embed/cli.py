@@ -79,6 +79,9 @@ def main(argv=None):
                          "in either year")
     ch.add_argument("--mask-flicker", action="store_true",
                     help="drop training pairs whose change reverts the next year")
+    ch.add_argument("--context", nargs="*", type=int, default=[], metavar="R",
+                    help="spatial context: radii (px) of neighbourhood class makeup added to the "
+                         "forecasters' input, e.g. --context 3 15 (70 m and 310 m windows)")
     ch.add_argument("--save-bundle", metavar="PATH",
                     help="with --labels logreg: save the classifier + next_class forecaster for "
                          "change-predict / change-detect")
@@ -185,7 +188,8 @@ def main(argv=None):
             px_per_chip=a.px_per_chip, hidden=tuple(a.hidden), dropout=a.dropout,
             epochs=a.epochs, aux_weight=a.aux_weight, pseudo=not a.no_pseudo, labels=a.labels, label_run=a.label_run, select=a.select, merge_tide=not a.no_merge_tide, seed=a.seed, device=a.device, tag=a.tag,
             save_bundle=a.save_bundle, loss=a.loss, jaccard_alpha=a.jaccard_alpha,
-            change_weight=a.change_weight, mask_uncertain=a.mask_uncertain, mask_flicker=a.mask_flicker))
+            change_weight=a.change_weight, mask_uncertain=a.mask_uncertain, mask_flicker=a.mask_flicker,
+            context=tuple(a.context)))
     elif a.cmd == "change-predict":
         from .deploy import predict_rasters
         for p in predict_rasters(a.bundle, a.inputs, a.out, a.block, a.probs, a.device):

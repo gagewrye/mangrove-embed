@@ -61,6 +61,11 @@ never overwrites the baseline run):
                     either year: borderline pixels whose "change" is classifier flicker.
   mask_flicker      drop training pairs whose change reverts the next year (C_t != C_{t+1} and
                     C_{t+2} = C_t), checked only where year t+2 is itself a training target year.
+  context           radii r (px): each input year also gets the readout's class probabilities
+                    averaged over the (2r+1) x (2r+1) window around the pixel (11 per radius):
+                    is it at a mangrove or water edge, and (from the k years) did its
+                    neighbourhood change. Class makeup instead of pooled embeddings keeps it to
+                    11 values per radius; cached per readout under <temporal_dir>/_cache.
 Validation and test pairs are never masked, so every variant is scored on the same pixels.
 
 Per-class outputs (classes.csv, transitions.csv): for every class c, enter_ap ranks the pixels
@@ -134,6 +139,8 @@ class ChangeConfig:
     change_weight: float = 1.0    # CE weight on pairs whose class changes
     mask_uncertain: float = 0.0   # drop training pairs with classifier top probability below this
     mask_flicker: bool = False    # drop training pairs whose change reverts the next year
+    context: tuple = ()           # radii (px) of neighbourhood class makeup added to the forecasters'
+                                  # input, per year (see context_features)
 
 
 def variant(cc: ChangeConfig):
@@ -147,15 +154,18 @@ def variant(cc: ChangeConfig):
         parts.append(f"conf{cc.mask_uncertain:g}")
     if cc.mask_flicker:
         parts.append("noflicker")
+    if cc.context:
+        parts.append("ctx" + "-".join(str(r) for r in cc.context))
     return "_".join(parts) or None
 
 
 # ------------------------------------------------------------------ data
 def sample_series(paths, n, seed):
     """Up to n random pixels per chip with an embedding in every year and a label in some year.
-    -> x float16 [N, T, 64], y uint8 [N, T] (0..10, 255 = none), chip index [N], years [T]."""
+    -> x float16 [N, T, 64], y uint8 [N, T] (0..10, 255 = none), chip index [N] (sorted),
+    years [T], pixel row / col in the chip [N, 2]."""
     rng = np.random.default_rng(seed)
-    xs, ys, cs, years = [], [], [], None
+    xs, ys, cs, hws, years = [], [], [], [], None
     for i, p in enumerate(paths):
         d = np.load(p)
         x, y = d["x"], d["y"]
@@ -168,23 +178,68 @@ def sample_series(paths, n, seed):
         xs.append(x[:, :, h, w].transpose(2, 0, 1))
         ys.append(np.where(y[:, h, w] == IGNORE, IGNORE, y[:, h, w] - 1).T.astype(np.uint8))
         cs.append(np.full(len(h), i, np.int32))
-    return np.concatenate(xs), np.concatenate(ys), np.concatenate(cs), np.asarray(years)
+        hws.append(np.c_[h, w].astype(np.int16))
+    return (np.concatenate(xs), np.concatenate(ys), np.concatenate(cs), np.asarray(years),
+            np.concatenate(hws))
 
 
 def load_series(cc: ChangeConfig, df):
-    """sample_series, cached under <temporal_dir>/_cache (keyed on the chip list)."""
+    """sample_series, cached under <temporal_dir>/_cache (keyed on the chip list). Caches from
+    before pixel positions were stored are resampled when spatial context needs them (same
+    seed = same pixels)."""
     cache = Path(cc.temporal_dir) / "_cache" / f"series_n{cc.px_per_chip}_s{cc.seed}_{len(df)}.npz"
     paths = list(df.path)
     if cache.exists():
         d = np.load(cache, allow_pickle=False)
-        if list(d["paths"]) == paths:
-            return d["x"], d["y"], d["chip"], d["years"]
+        if list(d["paths"]) == paths and ("hw" in d or not cc.context):
+            return d["x"], d["y"], d["chip"], d["years"], (d["hw"] if "hw" in d else None)
     t0 = time.time()
-    x, y, chip, years = sample_series(paths, cc.px_per_chip, cc.seed)
+    x, y, chip, years, hw = sample_series(paths, cc.px_per_chip, cc.seed)
     cache.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(cache, x=x, y=y, chip=chip, years=years, paths=np.array(paths))
+    np.savez(cache, x=x, y=y, chip=chip, years=years, hw=hw, paths=np.array(paths))
     log.info("sampled %d px from %d chips in %.0fs -> %s", len(y), len(paths), time.time() - t0, cache)
-    return x, y, chip, years
+    return x, y, chip, years, hw
+
+
+@torch.no_grad()
+def context_features(paths, chip, hw, readout, radii, device):
+    """Neighbourhood class makeup: for every sampled pixel and year, the readout's class
+    probabilities averaged over the (2r+1) x (2r+1) window around it, per radius r (pixels with
+    no embedding left out of the mean). -> uint8 [N, T, len(radii) * 11] (probability * 255)."""
+    bounds = np.searchsorted(chip, np.arange(len(paths) + 1))   # chip is sorted (sample_series)
+    out = None
+    for i, p in enumerate(paths):
+        lo, hi = bounds[i], bounds[i + 1]
+        if lo == hi:
+            continue
+        x = torch.from_numpy(np.load(p)["x"]).to(device).float()          # [T, 64, H, W]
+        t, _, h, w = x.shape
+        valid = (x.abs().sum(1, keepdim=True) > 0).float()               # [T, 1, H, W]
+        prob = readout(x.permute(0, 2, 3, 1).reshape(-1, 64)).float().softmax(1)
+        prob = prob.reshape(t, h, w, N_CLASSES).permute(0, 3, 1, 2) * valid
+        feats = []
+        for r in radii:  # masked mean: the window averages of prob and of valid, divided
+            s = F.avg_pool2d(prob, 2 * r + 1, 1, r)
+            n = F.avg_pool2d(valid, 2 * r + 1, 1, r)
+            feats.append(s / n.clamp_min(1e-6))
+        f = torch.cat(feats, 1)                                          # [T, R * 11, H, W]
+        rows = torch.from_numpy(hw[lo:hi, 0].astype(np.int64)).to(device)
+        cols = torch.from_numpy(hw[lo:hi, 1].astype(np.int64)).to(device)
+        v = (f[:, :, rows, cols].permute(2, 0, 1) * 255).round().clamp(0, 255)
+        if out is None:
+            out = np.zeros((len(chip), t, f.shape[1]), np.uint8)
+        out[lo:hi] = v.byte().cpu().numpy()
+    return out
+
+
+def readout_hash(readout):
+    """Short hash of a readout's weights: keys the context cache to the classifier that made it."""
+    import hashlib
+    h = hashlib.sha1()
+    for k, v in sorted(readout.state_dict().items()):
+        h.update(k.encode())
+        h.update(v.detach().float().cpu().numpy().tobytes())
+    return h.hexdigest()[:12]
 
 
 def pairs(y, rows, target_cols, k):
@@ -263,10 +318,11 @@ class Forecaster(nn.Module):
     """E_{t-k+1..t} [B, k, 64] -> (class logits | None, next embedding | None). The embedding
     head is a residual on E_t, renormalized (AlphaEarth embeddings are unit vectors). With
     prior=True a this-year class vector [B, 11] (one-hot map or probabilities) is also an input
-    and is added to the logits with a learned weight (starts at 3: favor no change)."""
-    def __init__(self, k, hidden, dropout, cls=True, emb=False, prior=False):
+    and is added to the logits with a learned weight (starts at 3: favor no change). d > 64:
+    each year's input also carries spatial context after the embedding ([B, k, d])."""
+    def __init__(self, k, hidden, dropout, cls=True, emb=False, prior=False, d=64):
         super().__init__()
-        self.body, c = trunk(64 * k + (N_CLASSES if prior else 0), hidden, dropout)
+        self.body, c = trunk(d * k + (N_CLASSES if prior else 0), hidden, dropout)
         self.cls = nn.Linear(c, N_CLASSES) if cls else None
         self.emb = nn.Linear(c, 64) if emb else None
         self.persist = nn.Parameter(torch.tensor(3.0)) if prior else None
@@ -278,7 +334,7 @@ class Forecaster(nn.Module):
         logits = self.cls(z) if self.cls is not None else None
         if logits is not None and prior is not None:
             logits = logits + self.persist * prior
-        e = F.normalize(xh[:, -1] + self.emb(z), dim=-1) if self.emb is not None else None
+        e = F.normalize(xh[:, -1, :64] + self.emb(z), dim=-1) if self.emb is not None else None
         return logits, e
 
 
@@ -287,9 +343,9 @@ class HazardForecaster(nn.Module):
     A change head gives h = logit P(change); a class head gives P(new class | change) over the
     other classes. log P(this year's class) = log(1 - sigmoid(h)), log P(c) = log sigmoid(h) +
     log P(c | change). The output is log-probabilities, so softmax / CE treat it as logits."""
-    def __init__(self, k, hidden, dropout, rate=0.05):
+    def __init__(self, k, hidden, dropout, rate=0.05, d=64):
         super().__init__()
-        self.body, c = trunk(64 * k, hidden, dropout)
+        self.body, c = trunk(d * k, hidden, dropout)
         self.change = nn.Linear(c, 1)
         self.cls = nn.Linear(c, N_CLASSES)
         nn.init.constant_(self.change.bias, float(np.log(rate / (1 - rate))))  # start at the base rate
@@ -329,11 +385,15 @@ def change_loss(logits, tgt, prev, cc):
     return cc.jaccard_alpha * ce + (1 - cc.jaccard_alpha) * (1 - torch.cat(ious).mean())
 
 
-def gather(X, P, k):
-    """X [N, T, 64] (device), P [B, 2] -> history [B, k, 64] float, next embedding [B, 64]."""
+def gather(X, P, k, C=None):
+    """X [N, T, 64] (device), P [B, 2] -> history [B, k, 64] float, next embedding [B, 64].
+    C [N, T, c] uint8 (spatial context): appended to each history year, scaled to 0-1."""
     i, j = P[:, 0], P[:, 1]
     cols = j[:, None] - k + torch.arange(k, device=X.device)
-    return X[i[:, None], cols].float(), X[i, j].float()
+    xh = X[i[:, None], cols].float()
+    if C is not None:
+        xh = torch.cat([xh, C[i[:, None], cols].float() / 255], 2)
+    return xh, X[i, j].float()
 
 
 def _batches(n, bs, shuffle, gen=None, device=None):
@@ -539,7 +599,7 @@ def run(cc: ChangeConfig):
     test_chip = split_blocks(df, 0.2, cc.seed + 1)
     val_chip = np.zeros(len(df), bool)
     val_chip[~test_chip] = split_blocks(df[~test_chip].reset_index(drop=True), cc.val_frac, cc.seed)
-    x, y, chip, years = load_series(cc, df)
+    x, y, chip, years, hw = load_series(cc, df)
     years = [int(v) for v in years]
     split = np.where(test_chip[chip], 2, np.where(val_chip[chip], 1, 0))
     rows = {s: np.flatnonzero(split == i) for i, s in enumerate(("train", "val", "test"))}
@@ -547,6 +607,8 @@ def run(cc: ChangeConfig):
     clf = cc.labels in ("classifier", "model", "logreg")
     if cc.save_bundle and (cc.labels != "logreg" or "next_class" not in cc.methods):
         raise SystemExit("--save-bundle needs --labels logreg and the next_class method")
+    if cc.save_bundle and cc.context:
+        raise SystemExit("--save-bundle: change-predict has no spatial context; drop --context")
     if cc.loss not in LOSSES:
         raise SystemExit(f"loss must be one of {LOSSES}")
     test_year = cc.test_year or (years[-1] if clf else 2020)
@@ -619,6 +681,20 @@ def run(cc: ChangeConfig):
     if clf:
         y = Y.cpu().numpy().astype(np.uint8)
         gmw = [j for j, yr in enumerate(years) if yr < test_year]   # target years from here on
+
+    C = None  # spatial context [N, T, R * 11] uint8, appended to each input year
+    if cc.context:
+        key = f"ctx_{readout_hash(readout)}_r{'-'.join(map(str, cc.context))}_n{cc.px_per_chip}_s{cc.seed}_{len(df)}.npz"
+        cpath = Path(cc.temporal_dir) / "_cache" / key
+        if cpath.exists():
+            c_np = np.load(cpath)["ctx"]
+        else:
+            t0 = time.time()
+            c_np = context_features(list(df.path), chip, hw, readout, cc.context, device)
+            np.savez(cpath, ctx=c_np)
+            log.info("context r=%s from %d chips in %.0fs -> %s", cc.context, len(df), time.time() - t0, cpath)
+        C = torch.from_numpy(c_np).to(device)
+    d_in = 64 + (C.shape[2] if C is not None else 0)
 
     # pseudo-labels for years after GMW, and in place of labels from test_year on, train pixels only
     Yt = Y.clone()
@@ -737,10 +813,10 @@ def run(cc: ChangeConfig):
         elif m in TRAINED:
             torch.manual_seed(cc.seed)
             if m == "next_class_hazard":
-                net = HazardForecaster(k, cc.hidden, cc.dropout, min(max(tr_rate, 1e-3), 0.5)).to(device)
+                net = HazardForecaster(k, cc.hidden, cc.dropout, min(max(tr_rate, 1e-3), 0.5), d=d_in).to(device)
             else:
                 net = Forecaster(k, cc.hidden, cc.dropout, cls=m != "next_embedding", emb=m in ("next_class_emb_aux", "next_embedding"),
-                                 prior=m in PRIOR).to(device)
+                                 prior=m in PRIOR, d=d_in).to(device)
 
             def extra(m, P, labels):  # second input: this year's class or prior, else None
                 if m == "next_class_hazard":
@@ -748,10 +824,10 @@ def run(cc: ChangeConfig):
                 return prior_of(m, P, labels) if m in PRIOR else None
 
             def fwd(P, net=net, m=m):
-                return lambda b: net(gather(X, P[b], k)[0], extra(m, P[b], Y))
+                return lambda b: net(gather(X, P[b], k, C)[0], extra(m, P[b], Y))
 
             def loss_fn(b, net=net, m=m):
-                xh, en = gather(X, tr[b], k)
+                xh, en = gather(X, tr[b], k, C)
                 logits, e = net(xh, extra(m, tr[b], Yt))
                 loss = 0.0
                 if logits is not None:
