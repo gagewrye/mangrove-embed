@@ -102,6 +102,11 @@ def main(argv=None):
     for q in (cp, cd):
         q.add_argument("--block", type=int, default=512, help="tile size in pixels (default 512)")
         q.add_argument("--device")
+    cr = sub.add_parser("change-report",
+                        help="figures + tables: observed mangrove change, 2025 forecast skill, 2026 outlook")
+    cr.add_argument("--bundle", default="models/change_logreg_k2.pt")
+    cr.add_argument("--out", default="results/change_report")
+    cr.add_argument("--device")
 
     t = sub.add_parser("train-seg", help="train SegFormer on chips (needs the [seg] extra)")
     t.add_argument("--protocol", choices=["loro", "pooled"], default="loro")
@@ -150,7 +155,7 @@ def main(argv=None):
     sub.add_parser("demo", help="run diagnostics on synthetic data (no Earth Engine needed)")
 
     a = ap.parse_args(argv)
-    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "temporal-chips", "change", "change-predict", "change-detect", "train-seg", "bench", "compare-pixel") else logging.WARNING,
+    logging.basicConfig(level=logging.INFO if a.verbose or a.cmd in ("extract", "chips", "temporal-chips", "change", "change-predict", "change-detect", "change-report", "train-seg", "bench", "compare-pixel") else logging.WARNING,
                         format="%(asctime)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
 
     if a.cmd == "auth":
@@ -236,6 +241,9 @@ def main(argv=None):
         run_pixel(a.chips or f"{cfg.data_dir}/chips", a.out or f"{cfg.results_dir}/model_comparison",
                   a.models, a.holdout, a.n_train, n_test=a.n_test, seed=a.seed,
                   regions=a.regions, wandb=_wb(a))
+    elif a.cmd == "change-report":
+        from .report import run as run_report
+        run_report(a.bundle, f"{cfg.data_dir}/temporal", a.out, a.device)
     elif a.cmd == "plots":
         from .plots import run as run_plots
         run_plots(cfg.results_dir)

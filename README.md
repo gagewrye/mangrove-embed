@@ -9,17 +9,18 @@ regions:
 - **A per-pixel model is enough.** With one region held out, logistic regression (715 parameters),
   a pixel MLP, a dilated FCN and SegFormer-B0 all score 0.82-0.84 mangrove IoU. That gap is
   smaller than the seed-to-seed spread. kNN, the earlier baseline, scores 0.76.
-- **Spatial context adds nothing.** Receptive fields from 10 m to 1.27 km score the same within
-  noise. The embeddings already encode their surroundings.
-- **Embeddings forecast change.** From the two prior years, a per-pixel MLP ranks next year's class
-  changes at AP 0.46-0.50, against 0.41-0.43 for persistence and 0.05 for random. It ranks
-  durable change (still there a year later) at 0.38-0.42, against 0.29-0.30.
-- **Cleaner targets and change-focused losses don't help.** Dropping uncertain or reverting
-  training pixels, upweighting change, a Jaccard loss and a separate change head all match or trail
-  the plain cross-entropy forecaster.
+- **Spatial context adds nothing, since the embeddings already account for it.** Receptive fields
+  from 10 m to 1.27 km score the same within noise.
+- **Embeddings forecast where change happens, modestly.** From the two prior years, a per-pixel
+  MLP ranks next year's class changes at AP 0.46-0.50, against 0.41-0.43 for persistence and 0.05
+  for random. For mangrove loss it is no better than today's map, and regional hectare totals are
+  off by up to 3×.
 - **But much of the change is not land cover.** A fifth of detected change is tidal flat to water,
   caused by tide stage. Global Mangrove Watch's own year-to-year changes are barely visible in the
   embeddings (AP ≤ 0.05).
+- **The maps see loss, not damage.** Checked against Sentinel-2, Hurricane Melissa damaged the
+  canopy of 91% of southwest Jamaica's mangrove; the annual map flags 12% as lost. Classifier
+  confidence does not track damage either.
 
 The classifier and forecaster ship as one model file that maps, forecasts and detects change from
 exported GeoTIFFs ([§6](#6-use-the-change-models)). Full results: [`results/README.md`](results/README.md).
@@ -45,14 +46,9 @@ hardest region and the one where logistic regression falls behind.*
 
   Pixels that WorldCover or GWL_FCS30 call mangrove but the label does not are masked as ambiguous. Non-mangrove
   classes are only sampled within 5 km of mangrove.
-- **Training labels per experiment:**
-  - **Mapping (2.1-2.3):** these labels for **2020**, the last GMW v3 year.
-  - **Change (2.4):** a classifier is first fit on these labels for **2017-2020** (the GMW v3
-    years that have embeddings). Its map for every year from 2017 to 2025 is then the target the
-    forecasters learn. Three classifiers are used: an MLP trained inside the change run (Fig. 3),
-    logistic regression (Fig. 4 and the shipped model) and a regularized per-pixel MLP trained
-    with `train-seg` on all 11 regions (Fig. 5). Training forecasters directly on the labels
-    fails (see 2.4).
+- **Training labels:** mapping (2.1-2.3) uses these labels for **2020**, the last GMW v3 year.
+  Change (2.4-2.5) uses a classifier's maps for 2017-2025 as targets, fit on these labels for
+  2017-2020; the shipped model uses logistic regression.
 - **Regions:** Sundarbans, Mekong, Mahakam, Matang, Niger Delta, Pará, Papua, Everglades, Rufiji,
   Jamaica, Mexico Pacific (`configs/default.yaml`), plus Baja California north as an unseen test region.
 - **Samples:** 128 × 128 px chips (1.28 km), 300 per region, half centred on mangrove.
@@ -83,9 +79,6 @@ When a region is in training, logistic regression and the regularized MLP tie in
 *Figure 2. Left: Mekong IoU vs FCN receptive field; the curve is flat within one configuration's
 seed range (0.73-0.82). Right: 10 m vs 630 m on matched splits, mean difference ≈ 0.*
 
-Adding mean-pooled neighbourhoods (30-310 m) to the regularized MLP changes IoU by +0.001 to
-+0.006 in-region and −0.017 to 0 on Baja.
-
 ### 2.3 Unseen region (Baja California north)
 | model | IoU | AP |
 |---|---|---|
@@ -95,61 +88,66 @@ Adding mean-pooled neighbourhoods (30-310 m) to the regularized MLP changes IoU 
 | MLP 128-64, no regularization | 0.64-0.75 | 0.946 |
 
 ### 2.4 Forecasting change
-![Change forecast](results/change/change_forecast.png)
-*Figure 3. Forecasting 2025 from 2023-2024, with MLP-classifier maps as targets: how well each
-method ranks the pixels that change. Learned forecasters (blue) beat every baseline (grey).*
+![Robustness](results/change/robustness_logreg.png)
+*Figure 3. Forecasting next year from the two prior years, with logistic-regression maps as targets
+(water and tidal flat merged), three seeds × three forecast years. The forecaster (blue) beats
+persistence (grey) every year, by more on durable change. The mangrove-specific margins are within
+seed spread in some years.*
 
-- **Predict the class directly.** Predicting the embedding first is worse; an auxiliary
-  next-embedding loss, or giving the model this year's map, adds nothing.
-- **Two prior years beat one; three add nothing.**
 - **The labels themselves cannot be forecast.** Trained directly on the yearly labels
   (forecasting 2020), every method ranks mangrove change near random (AP ≤ 0.05). About 70% of
   that label change is tidal flat ↔ water flicker in GWL_FCS30, and GMW's yearly mangrove
   changes are barely visible in the embeddings. Hence the classifier maps as targets.
-- **Accuracy does not move** (0.94, same as persistence). What improves is *where* change is
-  expected: the forecaster gets the new class right on 35% of changed pixels.
-
-![Robustness](results/change/robustness_logreg.png)
-*Figure 4. Logistic-regression maps as targets, water and tidal flat merged, three seeds × three
-forecast years. The forecaster
-(blue) beats persistence (grey) every year, by more on durable change. The mangrove-specific
-margins are within seed spread in some years.*
+- **Cleaner targets and change-focused losses don't help.** Dropping uncertain or reverting
+  training pixels, upweighting change, a Jaccard loss and a separate change head all match or trail
+  plain cross-entropy (details in [`results/README.md`](results/README.md)).
 
 ![Class transitions](results/change/change_model_k2_s0/transitions.png)
-*Figure 5. Regularized-MLP maps as targets. Left: what changing pixels become. Tidal flat → water
-alone is 21% of change.
-Right: forecasting helps most for barren, other land, tidal flat and mangrove, and not at all for
-water, salt marsh or cropland.*
+*Figure 4. Regularized-MLP maps as targets. Left: what changing pixels become. Tidal flat → water
+alone is 21% of change. Right: forecasting helps most for barren, other land, tidal flat and
+mangrove, and not at all for water, salt marsh or cropland.*
 
-**Training variants.** We tested whether noisy targets or the rarity of change hold the forecaster
-back (logistic-regression targets, 3 seeds × 2023-2025, compared on matching seed and year):
+### 2.5 Observed change, forecast use, and damage vs loss
+These results come from the partner report (`mangrove change-report`, [`results/change_report/`](results/change_report/README.md)),
+which runs the shipped model over all 400 temporal chips per region. "Confirmed" loss means a
+patch of ≥ 0.5 ha that was mangrove in both 2017 and 2018 and not mangrove in both 2024 and 2025.
 
-| variant | next_class change AP vs base | two-head model change AP vs base |
-|---|---|---|
-| drop changes that revert the next year | +0.003 | +0.005 |
-| drop pixels the classifier is unsure of (top probability < 0.6) | −0.007 | −0.075 |
-| drop both | −0.004 | −0.070 |
-| Jaccard loss (0.5 CE + 0.5 batch-pooled soft IoU) | −0.017 | −0.004 |
-| Jaccard + drop both | −0.020 | −0.089 |
-| change weight 5 | −0.046 | −0.008 |
+![Regions compared](results/change_report/regions_compared.png)
+*Figure 5. Confirmed and edge change per region. Rates use the 300 area-representative chips
+per region. Baja California Sur (0.1% confirmed loss) is among the most stable regions; Rufiji, Mahakam and
+Mekong lose 4-5%.*
 
-Base: next_class 0.482, two-head 0.416, persistence 0.417.
+![Forecast skill](results/change_report/forecast_skill.png)
+*Figure 6. The 2025 forecast on held-out blocks. Left and middle: share of 2025 change caught when
+flagging the highest-risk area first, against ranking by today's map's uncertainty. Right:
+forecast vs observed hectares per region.*
 
-![Training variants](results/change/variants.png)
-*Figure 6. Each variant minus plain cross-entropy, one dot per seed × year. Nothing moves
-next_class by more than its seed-to-seed spread (sd up to 0.06), except change weighting, which is worse in every
-pair.*
+- **Ranking where change will happen works, a little.** At 10% of area flagged, the forecaster
+  catches 75% of change against 71% for today's map, consistent with the AP gain in 2.4.
+- **It does not anticipate mangrove loss.** Loss concentrates on pixels the classifier is already
+  unsure of (patch edges), and the forecast adds nothing beyond that (85% vs 86%).
+- **Hectare totals are a prototype.** Summing probabilities gives 1,720 ha of forecast loss against
+  2,111 ha observed across regions, but individual regions are off by 0.2-3.1×.
 
-- **Plain cross-entropy stays best.** The flicker mask is the only variant that isn't worse, and
-  its gain is well inside the seed spread.
-- **A separate change head does no better than persistence.** The two-head model (P(change), then
-  the new class) ranks change like the classifier's own uncertainty (0.416 vs 0.417).
-- **Dropping uncertain pixels hurts the two-head model badly.** Most test-year change happens on
-  pixels the classifier is unsure of, so dropping them likely removes the cases its change head
-  needs to learn from.
-- **So target noise is not what limits the forecaster.** The next things to try are new inputs:
-  spatial context, a summary of each pixel's past flips, and drivers such as elevation and
-  distance to settlements.
+![Damage vs loss](results/change_report/damage_vs_loss.png)
+*Figure 7. An independent check with Sentinel-2 (`scripts/storm_check.py`): 1,500 pixels per
+storm that were mapped mangrove beforehand. Damage is NDVI change in cloud-masked
+composites (0-4 months and ~1 year after landfall), relative to the same windows one year earlier.
+Sundarbans cyclones (Amphan, Remal) are omitted: repeated cyclones and few clear looks make their
+baselines unreliable.*
+
+- **Storms damage far more than they remove, and most canopy recovers.** Melissa: 91% damaged,
+  32% still damaged after ~1 year. Irma: 59% → 17%. Beryl: 27% → 5%. Controls stay at 1-6%.
+- **The annual map captures the lasting part.** It flags 12%, 1% and 3% as lost, below the
+  share still damaged a year on. It detects mangrove that is gone or no longer looks like mangrove,
+  not damaged standing forest.
+- **Classifier confidence is not a health signal.** Among Melissa pixels sampled by pre-storm
+  P(mangrove) (`scripts/storm_damage_by_confidence.py`), canopy damage *rose* with confidence
+  (median NDVI change −0.18 below 0.80, −0.49 above 0.999), while flips to non-mangrove fell (48% → 0%). Confidence
+  measures how separable a pixel is from neighbouring cover, not its condition.
+- **So use the two together.** The embedding map identifies *what* is mangrove and *where* it was
+  lost or converted, consistently and through clouds. Sentinel-2 indices measure condition and
+  timing (every ~5 days) after an event.
 
 ## 3. Limitations
 - LORO covers 4 regions; SegFormer, logistic regression and kNN in Table 2.1 are single runs.
@@ -157,12 +155,15 @@ pair.*
   Merging water with tidal flat and scoring durable change reduce this but do not remove it;
   dropping uncertain or reverting pixels from training does not improve the forecaster.
 - Mangrove thresholds tuned on training regions do not transfer, so we report argmax.
+- Annual maps miss sub-annual damage and recovery (2.5), and the 2025 map holds only ~2 months
+  after Melissa. Loss and damage are checked against Sentinel-2, not field data.
 
 ## 4. Conclusion
 Use a regularized per-pixel MLP (or logistic regression) on the raw embeddings. It matches
 segmentation models, deploys as a per-pixel operation in Earth Engine, and is the safest choice on
 a new coast. The same embeddings carry a usable, though tide-contaminated, signal of next year's
-change.
+change, but not of mangrove loss specifically. The annual maps are best used to track extent and
+find lost or converted mangrove; canopy damage needs sub-annual optical data such as Sentinel-2.
 
 ## 5. Reproduce
 ```bash
@@ -181,6 +182,8 @@ with `EE_PROJECT`).
 | 2.3 unseen region | `mangrove --config configs/baja_test.yaml chips`, `mangrove eval-seg --chips data/test/chips` |
 | 2.4 change | `mangrove temporal-chips`, `mangrove change --labels logreg --history 2` |
 | 2.4 training variants | `python scripts/change_sweep.py` |
+| 2.5 change report for partners (`results/change_report/`) | `mangrove change-report` |
+| 2.5 storm damage vs loss (Sentinel-2) | `python scripts/storm_check.py`, `python scripts/storm_damage_by_confidence.py` |
 | figures | `mangrove plots` |
 
 Every command has `--help`. Runs resume, and each variant writes its own results folder.

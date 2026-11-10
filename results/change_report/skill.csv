@@ -1,0 +1,13 @@
+target,method,flagged_pct,base_rate_pct,caught_pct
+any change,forecast,5,5.2426,48.793
+any change,forecast,10,5.2426,75.1296
+any change,forecast,20,5.2426,95.0358
+any change,today's map only,5,5.2426,43.0365
+any change,today's map only,10,5.2426,70.787
+any change,today's map only,20,5.2426,93.9077
+mangrove loss,forecast,5,3.5132,59.9838
+mangrove loss,forecast,10,3.5132,85.0772
+mangrove loss,forecast,20,3.5132,97.6093
+mangrove loss,today's map only,5,3.5132,58.4149
+mangrove loss,today's map only,10,3.5132,86.4277
+mangrove loss,today's map only,20,3.5132,98.8309

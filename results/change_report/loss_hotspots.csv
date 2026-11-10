@@ -1,0 +1,2173 @@
+region,chip,ha,lat,lon,lost_since,now,now_share
+everglades,chip_0081,144.45,25.72473,-81.30726,2024,water / tidal flat,0.92842
+niger_delta,chip_0161,79.59,4.71721,6.6263,2023,other vegetation,1.0
+rufiji,chip_0383,66.37,-7.85553,39.23738,2022,other vegetation,0.96263
+everglades,chip_0057,65.09,25.17408,-80.82548,2024,water / tidal flat,0.8181
+rufiji,chip_0019,62.45,-7.85925,39.22365,2022,other vegetation,1.0
+rufiji,chip_0124,59.12,-7.8332,39.2533,2022,other vegetation,1.0
+everglades,chip_0105,53.6,25.15503,-80.99037,2024,water / tidal flat,0.66716
+niger_delta,chip_0055,50.31,4.71786,6.58316,2023,other vegetation,1.0
+rufiji,chip_0305,50.23,-7.85486,39.22743,2022,other vegetation,0.99781
+rufiji,chip_0094,47.47,-7.84364,39.26786,2020,other vegetation,1.0
+rufiji,chip_0063,45.34,-7.85479,39.36043,2021,other vegetation,0.99691
+niger_delta,chip_0055,44.1,4.71105,6.586,2023,other vegetation,0.99977
+everglades,chip_0322,41.49,25.14174,-81.04073,2021,water / tidal flat,0.96023
+mekong,chip_0340,39.94,8.83708,105.32543,2020,water / tidal flat,1.0
+rufiji,chip_0073,37.79,-7.84639,39.2516,2019,other vegetation,0.99947
+rufiji,chip_0137,37.73,-7.82806,39.25621,2022,other vegetation,0.99867
+mekong,chip_0236,35.63,8.84123,105.32844,2020,water / tidal flat,1.0
+everglades,chip_0320,32.95,25.14671,-80.98932,2024,water / tidal flat,0.9569
+rufiji,chip_0329,32.92,-7.86691,39.35372,2021,other vegetation,0.99544
+mahakam,chip_0063,32.82,-0.76766,117.49812,2022,water / tidal flat,1.0
+rufiji,chip_0181,32.46,-7.86556,39.35655,2021,other vegetation,0.97628
+mekong,chip_0339,32.24,8.81047,105.29825,2020,water / tidal flat,1.0
+everglades,chip_0091,30.03,25.67569,-81.25873,2024,water / tidal flat,0.55977
+mekong,chip_0065,29.92,8.75444,105.20186,2023,water / tidal flat,1.0
+everglades,chip_0010,29.62,25.72503,-81.30167,2024,water / tidal flat,0.78494
+mahakam,chip_0329,29.36,-0.72509,117.47458,2020,water / tidal flat,1.0
+rufiji,chip_0395,28.22,-7.81493,39.24916,2022,other vegetation,0.98689
+rufiji,chip_0233,28.17,-7.86293,39.23648,2019,other vegetation,0.96805
+rufiji,chip_0062,28.13,-7.85812,39.28296,2022,other vegetation,1.0
+rufiji,chip_0249,27.35,-7.85228,39.2383,2022,other vegetation,0.9777
+niger_delta,chip_0219,24.78,4.70608,6.61478,2024,other vegetation,1.0
+para,chip_0369,24.33,-0.83789,-46.73733,2022,water / tidal flat,1.0
+rufiji,chip_0012,24.3,-7.86755,39.33574,2022,other vegetation,1.0
+rufiji,chip_0049,23.85,-7.91505,39.37353,2020,other vegetation,0.94382
+rufiji,chip_0112,23.84,-7.82949,39.25929,2022,other vegetation,1.0
+rufiji,chip_0134,23.69,-7.87779,39.3155,2021,other vegetation,1.0
+rufiji,chip_0340,22.53,-7.83718,39.26041,2019,other vegetation,1.0
+mekong,chip_0371,22.4,8.82266,105.30531,2023,water / tidal flat,1.0
+rufiji,chip_0096,22.13,-7.83195,39.27408,2022,other vegetation,1.0
+mekong,chip_0378,21.0,8.7519,104.92036,2020,water / tidal flat,1.0
+para,chip_0021,20.97,-1.05814,-45.97067,2024,water / tidal flat,0.90272
+mekong,chip_0373,20.29,8.59457,104.96364,2023,water / tidal flat,1.0
+mekong,chip_0353,19.89,9.01083,104.8041,2020,water / tidal flat,1.0
+mekong,chip_0026,19.88,8.99366,105.39329,2023,water / tidal flat,1.0
+sundarbans,chip_0263,19.87,21.57896,88.73194,2020,water / tidal flat,1.0
+mekong,chip_0364,19.82,8.63378,104.96145,2023,water / tidal flat,0.99798
+mekong,chip_0321,19.73,8.95758,105.38508,2022,water / tidal flat,1.0
+matang,chip_0344,19.12,4.94682,100.42629,2021,water / tidal flat,1.0
+niger_delta,chip_0236,18.43,4.71661,6.69321,2023,other vegetation,1.0
+jamaica,chip_0183,17.64,17.98298,-77.82468,2023,other vegetation,1.0
+rufiji,chip_0249,16.77,-7.84628,39.2432,2020,other vegetation,0.95945
+mekong,chip_0023,16.65,8.59983,104.9699,2023,water / tidal flat,1.0
+rufiji,chip_0363,16.59,-7.84383,39.36535,2022,other vegetation,1.0
+mekong,chip_0320,16.48,8.78421,105.11354,2023,water / tidal flat,1.0
+mahakam,chip_0146,16.4,-0.75673,117.57757,2020,water / tidal flat,1.0
+mekong,chip_0399,16.12,8.97235,105.38532,2023,water / tidal flat,1.0
+niger_delta,chip_0123,16.06,4.69665,6.63089,2024,other vegetation,1.0
+mahakam,chip_0356,15.82,-0.74754,117.58795,2020,water / tidal flat,1.0
+mekong,chip_0326,15.78,8.77279,104.91929,2022,water / tidal flat,1.0
+rufiji,chip_0068,15.6,-7.83102,39.24612,2022,other vegetation,0.94231
+rufiji,chip_0034,15.53,-7.80929,39.24968,2022,other vegetation,1.0
+para,chip_0105,15.49,-0.94556,-46.41288,2021,water / tidal flat,1.0
+mahakam,chip_0172,15.13,-0.55189,117.58012,2020,water / tidal flat,1.0
+mahakam,chip_0303,15.04,-0.52977,117.47996,2021,water / tidal flat,1.0
+sundarbans,chip_0371,14.65,21.61809,88.98135,2024,water / tidal flat,1.0
+rufiji,chip_0315,14.64,-7.84471,39.26585,2019,other vegetation,1.0
+para,chip_0049,14.51,-0.95555,-46.33345,2019,water / tidal flat,0.95314
+mekong,chip_0011,14.43,8.748,105.09866,2022,water / tidal flat,1.0
+mahakam,chip_0000,14.27,-0.7167,117.48468,2020,water / tidal flat,1.0
+mekong,chip_0108,13.94,8.84471,105.10388,2021,water / tidal flat,1.0
+rufiji,chip_0340,13.84,-7.84091,39.25405,2019,other vegetation,1.0
+mekong,chip_0378,13.81,8.74758,104.92176,2023,water / tidal flat,1.0
+mekong,chip_0320,13.69,8.78786,105.11537,2023,water / tidal flat,1.0
+mahakam,chip_0057,13.37,-0.65628,117.47368,2020,water / tidal flat,1.0
+rufiji,chip_0274,13.37,-7.84476,39.23502,2022,other vegetation,1.0
+mahakam,chip_0086,13.23,-0.76911,117.61282,2020,water / tidal flat,1.0
+mekong,chip_0293,13.12,8.57243,104.87239,2021,water / tidal flat,1.0
+matang,chip_0369,12.96,4.95362,100.42401,2020,water / tidal flat,1.0
+rufiji,chip_0063,12.84,-7.86081,39.35909,2020,other vegetation,0.99766
+rufiji,chip_0369,12.66,-7.87947,39.35578,2019,other vegetation,1.0
+matang,chip_0017,12.63,4.93721,100.42998,2021,water / tidal flat,1.0
+mahakam,chip_0113,12.44,-0.7452,117.46641,2020,water / tidal flat,1.0
+mekong,chip_0295,12.39,8.74562,105.10577,2021,water / tidal flat,1.0
+mahakam,chip_0030,12.24,-0.74649,117.58704,2020,water / tidal flat,1.0
+everglades,chip_0128,12.21,25.14055,-80.95837,2024,other vegetation,0.99099
+mekong,chip_0097,12.05,9.00779,105.32394,2020,water / tidal flat,1.0
+jamaica,chip_0173,12.03,17.81201,-77.18807,2019,other vegetation,0.70574
+rufiji,chip_0135,11.99,-7.85554,39.26641,2019,other vegetation,0.98666
+mahakam,chip_0091,11.97,-0.53948,117.53294,2024,water / tidal flat,1.0
+mekong,chip_0349,11.97,8.63863,104.95071,2023,water / tidal flat,1.0
+mahakam,chip_0042,11.96,-0.82466,117.35267,2020,water / tidal flat,1.0
+mekong,chip_0139,11.92,8.85205,104.90214,2020,water / tidal flat,0.99748
+sundarbans,chip_0090,11.77,21.63417,89.08324,2024,water / tidal flat,1.0
+mahakam,chip_0039,11.75,-0.61988,117.45986,2021,water / tidal flat,1.0
+rufiji,chip_0021,11.72,-7.88085,39.33086,2020,other vegetation,1.0
+mekong,chip_0206,11.65,8.93645,104.80378,2021,water / tidal flat,1.0
+rufiji,chip_0035,11.63,-7.88312,39.30116,2022,other vegetation,1.0
+rufiji,chip_0096,11.57,-7.82582,39.2723,2022,other vegetation,1.0
+rufiji,chip_0340,11.55,-7.83672,39.25384,2020,other vegetation,1.0
+sundarbans,chip_0302,11.42,21.609,89.025,2020,water / tidal flat,1.0
+matang,chip_0071,11.4,4.98374,100.42209,2021,water / tidal flat,1.0
+mekong,chip_0217,11.39,8.7256,105.13652,2019,water / tidal flat,0.97191
+rufiji,chip_0135,11.37,-7.85696,39.26057,2019,other vegetation,0.97537
+matang,chip_0370,11.33,4.61399,100.59245,2023,water / tidal flat,1.0
+mahakam,chip_0070,11.27,-0.76054,117.59652,2020,water / tidal flat,1.0
+niger_delta,chip_0084,11.14,4.32727,6.38945,2023,water / tidal flat,1.0
+mekong,chip_0295,10.95,8.75042,105.10634,2022,water / tidal flat,1.0
+matang,chip_0389,10.93,4.93065,100.43366,2020,water / tidal flat,1.0
+mekong,chip_0222,10.83,8.57029,104.85069,2019,water / tidal flat,1.0
+mahakam,chip_0135,10.7,-0.59985,117.47701,2023,water / tidal flat,1.0
+jamaica,chip_0154,10.64,17.98087,-77.82487,2019,other vegetation,1.0
+sundarbans,chip_0283,10.64,21.7186,89.59421,2024,water / tidal flat,1.0
+niger_delta,chip_0123,10.63,4.69756,6.6216,2024,other vegetation,1.0
+rufiji,chip_0329,10.62,-7.86388,39.34622,2022,other vegetation,1.0
+mahakam,chip_0345,10.57,-0.54601,117.57681,2020,water / tidal flat,1.0
+mahakam,chip_0090,10.54,-0.62688,117.4007,2020,water / tidal flat,1.0
+rufiji,chip_0369,10.47,-7.88366,39.35194,2019,other vegetation,0.97612
+matang,chip_0350,10.44,4.62777,100.59835,2024,water / tidal flat,1.0
+mahakam,chip_0313,10.42,-0.80854,117.53505,2024,water / tidal flat,1.0
+sundarbans,chip_0383,10.21,21.71333,88.61041,2024,water / tidal flat,1.0
+mekong,chip_0398,10.12,9.05254,105.44455,2020,water / tidal flat,0.46542
+rufiji,chip_0025,10.09,-7.88453,39.34982,2019,other vegetation,0.97027
+jamaica,chip_0162,10.04,18.40785,-78.26851,2022,built-up,0.83466
+mekong,chip_0091,10.02,8.99487,105.35367,2020,water / tidal flat,0.999
+para,chip_0033,9.96,-0.74811,-46.84471,2019,water / tidal flat,1.0
+para,chip_0323,9.93,-0.94804,-46.31114,2019,water / tidal flat,1.0
+rufiji,chip_0019,9.88,-7.85411,39.22852,2022,other vegetation,1.0
+matang,chip_0357,9.87,4.60564,100.58972,2023,water / tidal flat,1.0
+matang,chip_0144,9.83,4.97487,100.42195,2021,water / tidal flat,0.99491
+niger_delta,chip_0280,9.72,4.75332,6.88177,2023,other vegetation,1.0
+mekong,chip_0224,9.67,8.76288,105.13132,2023,water / tidal flat,1.0
+para,chip_0143,9.62,-0.84419,-46.80835,2022,water / tidal flat,1.0
+mahakam,chip_0047,9.58,-0.4948,117.49009,2021,water / tidal flat,1.0
+para,chip_0387,9.34,-1.02538,-46.08375,2020,water / tidal flat,0.96146
+jamaica,chip_0378,9.27,17.91984,-77.09044,2019,other vegetation,1.0
+mekong,chip_0352,9.13,8.61575,105.03286,2020,water / tidal flat,1.0
+rufiji,chip_0048,8.9,-7.74727,39.34722,2019,other vegetation,0.78427
+matang,chip_0315,8.88,4.9657,100.42237,2023,water / tidal flat,1.0
+matang,chip_0317,8.86,5.00006,100.4093,2024,bare ground,0.57336
+mekong,chip_0091,8.85,8.9883,105.35643,2023,water / tidal flat,0.99887
+mahakam,chip_0333,8.83,-0.42222,117.48453,2021,water / tidal flat,1.0
+sundarbans,chip_0252,8.78,21.6582,89.25339,2024,water / tidal flat,1.0
+mahakam,chip_0340,8.76,-0.76734,117.50767,2024,water / tidal flat,1.0
+mekong,chip_0093,8.76,8.75872,104.93128,2019,water / tidal flat,0.97489
+rufiji,chip_0106,8.63,-7.83688,39.23493,2019,other vegetation,1.0
+rufiji,chip_0395,8.61,-7.81991,39.24924,2023,other vegetation,0.72706
+rufiji,chip_0174,8.59,-7.88098,39.30967,2020,other vegetation,1.0
+rufiji,chip_0076,8.58,-7.83467,39.2895,2022,other vegetation,1.0
+rufiji,chip_0068,8.55,-7.82594,39.23953,2022,other vegetation,0.95673
+mekong,chip_0177,8.55,8.66693,104.88845,2023,water / tidal flat,0.96608
+niger_delta,chip_0053,8.49,4.78287,6.94646,2019,other vegetation,0.5689
+mekong,chip_0051,8.43,8.90433,104.85615,2020,water / tidal flat,1.0
+rufiji,chip_0112,8.32,-7.825,39.26613,2022,other vegetation,1.0
+mahakam,chip_0144,8.3,-0.51278,117.5575,2024,water / tidal flat,1.0
+mekong,chip_0270,8.23,9.85235,106.65647,2020,water / tidal flat,0.82503
+mekong,chip_0295,8.21,8.74851,105.1001,2022,water / tidal flat,1.0
+mekong,chip_0380,8.19,10.20576,104.60476,2021,other vegetation,0.5348
+para,chip_0293,8.12,-0.84018,-46.69633,2019,water / tidal flat,1.0
+para,chip_0312,8.03,-0.99359,-46.22076,2019,water / tidal flat,1.0
+mahakam,chip_0290,8.02,-0.88023,117.23278,2024,other vegetation,1.0
+mahakam,chip_0131,8.01,-0.57667,117.57142,2021,water / tidal flat,1.0
+mahakam,chip_0070,7.99,-0.75969,117.59082,2020,water / tidal flat,1.0
+mahakam,chip_0378,7.97,-0.72551,117.39195,2019,water / tidal flat,1.0
+everglades,chip_0349,7.96,25.13377,-81.04129,2024,water / tidal flat,0.97487
+mahakam,chip_0204,7.93,-0.38973,117.44309,2021,water / tidal flat,1.0
+mekong,chip_0289,7.91,8.6627,104.97601,2023,water / tidal flat,0.98104
+sundarbans,chip_0128,7.83,21.66389,89.21143,2024,water / tidal flat,1.0
+sundarbans,chip_0172,7.81,21.80498,89.47052,2021,bare ground,0.7452
+sundarbans,chip_0144,7.79,21.72874,89.41714,2024,water / tidal flat,1.0
+mahakam,chip_0055,7.78,-0.63314,117.43189,2019,water / tidal flat,1.0
+mekong,chip_0399,7.7,8.96581,105.38389,2022,water / tidal flat,1.0
+mahakam,chip_0398,7.68,-0.70373,117.517,2023,water / tidal flat,1.0
+sundarbans,chip_0389,7.66,22.16541,88.65826,2024,water / tidal flat,0.94648
+mahakam,chip_0330,7.55,-0.7279,117.46507,2021,water / tidal flat,1.0
+sundarbans,chip_0095,7.53,21.67954,89.21798,2024,water / tidal flat,1.0
+mahakam,chip_0167,7.53,-0.64256,117.42107,2020,water / tidal flat,1.0
+everglades,chip_0128,7.36,25.14333,-80.95337,2024,other vegetation,1.0
+mahakam,chip_0064,7.36,-0.62761,117.52963,2022,water / tidal flat,1.0
+mekong,chip_0184,7.33,9.40223,106.18775,2021,water / tidal flat,1.0
+mahakam,chip_0065,7.29,-0.76966,117.40823,2024,water / tidal flat,1.0
+mahakam,chip_0072,7.28,-0.90678,117.34319,2021,water / tidal flat,1.0
+rufiji,chip_0309,7.28,-7.86107,39.36717,2024,other vegetation,1.0
+mekong,chip_0387,7.26,8.81259,105.13749,2019,water / tidal flat,1.0
+sundarbans,chip_0039,7.19,21.72659,89.386,2024,water / tidal flat,1.0
+rufiji,chip_0331,7.15,-7.8973,39.39122,2019,other vegetation,0.99161
+matang,chip_0072,7.11,4.99342,100.42049,2021,water / tidal flat,1.0
+mekong,chip_0000,7.11,8.77299,105.12095,2023,water / tidal flat,1.0
+everglades,chip_0080,7.11,25.17483,-80.82239,2024,other vegetation,0.56681
+mekong,chip_0371,7.01,8.82647,105.30821,2023,water / tidal flat,1.0
+mahakam,chip_0110,7.01,-0.82557,117.29005,2020,water / tidal flat,1.0
+para,chip_0033,6.98,-0.74555,-46.84847,2020,water / tidal flat,0.96848
+rufiji,chip_0106,6.85,-7.83028,39.23778,2022,other vegetation,0.98978
+niger_delta,chip_0210,6.82,4.69357,6.56921,2023,other vegetation,1.0
+mekong,chip_0327,6.74,8.63347,104.96354,2023,water / tidal flat,1.0
+para,chip_0354,6.73,-0.79954,-46.64314,2021,water / tidal flat,0.80981
+mahakam,chip_0090,6.73,-0.63367,117.39752,2020,water / tidal flat,1.0
+mahakam,chip_0070,6.68,-0.76352,117.59267,2019,water / tidal flat,1.0
+mahakam,chip_0104,6.63,-0.47858,117.45861,2024,water / tidal flat,1.0
+rufiji,chip_0068,6.6,-7.83392,39.24902,2022,other vegetation,1.0
+mekong,chip_0222,6.6,8.56921,104.84474,2023,water / tidal flat,1.0
+para,chip_0378,6.5,-1.05613,-45.87249,2024,water / tidal flat,0.97077
+rufiji,chip_0383,6.48,-7.85622,39.23302,2022,other vegetation,0.99846
+sundarbans,chip_0189,6.45,22.02825,89.51885,2024,water / tidal flat,1.0
+mekong,chip_0227,6.41,8.6765,104.92765,2022,water / tidal flat,0.96568
+mekong,chip_0360,6.39,9.15246,105.58089,2019,water / tidal flat,0.98905
+rufiji,chip_0034,6.31,-7.80275,39.25436,2021,other vegetation,1.0
+mahakam,chip_0198,6.3,-0.42048,117.4363,2020,water / tidal flat,1.0
+mahakam,chip_0348,6.29,-0.76359,117.56951,2021,water / tidal flat,1.0
+mahakam,chip_0378,6.24,-0.72292,117.38867,2023,water / tidal flat,1.0
+jamaica,chip_0230,6.24,18.01963,-77.83475,2021,other vegetation,1.0
+mahakam,chip_0143,6.23,-0.6766,117.3859,2024,water / tidal flat,1.0
+mekong,chip_0010,6.19,9.1871,105.70352,2020,water / tidal flat,1.0
+mahakam,chip_0393,6.15,-0.73782,117.48501,2023,water / tidal flat,1.0
+mahakam,chip_0373,6.1,-0.74339,117.55609,2021,water / tidal flat,1.0
+para,chip_0166,6.09,-0.84551,-46.94053,2019,water / tidal flat,1.0
+mekong,chip_0001,6.09,8.6113,104.88862,2021,water / tidal flat,1.0
+jamaica,chip_0203,6.09,18.04371,-77.89752,2024,other vegetation,1.0
+rufiji,chip_0014,6.09,-7.79992,39.26393,2022,other vegetation,1.0
+rufiji,chip_0384,6.05,-7.75628,39.35573,2020,other vegetation,0.7686
+mekong,chip_0368,6.01,9.16899,105.6668,2020,water / tidal flat,1.0
+mekong,chip_0313,6.0,8.74216,104.99658,2023,water / tidal flat,1.0
+para,chip_0315,5.99,-0.86639,-46.80904,2024,water / tidal flat,1.0
+everglades,chip_0080,5.98,25.17789,-80.81499,2024,other vegetation,0.6388
+rufiji,chip_0137,5.98,-7.82498,39.25102,2022,other vegetation,0.99164
+niger_delta,chip_0085,5.98,4.71868,6.87281,2023,other vegetation,1.0
+mahakam,chip_0350,5.93,-0.46345,117.54045,2024,water / tidal flat,1.0
+rufiji,chip_0144,5.93,-7.87656,39.36111,2022,other vegetation,1.0
+mekong,chip_0139,5.92,8.85252,104.90858,2020,water / tidal flat,1.0
+mekong,chip_0019,5.82,9.19531,105.72378,2020,water / tidal flat,1.0
+mekong,chip_0195,5.74,8.80786,104.90549,2024,water / tidal flat,1.0
+mahakam,chip_0087,5.69,-0.83499,117.48381,2019,water / tidal flat,1.0
+mahakam,chip_0183,5.66,-0.47182,117.52543,2021,water / tidal flat,1.0
+rufiji,chip_0112,5.65,-7.82637,39.26247,2022,other vegetation,1.0
+mahakam,chip_0133,5.64,-0.35518,117.47503,2021,water / tidal flat,1.0
+matang,chip_0268,5.64,4.62003,100.59514,2024,water / tidal flat,1.0
+mahakam,chip_0146,5.62,-0.75622,117.58038,2021,water / tidal flat,1.0
+mekong,chip_0197,5.6,9.534,106.37772,2020,water / tidal flat,1.0
+mahakam,chip_0373,5.6,-0.74416,117.55119,2020,water / tidal flat,1.0
+mekong,chip_0395,5.57,9.14709,104.81233,2020,water / tidal flat,0.98564
+mekong,chip_0323,5.56,8.67863,105.0107,2023,water / tidal flat,1.0
+matang,chip_0393,5.54,4.67248,100.59745,2023,water / tidal flat,1.0
+mekong,chip_0013,5.51,8.82848,104.78185,2019,water / tidal flat,1.0
+mahakam,chip_0004,5.43,-0.75017,117.52537,2019,water / tidal flat,1.0
+mekong,chip_0380,5.43,10.20656,104.60986,2023,other vegetation,0.89503
+mekong,chip_0306,5.42,8.7773,104.91749,2020,water / tidal flat,1.0
+mekong,chip_0378,5.41,8.74529,104.91498,2019,water / tidal flat,1.0
+mekong,chip_0362,5.4,9.32304,104.82525,2019,water / tidal flat,0.89259
+mahakam,chip_0199,5.4,-0.7875,117.52691,2020,water / tidal flat,1.0
+para,chip_0341,5.37,-0.76927,-47.08044,2021,water / tidal flat,1.0
+rufiji,chip_0021,5.37,-7.87199,39.33607,2021,other vegetation,1.0
+mahakam,chip_0100,5.34,-0.73629,117.42338,2021,water / tidal flat,1.0
+mekong,chip_0387,5.33,8.81136,105.1339,2023,water / tidal flat,1.0
+rufiji,chip_0124,5.23,-7.83233,39.2472,2022,other vegetation,1.0
+mahakam,chip_0103,5.17,-0.67769,117.40453,2020,water / tidal flat,1.0
+everglades,chip_0080,5.15,25.1746,-80.81823,2024,other vegetation,0.66602
+mekong,chip_0291,5.14,8.62277,104.85966,2023,water / tidal flat,1.0
+rufiji,chip_0395,5.12,-7.82333,39.25516,2022,other vegetation,0.99023
+sundarbans,chip_0113,5.11,21.8993,89.47117,2024,water / tidal flat,1.0
+jamaica,chip_0186,5.11,18.22542,-78.17411,2024,other vegetation,1.0
+mahakam,chip_0077,5.1,-0.88023,117.35564,2024,water / tidal flat,1.0
+matang,chip_0320,5.1,5.00348,100.40591,2021,water / tidal flat,0.99412
+mahakam,chip_0183,5.0,-0.46888,117.52561,2023,water / tidal flat,1.0
+mekong,chip_0020,5.0,8.71445,104.98831,2023,water / tidal flat,1.0
+mekong,chip_0334,4.99,8.77577,105.11261,2023,water / tidal flat,1.0
+mahakam,chip_0171,4.98,-0.42313,117.62357,2024,water / tidal flat,1.0
+mahakam,chip_0030,4.97,-0.73881,117.5809,2024,water / tidal flat,1.0
+niger_delta,chip_0123,4.94,4.68904,6.62245,2024,other vegetation,1.0
+mahakam,chip_0082,4.94,-0.44116,117.50704,2023,water / tidal flat,1.0
+mekong,chip_0296,4.94,10.4384,106.75322,2021,other vegetation,0.59109
+mahakam,chip_0084,4.93,-0.42956,117.43184,2020,water / tidal flat,1.0
+matang,chip_0317,4.93,4.99686,100.41005,2024,water / tidal flat,1.0
+mahakam,chip_0131,4.88,-0.57777,117.56418,2020,water / tidal flat,1.0
+mahakam,chip_0148,4.88,-0.62259,117.52576,2019,water / tidal flat,1.0
+everglades,chip_0392,4.86,25.13916,-80.94753,2024,other vegetation,1.0
+mahakam,chip_0356,4.85,-0.74577,117.59643,2021,water / tidal flat,1.0
+para,chip_0323,4.83,-0.95449,-46.3134,2019,water / tidal flat,1.0
+mahakam,chip_0034,4.83,-0.85519,117.31802,2024,water / tidal flat,1.0
+mekong,chip_0343,4.83,8.75697,105.08833,2023,water / tidal flat,1.0
+mahakam,chip_0318,4.81,-0.46218,117.54404,2020,water / tidal flat,1.0
+mekong,chip_0296,4.8,10.44076,106.75096,2024,bare ground,0.525
+matang,chip_0313,4.76,4.71343,100.58326,2023,water / tidal flat,1.0
+rufiji,chip_0301,4.75,-7.88102,39.24189,2019,other vegetation,0.83579
+rufiji,chip_0274,4.75,-7.83853,39.23384,2019,other vegetation,1.0
+rufiji,chip_0315,4.74,-7.85201,39.26663,2019,other vegetation,1.0
+matang,chip_0394,4.73,4.70415,100.58516,2023,water / tidal flat,1.0
+mekong,chip_0387,4.73,8.81728,105.14318,2023,water / tidal flat,1.0
+mahakam,chip_0372,4.69,-0.73334,117.56676,2019,water / tidal flat,1.0
+mekong,chip_0228,4.66,8.73906,105.09007,2024,water / tidal flat,1.0
+mahakam,chip_0364,4.65,-0.42105,117.48499,2021,water / tidal flat,1.0
+mahakam,chip_0248,4.64,-0.54989,117.52815,2021,water / tidal flat,1.0
+niger_delta,chip_0219,4.64,4.70637,6.60916,2023,other vegetation,1.0
+everglades,chip_0236,4.61,25.74257,-81.32156,2024,other vegetation,0.7115
+mekong,chip_0312,4.6,9.21272,104.81674,2020,water / tidal flat,0.83913
+matang,chip_0301,4.59,4.69702,100.58671,2020,water / tidal flat,1.0
+mekong,chip_0343,4.58,8.76212,105.09497,2023,water / tidal flat,1.0
+mahakam,chip_0336,4.58,-0.63583,117.55571,2021,water / tidal flat,1.0
+rufiji,chip_0021,4.58,-7.8733,39.32889,2019,other vegetation,1.0
+mekong,chip_0126,4.56,9.73985,105.17994,2024,water / tidal flat,0.95614
+mekong,chip_0386,4.5,9.58928,104.84106,2021,water / tidal flat,1.0
+niger_delta,chip_0196,4.46,4.35169,6.7942,2022,other vegetation,0.71973
+mekong,chip_0259,4.45,8.80052,105.12467,2023,water / tidal flat,1.0
+mahakam,chip_0340,4.44,-0.76991,117.51055,2022,water / tidal flat,1.0
+mekong,chip_0224,4.41,8.76863,105.12896,2023,water / tidal flat,1.0
+mekong,chip_0077,4.38,10.04233,106.66977,2020,water / tidal flat,1.0
+sundarbans,chip_0332,4.37,21.74449,89.22367,2024,water / tidal flat,1.0
+mekong,chip_0378,4.36,8.74487,104.91964,2023,water / tidal flat,1.0
+jamaica,chip_0271,4.35,17.95147,-77.82831,2023,other vegetation,1.0
+mekong,chip_0246,4.35,8.58958,104.94788,2024,water / tidal flat,1.0
+mahakam,chip_0332,4.34,-0.43322,117.5828,2020,water / tidal flat,1.0
+everglades,chip_0395,4.33,25.63573,-81.22907,2024,water / tidal flat,0.95381
+mahakam,chip_0332,4.33,-0.43795,117.58074,2020,water / tidal flat,1.0
+mekong,chip_0253,4.33,8.74855,105.07173,2024,water / tidal flat,1.0
+mekong,chip_0377,4.32,8.65248,104.83901,2023,water / tidal flat,1.0
+jamaica,chip_0216,4.32,18.49044,-77.6652,2020,built-up,0.60648
+mahakam,chip_0001,4.29,-0.53903,117.48604,2022,water / tidal flat,1.0
+niger_delta,chip_0248,4.29,4.68882,6.64253,2024,other vegetation,1.0
+rufiji,chip_0347,4.29,-7.90314,39.39783,2019,other vegetation,1.0
+mekong,chip_0228,4.26,8.73879,105.08811,2024,water / tidal flat,1.0
+para,chip_0319,4.25,-0.95122,-46.41686,2022,water / tidal flat,0.90824
+mahakam,chip_0050,4.19,-0.53258,117.45621,2019,water / tidal flat,1.0
+everglades,chip_0080,4.18,25.18283,-80.81184,2024,other vegetation,0.65789
+mahakam,chip_0376,4.18,-0.51917,117.57346,2024,water / tidal flat,1.0
+mekong,chip_0077,4.16,10.03471,106.67558,2023,water / tidal flat,1.0
+mekong,chip_0306,4.16,8.78444,104.91952,2020,water / tidal flat,1.0
+everglades,chip_0392,4.16,25.14008,-80.95559,2024,other vegetation,1.0
+mahakam,chip_0327,4.16,-0.6301,117.51466,2019,water / tidal flat,1.0
+para,chip_0124,4.13,-0.99252,-46.32429,2020,water / tidal flat,1.0
+mekong,chip_0020,4.13,8.70907,104.99212,2023,water / tidal flat,1.0
+mekong,chip_0108,4.13,8.8443,105.09958,2023,water / tidal flat,1.0
+everglades,chip_0080,4.12,25.17396,-80.81285,2024,water / tidal flat,0.78398
+rufiji,chip_0329,4.11,-7.86864,39.3481,2022,other vegetation,1.0
+para,chip_0333,4.11,-0.83423,-46.61194,2021,other vegetation,0.89051
+para,chip_0276,4.09,-1.15271,-45.91829,2024,water / tidal flat,1.0
+jamaica,chip_0378,4.07,17.91888,-77.09429,2023,other vegetation,1.0
+jamaica,chip_0162,4.07,18.40999,-78.26408,2021,built-up,0.85258
+matang,chip_0197,4.06,4.92572,100.43698,2020,water / tidal flat,1.0
+mekong,chip_0396,4.06,9.88386,106.66362,2024,water / tidal flat,1.0
+mekong,chip_0220,4.06,8.72651,105.1021,2023,water / tidal flat,1.0
+mahakam,chip_0085,4.05,-0.48593,117.54546,2019,water / tidal flat,1.0
+para,chip_0360,4.05,-0.99163,-46.46783,2019,water / tidal flat,1.0
+mahakam,chip_0145,4.04,-0.805,117.45378,2024,water / tidal flat,1.0
+mahakam,chip_0345,4.02,-0.54529,117.58,2019,water / tidal flat,1.0
+mekong,chip_0308,4.02,9.43863,104.83201,2024,water / tidal flat,1.0
+mekong,chip_0273,3.99,10.00591,106.6504,2019,water / tidal flat,1.0
+para,chip_0397,3.97,-1.00275,-46.31662,2024,water / tidal flat,1.0
+sundarbans,chip_0341,3.96,21.96566,89.0944,2024,water / tidal flat,1.0
+mahakam,chip_0004,3.95,-0.75257,117.52722,2023,water / tidal flat,1.0
+mekong,chip_0348,3.93,8.7523,105.06777,2024,water / tidal flat,1.0
+mahakam,chip_0372,3.93,-0.73692,117.57148,2023,water / tidal flat,1.0
+mahakam,chip_0116,3.92,-0.56227,117.58243,2024,water / tidal flat,1.0
+mahakam,chip_0240,3.88,-0.63653,117.4187,2019,water / tidal flat,1.0
+rufiji,chip_0035,3.84,-7.8798,39.2983,2023,other vegetation,0.96354
+rufiji,chip_0369,3.84,-7.88408,39.35562,2021,other vegetation,1.0
+mahakam,chip_0312,3.84,-0.53771,117.50988,2019,water / tidal flat,1.0
+mahakam,chip_0372,3.83,-0.72964,117.56792,2024,water / tidal flat,1.0
+mahakam,chip_0313,3.83,-0.80885,117.52725,2021,water / tidal flat,1.0
+rufiji,chip_0031,3.83,-7.90294,39.36392,2022,water / tidal flat,0.57963
+mekong,chip_0341,3.82,8.80929,105.15092,2023,water / tidal flat,1.0
+mahakam,chip_0269,3.81,-0.77767,117.5617,2022,water / tidal flat,1.0
+jamaica,chip_0270,3.81,18.03345,-77.82431,2024,other vegetation,1.0
+mekong,chip_0199,3.81,9.87612,106.66202,2021,water / tidal flat,1.0
+mekong,chip_0228,3.78,8.73669,105.09761,2022,water / tidal flat,1.0
+mekong,chip_0011,3.77,8.7455,105.09419,2022,water / tidal flat,1.0
+mahakam,chip_0137,3.76,-0.75101,117.41823,2022,water / tidal flat,1.0
+mekong,chip_0320,3.75,8.79178,105.11103,2023,water / tidal flat,1.0
+mekong,chip_0329,3.73,8.74407,104.94465,2022,water / tidal flat,1.0
+niger_delta,chip_0087,3.72,4.71508,6.83693,2022,other vegetation,1.0
+niger_delta,chip_0245,3.72,4.6385,6.84019,2023,other vegetation,1.0
+mahakam,chip_0302,3.72,-0.68526,117.5288,2020,water / tidal flat,1.0
+rufiji,chip_0174,3.7,-7.88702,39.30437,2020,other vegetation,0.95405
+rufiji,chip_0174,3.69,-7.88113,39.3045,2019,other vegetation,1.0
+mekong,chip_0093,3.69,8.76222,104.93483,2020,water / tidal flat,1.0
+mekong,chip_0345,3.69,8.70988,104.98038,2023,water / tidal flat,0.84282
+mahakam,chip_0145,3.68,-0.80635,117.45589,2021,water / tidal flat,1.0
+mahakam,chip_0043,3.67,-0.6198,117.44089,2019,water / tidal flat,1.0
+matang,chip_0372,3.67,4.71886,100.5832,2023,water / tidal flat,1.0
+mekong,chip_0338,3.66,9.80981,104.88797,2023,water / tidal flat,1.0
+mekong,chip_0349,3.66,8.63793,104.94588,2021,water / tidal flat,1.0
+mekong,chip_0051,3.65,8.90072,104.84905,2019,water / tidal flat,0.98904
+rufiji,chip_0340,3.65,-7.84208,39.26269,2019,other vegetation,1.0
+mekong,chip_0093,3.63,8.76032,104.92936,2019,water / tidal flat,0.98898
+mekong,chip_0326,3.62,8.77442,104.91651,2020,water / tidal flat,1.0
+mahakam,chip_0313,3.62,-0.80491,117.52975,2019,water / tidal flat,1.0
+mahakam,chip_0297,3.62,-0.62557,117.43566,2023,water / tidal flat,1.0
+mahakam,chip_0325,3.61,-0.81853,117.4656,2024,water / tidal flat,1.0
+mekong,chip_0377,3.61,8.65891,104.83048,2023,water / tidal flat,0.98892
+niger_delta,chip_0248,3.6,4.68479,6.64336,2024,other vegetation,1.0
+mahakam,chip_0391,3.59,-0.58036,117.42782,2019,water / tidal flat,1.0
+mahakam,chip_0344,3.58,-0.42038,117.59593,2022,water / tidal flat,1.0
+mahakam,chip_0357,3.55,-0.83218,117.39249,2019,water / tidal flat,1.0
+jamaica,chip_0380,3.54,17.91587,-76.90759,2024,water / tidal flat,1.0
+sundarbans,chip_0055,3.52,22.12937,89.49169,2024,water / tidal flat,1.0
+mekong,chip_0383,3.52,8.81051,105.24018,2020,water / tidal flat,1.0
+mahakam,chip_0345,3.52,-0.5498,117.57974,2019,water / tidal flat,1.0
+mekong,chip_0382,3.5,9.26561,105.88281,2022,water / tidal flat,1.0
+mekong,chip_0306,3.5,8.77798,104.92104,2020,water / tidal flat,1.0
+mahakam,chip_0034,3.5,-0.85584,117.31323,2020,water / tidal flat,1.0
+mekong,chip_0258,3.48,8.83804,105.17712,2023,water / tidal flat,1.0
+niger_delta,chip_0087,3.47,4.70986,6.83441,2022,other vegetation,1.0
+mekong,chip_0097,3.47,9.00747,105.31973,2020,water / tidal flat,1.0
+mahakam,chip_0138,3.46,-0.47874,117.4573,2019,water / tidal flat,1.0
+sundarbans,chip_0213,3.46,21.92631,89.50735,2024,water / tidal flat,1.0
+para,chip_0363,3.46,-0.90228,-46.233,2020,bare ground,0.52312
+everglades,chip_0367,3.45,25.24821,-80.85488,2024,other vegetation,1.0
+mahakam,chip_0041,3.45,-0.77354,117.48046,2021,water / tidal flat,1.0
+rufiji,chip_0213,3.45,-7.78968,39.26619,2022,other vegetation,1.0
+rufiji,chip_0137,3.44,-7.83128,39.25168,2022,other vegetation,1.0
+mekong,chip_0326,3.44,8.77193,104.92243,2019,water / tidal flat,1.0
+para,chip_0161,3.44,-0.74893,-46.84204,2019,water / tidal flat,1.0
+mahakam,chip_0096,3.43,-0.90784,117.33699,2020,water / tidal flat,1.0
+niger_delta,chip_0248,3.42,4.68904,6.64623,2024,other vegetation,1.0
+rufiji,chip_0121,3.42,-7.87594,39.30619,2019,other vegetation,1.0
+mekong,chip_0305,3.41,10.38458,106.89617,2022,other vegetation,0.73314
+rufiji,chip_0031,3.41,-7.90741,39.3585,2020,other vegetation,1.0
+mahakam,chip_0112,3.41,-0.51558,117.53106,2020,water / tidal flat,1.0
+rufiji,chip_0357,3.41,-7.93206,39.41514,2020,other vegetation,1.0
+jamaica,chip_0218,3.4,17.86648,-77.40987,2024,other vegetation,1.0
+matang,chip_0317,3.39,5.00198,100.40552,2021,water / tidal flat,0.99115
+mekong,chip_0313,3.38,8.7469,104.99586,2022,water / tidal flat,1.0
+mekong,chip_0306,3.38,8.77779,104.91516,2020,water / tidal flat,1.0
+rufiji,chip_0130,3.37,-7.82858,39.29679,2024,other vegetation,1.0
+mahakam,chip_0072,3.37,-0.90581,117.34891,2024,other vegetation,1.0
+mahakam,chip_0304,3.37,-0.40861,117.52402,2022,water / tidal flat,1.0
+para,chip_0106,3.36,-1.02387,-46.22152,2019,water / tidal flat,1.0
+sundarbans,chip_0231,3.36,22.11348,89.20601,2024,water / tidal flat,1.0
+niger_delta,chip_0080,3.35,4.70614,6.88829,2023,other vegetation,1.0
+mahakam,chip_0248,3.35,-0.55352,117.52576,2021,water / tidal flat,1.0
+mekong,chip_0226,3.34,9.18532,104.81057,2019,water / tidal flat,1.0
+para,chip_0370,3.34,-0.93026,-46.55742,2022,water / tidal flat,1.0
+rufiji,chip_0035,3.33,-7.87905,39.30328,2019,other vegetation,1.0
+rufiji,chip_0363,3.33,-7.84795,39.36631,2022,other vegetation,1.0
+mekong,chip_0108,3.33,8.84931,105.10286,2023,water / tidal flat,1.0
+mahakam,chip_0085,3.31,-0.49092,117.54877,2019,water / tidal flat,1.0
+mekong,chip_0398,3.31,9.05441,105.43989,2019,other vegetation,0.74018
+mekong,chip_0319,3.31,8.73119,104.99668,2023,water / tidal flat,1.0
+matang,chip_0321,3.29,4.64249,100.60857,2023,water / tidal flat,1.0
+mekong,chip_0219,3.28,8.75861,105.15099,2020,water / tidal flat,1.0
+rufiji,chip_0346,3.28,-7.87683,39.27942,2020,other vegetation,1.0
+jamaica,chip_0171,3.26,18.03485,-77.81687,2024,other vegetation,1.0
+jamaica,chip_0241,3.26,17.81811,-77.18344,2019,other vegetation,1.0
+mekong,chip_0319,3.25,8.74047,104.99758,2023,water / tidal flat,1.0
+rufiji,chip_0034,3.25,-7.81081,39.24961,2022,other vegetation,1.0
+rufiji,chip_0137,3.24,-7.82454,39.25798,2022,other vegetation,1.0
+rufiji,chip_0021,3.24,-7.87632,39.33088,2021,other vegetation,1.0
+mekong,chip_0341,3.24,8.81551,105.15352,2022,water / tidal flat,1.0
+mahakam,chip_0399,3.23,-0.58684,117.54223,2020,water / tidal flat,1.0
+mahakam,chip_0302,3.22,-0.69012,117.51897,2019,water / tidal flat,1.0
+mahakam,chip_0230,3.21,-0.73571,117.53281,2019,water / tidal flat,1.0
+mexico_pacific,chip_0088,3.18,24.78912,-112.19438,2022,bare ground,0.95912
+mekong,chip_0335,3.18,8.63013,104.95051,2024,water / tidal flat,0.98113
+rufiji,chip_0154,3.17,-7.86673,39.27464,2019,other vegetation,1.0
+mekong,chip_0135,3.17,9.03177,105.3913,2020,water / tidal flat,0.653
+mekong,chip_0215,3.15,8.80908,105.11593,2021,water / tidal flat,1.0
+mahakam,chip_0399,3.14,-0.58984,117.54246,2021,water / tidal flat,1.0
+mahakam,chip_0012,3.14,-0.49081,117.55206,2019,water / tidal flat,1.0
+matang,chip_0397,3.13,4.61562,100.67287,2020,other vegetation,1.0
+mahakam,chip_0194,3.12,-0.67849,117.48419,2020,water / tidal flat,1.0
+mahakam,chip_0209,3.12,-0.7627,117.55244,2020,water / tidal flat,1.0
+jamaica,chip_0274,3.12,18.26413,-76.71165,2023,other vegetation,1.0
+mahakam,chip_0106,3.11,-0.78641,117.19349,2019,other vegetation,1.0
+mekong,chip_0077,3.11,10.03962,106.67461,2019,water / tidal flat,1.0
+mekong,chip_0390,3.09,9.20236,105.74079,2020,water / tidal flat,0.75405
+mekong,chip_0306,3.08,8.78565,104.91692,2020,water / tidal flat,1.0
+mahakam,chip_0203,3.08,-0.86427,117.35434,2019,water / tidal flat,1.0
+mahakam,chip_0370,3.07,-0.56092,117.46005,2024,other vegetation,1.0
+sundarbans,chip_0139,3.07,21.83461,89.55921,2024,water / tidal flat,1.0
+rufiji,chip_0085,3.07,-7.86182,39.27417,2019,other vegetation,1.0
+mekong,chip_0264,3.06,9.36547,106.1759,2024,water / tidal flat,1.0
+sundarbans,chip_0252,3.06,21.65896,89.25076,2022,bare ground,0.93791
+para,chip_0049,3.05,-0.96159,-46.33398,2024,water / tidal flat,0.84262
+rufiji,chip_0106,3.04,-7.83677,39.2407,2022,other vegetation,1.0
+mekong,chip_0220,3.03,8.73464,105.09818,2024,water / tidal flat,1.0
+mekong,chip_0306,3.02,8.78193,104.91794,2023,water / tidal flat,1.0
+sundarbans,chip_0074,3.01,22.28864,89.48523,2024,water / tidal flat,1.0
+sundarbans,chip_0272,3.01,22.31757,89.46732,2024,water / tidal flat,1.0
+mahakam,chip_0381,2.98,-0.78944,117.50863,2020,water / tidal flat,1.0
+mahakam,chip_0030,2.97,-0.74553,117.58193,2023,water / tidal flat,1.0
+para,chip_0039,2.96,-0.78457,-46.98341,2019,water / tidal flat,1.0
+mahakam,chip_0096,2.95,-0.90458,117.33832,2020,water / tidal flat,1.0
+para,chip_0387,2.94,-1.03069,-46.07665,2019,water / tidal flat,1.0
+matang,chip_0205,2.94,4.93226,100.43256,2020,water / tidal flat,1.0
+mekong,chip_0139,2.93,8.84713,104.90158,2020,water / tidal flat,1.0
+rufiji,chip_0346,2.93,-7.88082,39.27681,2020,other vegetation,0.98976
+mekong,chip_0210,2.93,9.82846,104.92918,2024,water / tidal flat,1.0
+mekong,chip_0219,2.93,8.7573,105.1566,2020,water / tidal flat,1.0
+mekong,chip_0051,2.92,8.90003,104.85143,2020,water / tidal flat,0.9726
+rufiji,chip_0174,2.91,-7.88385,39.30364,2019,other vegetation,1.0
+mekong,chip_0333,2.9,8.61233,104.83179,2023,water / tidal flat,1.0
+mekong,chip_0170,2.9,9.16315,105.65269,2020,water / tidal flat,1.0
+mekong,chip_0311,2.9,8.63416,104.85259,2022,water / tidal flat,0.94138
+mekong,chip_0085,2.9,9.32872,106.11081,2022,water / tidal flat,1.0
+mahakam,chip_0328,2.89,-0.78294,117.38656,2020,water / tidal flat,1.0
+sundarbans,chip_0397,2.89,22.1339,89.22095,2024,water / tidal flat,1.0
+everglades,chip_0146,2.88,25.13775,-81.0463,2024,water / tidal flat,0.99306
+mekong,chip_0225,2.88,8.60086,104.72744,2023,water / tidal flat,1.0
+mahakam,chip_0276,2.88,-0.7915,117.23099,2024,other vegetation,1.0
+niger_delta,chip_0282,2.87,4.77664,6.91267,2023,other vegetation,1.0
+mekong,chip_0303,2.86,8.64999,105.00735,2023,water / tidal flat,1.0
+mekong,chip_0228,2.85,8.73629,105.09463,2023,water / tidal flat,1.0
+mekong,chip_0343,2.85,8.75782,105.09505,2021,water / tidal flat,1.0
+rufiji,chip_0362,2.85,-8.11873,39.35576,2019,water / tidal flat,1.0
+rufiji,chip_0249,2.85,-7.85121,39.24261,2022,other vegetation,0.85965
+mahakam,chip_0197,2.84,-0.73597,117.59139,2020,water / tidal flat,1.0
+rufiji,chip_0369,2.84,-7.8775,39.36004,2020,other vegetation,1.0
+mekong,chip_0128,2.82,8.90094,105.26162,2020,water / tidal flat,1.0
+sundarbans,chip_0389,2.82,22.16537,88.66542,2020,water / tidal flat,0.98582
+mekong,chip_0134,2.81,9.29558,105.90546,2019,other vegetation,0.97509
+mahakam,chip_0055,2.81,-0.64059,117.42494,2021,water / tidal flat,1.0
+mahakam,chip_0318,2.8,-0.46481,117.54206,2020,water / tidal flat,1.0
+mahakam,chip_0054,2.8,-0.70275,117.50346,2023,water / tidal flat,1.0
+mekong,chip_0254,2.79,10.48093,106.77584,2023,water / tidal flat,1.0
+mekong,chip_0011,2.79,8.73867,105.10152,2024,water / tidal flat,1.0
+mekong,chip_0230,2.77,9.13554,105.58297,2019,water / tidal flat,0.98917
+mahakam,chip_0055,2.74,-0.64078,117.4272,2022,water / tidal flat,1.0
+rufiji,chip_0025,2.74,-7.88871,39.34356,2022,other vegetation,1.0
+mahakam,chip_0112,2.73,-0.51285,117.52767,2019,water / tidal flat,1.0
+mahakam,chip_0385,2.73,-0.77322,117.59588,2021,water / tidal flat,1.0
+mahakam,chip_0171,2.73,-0.42481,117.6249,2024,water / tidal flat,1.0
+sundarbans,chip_0096,2.73,21.67763,88.69594,2024,water / tidal flat,1.0
+mahakam,chip_0197,2.71,-0.73843,117.59973,2020,water / tidal flat,1.0
+mahakam,chip_0393,2.7,-0.73228,117.47709,2020,water / tidal flat,1.0
+mahakam,chip_0382,2.7,-0.77689,117.55041,2019,water / tidal flat,1.0
+sundarbans,chip_0226,2.69,22.20448,89.45525,2022,water / tidal flat,1.0
+mekong,chip_0268,2.69,8.77008,105.12262,2020,water / tidal flat,1.0
+mahakam,chip_0114,2.68,-0.31431,117.43974,2024,bare ground,0.54478
+mekong,chip_0108,2.65,8.85305,105.10738,2024,water / tidal flat,1.0
+para,chip_0111,2.64,-0.88044,-46.81344,2024,water / tidal flat,1.0
+mekong,chip_0323,2.64,8.67672,105.01291,2023,water / tidal flat,1.0
+para,chip_0293,2.63,-0.84162,-46.70065,2020,water / tidal flat,1.0
+mahakam,chip_0311,2.63,-0.48476,117.50009,2024,water / tidal flat,1.0
+mekong,chip_0108,2.63,8.85338,105.10113,2020,water / tidal flat,1.0
+niger_delta,chip_0087,2.62,4.70986,6.83638,2022,other vegetation,1.0
+mahakam,chip_0132,2.62,-0.42669,117.4218,2022,water / tidal flat,1.0
+mekong,chip_0097,2.6,9.00346,105.32134,2020,water / tidal flat,1.0
+mekong,chip_0011,2.59,8.74573,105.10306,2022,water / tidal flat,1.0
+mekong,chip_0304,2.59,9.12837,105.04728,2021,other vegetation,0.55598
+mekong,chip_0372,2.58,9.73365,104.8749,2020,water / tidal flat,1.0
+mahakam,chip_0375,2.56,-0.41576,117.48211,2024,water / tidal flat,1.0
+sundarbans,chip_0331,2.55,21.58268,88.5409,2024,water / tidal flat,1.0
+mekong,chip_0329,2.55,8.74387,104.95061,2022,water / tidal flat,1.0
+mahakam,chip_0100,2.54,-0.74237,117.41624,2020,water / tidal flat,1.0
+rufiji,chip_0296,2.54,-7.8789,39.34433,2024,water / tidal flat,0.83465
+rufiji,chip_0124,2.53,-7.83703,39.24679,2022,other vegetation,1.0
+mahakam,chip_0057,2.53,-0.65436,117.47966,2024,water / tidal flat,1.0
+rufiji,chip_0301,2.53,-7.87498,39.24216,2019,water / tidal flat,0.56126
+mahakam,chip_0319,2.53,-0.79991,117.50502,2020,water / tidal flat,1.0
+para,chip_0386,2.52,-0.98022,-46.42263,2019,bare ground,0.74206
+niger_delta,chip_0087,2.52,4.71664,6.83344,2022,other vegetation,1.0
+rufiji,chip_0068,2.51,-7.83425,39.24402,2022,other vegetation,1.0
+mahakam,chip_0072,2.51,-0.9043,117.34712,2024,water / tidal flat,1.0
+rufiji,chip_0213,2.5,-7.78994,39.26934,2020,other vegetation,1.0
+rufiji,chip_0249,2.49,-7.84486,39.24704,2019,other vegetation,1.0
+mekong,chip_0108,2.49,8.84335,105.10748,2020,water / tidal flat,1.0
+mahakam,chip_0218,2.48,-0.77586,117.30435,2019,water / tidal flat,1.0
+sundarbans,chip_0316,2.47,22.13297,88.99741,2024,water / tidal flat,1.0
+sundarbans,chip_0105,2.47,21.64075,88.94415,2024,water / tidal flat,0.61134
+mekong,chip_0335,2.46,8.63113,104.95482,2023,water / tidal flat,1.0
+mekong,chip_0215,2.46,8.80229,105.10864,2023,water / tidal flat,1.0
+mahakam,chip_0115,2.46,-0.8911,117.33078,2019,water / tidal flat,1.0
+rufiji,chip_0213,2.45,-7.78606,39.26657,2021,other vegetation,1.0
+matang,chip_0101,2.45,4.67734,100.59486,2020,water / tidal flat,1.0
+mekong,chip_0247,2.45,8.71478,104.90336,2022,water / tidal flat,1.0
+sundarbans,chip_0145,2.45,22.06944,88.68154,2022,water / tidal flat,0.81633
+mekong,chip_0378,2.44,8.74961,104.91334,2020,water / tidal flat,1.0
+mekong,chip_0020,2.44,8.70595,104.99699,2024,water / tidal flat,1.0
+rufiji,chip_0309,2.43,-7.86403,39.36569,2022,other vegetation,0.82305
+para,chip_0322,2.43,-0.95137,-46.5124,2021,water / tidal flat,1.0
+sundarbans,chip_0084,2.43,22.16061,89.23774,2022,water / tidal flat,1.0
+para,chip_0080,2.42,-1.08767,-46.20472,2023,water / tidal flat,1.0
+mahakam,chip_0033,2.41,-0.73975,117.308,2021,water / tidal flat,1.0
+jamaica,chip_0049,2.4,18.48792,-77.61824,2023,water / tidal flat,0.58333
+mekong,chip_0313,2.4,8.74382,104.99782,2021,water / tidal flat,1.0
+rufiji,chip_0006,2.4,-7.85655,39.2645,2019,other vegetation,1.0
+para,chip_0312,2.4,-0.98898,-46.22396,2024,water / tidal flat,1.0
+matang,chip_0361,2.39,4.99684,100.44734,2024,other vegetation,0.64017
+jamaica,chip_0342,2.39,18.01128,-77.82086,2019,other vegetation,1.0
+jamaica,chip_0255,2.39,18.11259,-77.99381,2024,other vegetation,0.97908
+sundarbans,chip_0053,2.38,21.64574,88.52285,2024,water / tidal flat,1.0
+mekong,chip_0313,2.38,8.74115,104.99288,2019,water / tidal flat,0.98739
+para,chip_0271,2.37,-0.87426,-46.77591,2024,water / tidal flat,1.0
+mahakam,chip_0303,2.36,-0.53384,117.48329,2019,water / tidal flat,1.0
+mekong,chip_0306,2.36,8.78168,104.9106,2023,water / tidal flat,1.0
+mekong,chip_0334,2.35,8.77988,105.10442,2023,water / tidal flat,1.0
+para,chip_0179,2.35,-0.76616,-47.16797,2019,water / tidal flat,1.0
+mahakam,chip_0327,2.34,-0.62143,117.51022,2019,water / tidal flat,1.0
+mekong,chip_0215,2.34,8.80335,105.11594,2023,water / tidal flat,1.0
+rufiji,chip_0034,2.34,-7.80112,39.25238,2021,other vegetation,1.0
+mahakam,chip_0341,2.34,-0.34184,117.49107,2023,water / tidal flat,1.0
+mahakam,chip_0130,2.33,-0.46375,117.47424,2021,water / tidal flat,1.0
+mekong,chip_0091,2.33,8.99519,105.36074,2023,water / tidal flat,1.0
+mekong,chip_0389,2.33,10.15914,106.78193,2023,water / tidal flat,1.0
+mekong,chip_0139,2.31,8.85676,104.90154,2020,water / tidal flat,1.0
+mekong,chip_0142,2.31,8.74006,105.07474,2023,water / tidal flat,1.0
+para,chip_0076,2.3,-1.14891,-45.82438,2023,water / tidal flat,1.0
+rufiji,chip_0058,2.3,-8.08711,39.40798,2024,water / tidal flat,1.0
+mekong,chip_0313,2.3,8.74489,104.99273,2023,water / tidal flat,0.98696
+sundarbans,chip_0337,2.3,22.21084,89.24531,2024,water / tidal flat,1.0
+mekong,chip_0299,2.29,8.82951,105.16572,2023,water / tidal flat,0.89956
+jamaica,chip_0271,2.29,17.95088,-77.82448,2023,other vegetation,1.0
+mekong,chip_0335,2.29,8.62562,104.96045,2024,water / tidal flat,1.0
+mekong,chip_0347,2.28,9.48924,106.20193,2019,other vegetation,0.80263
+niger_delta,chip_0285,2.28,4.32642,6.53193,2023,other vegetation,1.0
+mekong,chip_0077,2.28,10.03533,106.67013,2021,water / tidal flat,1.0
+niger_delta,chip_0080,2.28,4.71417,6.8879,2023,other vegetation,1.0
+mekong,chip_0346,2.27,8.67565,104.89847,2023,water / tidal flat,0.99119
+mahakam,chip_0370,2.27,-0.55934,117.45718,2019,water / tidal flat,1.0
+mekong,chip_0357,2.26,10.39639,106.83559,2022,water / tidal flat,1.0
+mahakam,chip_0345,2.26,-0.54724,117.57283,2024,water / tidal flat,1.0
+mahakam,chip_0371,2.26,-0.87779,117.3677,2019,water / tidal flat,1.0
+mahakam,chip_0390,2.26,-0.37395,117.52051,2022,water / tidal flat,1.0
+mekong,chip_0215,2.26,8.80594,105.11358,2020,water / tidal flat,1.0
+mahakam,chip_0226,2.26,-0.54068,117.559,2024,water / tidal flat,1.0
+para,chip_0394,2.25,-0.90564,-46.46975,2023,other vegetation,1.0
+mekong,chip_0189,2.25,8.95159,104.80565,2022,water / tidal flat,1.0
+rufiji,chip_0049,2.25,-7.90961,39.37178,2022,other vegetation,1.0
+mekong,chip_0364,2.25,8.62797,104.96386,2021,water / tidal flat,1.0
+mahakam,chip_0022,2.24,-0.88743,117.36389,2020,water / tidal flat,1.0
+mahakam,chip_0234,2.24,-0.74445,117.53067,2020,water / tidal flat,1.0
+mekong,chip_0097,2.24,9.00485,105.32001,2020,water / tidal flat,1.0
+rufiji,chip_0233,2.23,-7.86669,39.24242,2020,other vegetation,0.58296
+rufiji,chip_0370,2.23,-7.90834,39.35814,2020,other vegetation,1.0
+mekong,chip_0139,2.22,8.85633,104.90927,2021,water / tidal flat,1.0
+everglades,chip_0030,2.21,25.23804,-80.86374,2024,other vegetation,1.0
+para,chip_0020,2.2,-0.88236,-46.41797,2019,water / tidal flat,1.0
+mekong,chip_0211,2.2,8.74196,104.92499,2023,water / tidal flat,1.0
+everglades,chip_0080,2.19,25.18463,-80.81355,2024,water / tidal flat,0.69406
+mahakam,chip_0051,2.18,-0.86497,117.42265,2024,water / tidal flat,1.0
+mekong,chip_0149,2.17,8.6123,104.80738,2024,water / tidal flat,1.0
+mahakam,chip_0360,2.17,-0.65696,117.45511,2023,water / tidal flat,1.0
+niger_delta,chip_0236,2.17,4.71912,6.69627,2023,other vegetation,1.0
+mekong,chip_0160,2.17,8.68549,104.97949,2024,water / tidal flat,1.0
+rufiji,chip_0021,2.16,-7.87622,39.33819,2021,other vegetation,1.0
+mekong,chip_0387,2.15,8.80958,105.14068,2022,water / tidal flat,1.0
+mekong,chip_0230,2.15,9.14055,105.58159,2022,other vegetation,0.43721
+jamaica,chip_0171,2.15,18.03286,-77.81263,2024,other vegetation,1.0
+mekong,chip_0069,2.15,8.67405,104.98193,2023,water / tidal flat,1.0
+mahakam,chip_0081,2.14,-0.8489,117.4193,2020,water / tidal flat,1.0
+sundarbans,chip_0152,2.14,22.15777,89.22462,2024,water / tidal flat,1.0
+mahakam,chip_0398,2.14,-0.69871,117.51645,2023,water / tidal flat,1.0
+mekong,chip_0381,2.13,8.85178,105.23355,2023,water / tidal flat,1.0
+para,chip_0348,2.13,-1.10734,-46.03293,2023,water / tidal flat,1.0
+mekong,chip_0094,2.13,8.71857,105.05309,2024,water / tidal flat,1.0
+mekong,chip_0254,2.12,10.47975,106.77373,2023,water / tidal flat,0.88679
+mahakam,chip_0060,2.12,-0.7929,117.48952,2024,water / tidal flat,1.0
+rufiji,chip_0135,2.12,-7.8501,39.26898,2019,other vegetation,1.0
+jamaica,chip_0180,2.11,18.02289,-77.82587,2024,other vegetation,1.0
+everglades,chip_0225,2.11,25.209,-80.95327,2024,other vegetation,1.0
+mahakam,chip_0090,2.11,-0.63303,117.39339,2019,water / tidal flat,1.0
+mahakam,chip_0385,2.11,-0.77619,117.59396,2022,water / tidal flat,1.0
+rufiji,chip_0309,2.1,-7.86318,39.37109,2019,other vegetation,0.90476
+mekong,chip_0214,2.1,8.73761,104.93739,2023,water / tidal flat,1.0
+rufiji,chip_0031,2.09,-7.90528,39.36602,2019,other vegetation,0.73206
+mekong,chip_0307,2.09,8.6512,104.9999,2024,water / tidal flat,0.94258
+niger_delta,chip_0369,2.08,4.77046,6.9492,2022,other vegetation,1.0
+mekong,chip_0313,2.08,8.73936,104.99397,2023,water / tidal flat,1.0
+mekong,chip_0345,2.08,8.71521,104.98498,2022,water / tidal flat,0.93269
+everglades,chip_0091,2.07,25.67694,-81.26642,2024,other vegetation,1.0
+mekong,chip_0398,2.07,9.0551,105.44885,2019,other vegetation,0.71498
+mekong,chip_0327,2.06,8.62782,104.96267,2024,water / tidal flat,1.0
+mekong,chip_0315,2.06,9.68001,104.86154,2019,water / tidal flat,1.0
+sundarbans,chip_0160,2.06,21.63488,88.7205,2023,bare ground,0.56311
+para,chip_0048,2.04,-0.78198,-46.96191,2023,water / tidal flat,1.0
+mahakam,chip_0333,2.04,-0.43105,117.48055,2024,water / tidal flat,1.0
+mekong,chip_0194,2.04,8.69566,105.13624,2023,water / tidal flat,1.0
+mahakam,chip_0023,2.04,-0.77113,117.49534,2024,water / tidal flat,1.0
+mekong,chip_0298,2.04,8.78234,105.08557,2020,water / tidal flat,1.0
+jamaica,chip_0160,2.02,17.91299,-77.08598,2023,bare ground,0.4703
+mekong,chip_0333,2.02,8.61518,104.83316,2023,water / tidal flat,1.0
+mekong,chip_0392,2.01,8.74198,105.12849,2024,water / tidal flat,1.0
+rufiji,chip_0350,2.01,-7.98981,39.42932,2020,other vegetation,1.0
+mekong,chip_0214,2.01,8.73315,104.93233,2019,water / tidal flat,0.93532
+sundarbans,chip_0362,2.01,22.17432,88.92691,2024,water / tidal flat,1.0
+mekong,chip_0023,2.0,8.60551,104.96134,2021,water / tidal flat,1.0
+mekong,chip_0207,2.0,8.76494,105.14104,2023,water / tidal flat,1.0
+jamaica,chip_0269,2.0,17.81084,-77.18758,2020,other vegetation,0.87
+mahakam,chip_0020,1.99,-0.66473,117.39051,2020,water / tidal flat,1.0
+mahakam,chip_0240,1.99,-0.63452,117.41637,2024,water / tidal flat,1.0
+sundarbans,chip_0322,1.99,22.00886,88.72769,2024,water / tidal flat,1.0
+jamaica,chip_0171,1.98,18.03529,-77.81856,2024,other vegetation,1.0
+mekong,chip_0358,1.98,8.726,105.02197,2022,water / tidal flat,1.0
+mahakam,chip_0339,1.98,-0.60848,117.47067,2019,water / tidal flat,1.0
+mahakam,chip_0297,1.98,-0.62961,117.43799,2024,water / tidal flat,1.0
+mahakam,chip_0183,1.98,-0.47674,117.51733,2022,water / tidal flat,1.0
+rufiji,chip_0014,1.98,-7.80186,39.26172,2019,other vegetation,1.0
+mekong,chip_0139,1.98,8.84704,104.90655,2020,water / tidal flat,1.0
+rufiji,chip_0106,1.97,-7.83882,39.2426,2022,other vegetation,0.99492
+mahakam,chip_0310,1.97,-0.52361,117.45741,2024,water / tidal flat,1.0
+rufiji,chip_0025,1.97,-7.88599,39.35254,2021,other vegetation,1.0
+mahakam,chip_0379,1.97,-0.60403,117.44176,2024,water / tidal flat,1.0
+mekong,chip_0020,1.97,8.70732,104.99728,2023,water / tidal flat,1.0
+rufiji,chip_0014,1.96,-7.79413,39.26357,2022,other vegetation,1.0
+rufiji,chip_0062,1.95,-7.86488,39.28691,2020,other vegetation,1.0
+mahakam,chip_0016,1.95,-0.66935,117.4719,2024,water / tidal flat,1.0
+mekong,chip_0259,1.95,8.7981,105.11443,2023,water / tidal flat,1.0
+rufiji,chip_0156,1.94,-7.84435,39.22854,2020,other vegetation,1.0
+mekong,chip_0193,1.94,8.64891,104.87337,2024,water / tidal flat,1.0
+mekong,chip_0378,1.94,8.75399,104.91444,2022,water / tidal flat,0.98454
+rufiji,chip_0112,1.94,-7.82389,39.25616,2022,other vegetation,1.0
+mekong,chip_0282,1.93,8.73266,105.11819,2024,water / tidal flat,0.99482
+mahakam,chip_0250,1.92,-0.67204,117.43455,2022,water / tidal flat,1.0
+mekong,chip_0146,1.92,9.07563,105.05677,2019,water / tidal flat,0.63542
+mekong,chip_0243,1.92,8.68144,105.0285,2024,water / tidal flat,1.0
+mekong,chip_0179,1.92,8.63964,104.9172,2024,water / tidal flat,1.0
+mahakam,chip_0090,1.92,-0.63433,117.39156,2020,water / tidal flat,1.0
+jamaica,chip_0114,1.91,18.01496,-76.86479,2021,other vegetation,1.0
+mahakam,chip_0398,1.91,-0.70477,117.51442,2020,water / tidal flat,1.0
+mahakam,chip_0167,1.91,-0.64199,117.42563,2019,water / tidal flat,1.0
+mekong,chip_0059,1.91,9.45121,105.95793,2019,other vegetation,0.58115
+mahakam,chip_0073,1.9,-0.61166,117.44725,2019,water / tidal flat,1.0
+mekong,chip_0396,1.9,9.88732,106.66291,2022,other vegetation,0.36842
+mekong,chip_0261,1.9,8.72433,105.03751,2023,water / tidal flat,1.0
+mekong,chip_0195,1.9,8.8072,104.90886,2021,water / tidal flat,1.0
+mekong,chip_0177,1.9,8.65746,104.89086,2024,water / tidal flat,0.96316
+mahakam,chip_0078,1.9,-0.64299,117.53575,2020,water / tidal flat,1.0
+mekong,chip_0215,1.9,8.80773,105.11449,2021,water / tidal flat,1.0
+mahakam,chip_0197,1.89,-0.74609,117.58947,2020,water / tidal flat,1.0
+mekong,chip_0378,1.89,8.74385,104.91347,2023,water / tidal flat,1.0
+mekong,chip_0051,1.89,8.90616,104.85308,2019,water / tidal flat,0.92593
+rufiji,chip_0068,1.88,-7.82527,39.24956,2022,other vegetation,0.9734
+mekong,chip_0146,1.88,9.07991,105.05177,2020,water / tidal flat,0.62766
+sundarbans,chip_0259,1.88,22.22954,89.42106,2024,water / tidal flat,1.0
+mekong,chip_0313,1.88,8.7447,104.99403,2019,water / tidal flat,0.93085
+mekong,chip_0209,1.87,8.67266,104.96354,2024,water / tidal flat,1.0
+mekong,chip_0381,1.87,8.85277,105.23474,2022,water / tidal flat,1.0
+rufiji,chip_0034,1.87,-7.80595,39.24923,2020,other vegetation,1.0
+sundarbans,chip_0284,1.87,21.64862,88.92566,2024,water / tidal flat,1.0
+mexico_pacific,chip_0362,1.87,25.08459,-112.16957,2024,bare ground,0.97326
+rufiji,chip_0013,1.87,-7.79654,39.40346,2019,water / tidal flat,1.0
+sundarbans,chip_0305,1.86,21.76687,89.44945,2024,water / tidal flat,1.0
+mekong,chip_0295,1.86,8.74627,105.09995,2023,water / tidal flat,1.0
+mahakam,chip_0295,1.86,-0.79288,117.42609,2020,water / tidal flat,1.0
+mekong,chip_0358,1.85,8.72829,105.02813,2022,water / tidal flat,1.0
+rufiji,chip_0092,1.85,-7.84449,39.31528,2019,other vegetation,1.0
+mahakam,chip_0383,1.84,-0.66921,117.42135,2020,water / tidal flat,1.0
+mahakam,chip_0136,1.84,-0.36381,117.44907,2019,water / tidal flat,1.0
+mahakam,chip_0229,1.84,-0.55711,117.53626,2024,water / tidal flat,1.0
+sundarbans,chip_0115,1.84,21.89752,89.19482,2024,water / tidal flat,1.0
+mekong,chip_0387,1.84,8.81535,105.14206,2020,water / tidal flat,1.0
+sundarbans,chip_0060,1.83,22.08066,89.28895,2022,water / tidal flat,1.0
+para,chip_0179,1.83,-0.77127,-47.16544,2023,water / tidal flat,1.0
+niger_delta,chip_0210,1.82,4.69165,6.57178,2023,other vegetation,1.0
+mekong,chip_0210,1.82,9.82901,104.92289,2019,water / tidal flat,1.0
+rufiji,chip_0351,1.82,-7.80081,39.2455,2020,other vegetation,1.0
+mahakam,chip_0028,1.82,-0.40106,117.44393,2024,water / tidal flat,1.0
+mahakam,chip_0172,1.81,-0.54658,117.5849,2021,water / tidal flat,1.0
+para,chip_0394,1.81,-0.90637,-46.4734,2019,water / tidal flat,1.0
+mahakam,chip_0083,1.81,-0.67331,117.48754,2020,water / tidal flat,1.0
+mahakam,chip_0352,1.81,-0.65483,117.472,2020,water / tidal flat,1.0
+matang,chip_0039,1.81,4.9196,100.44156,2024,water / tidal flat,1.0
+mekong,chip_0343,1.81,8.75425,105.09589,2022,water / tidal flat,1.0
+para,chip_0088,1.8,-0.67733,-47.17828,2021,water / tidal flat,0.58333
+mahakam,chip_0146,1.8,-0.75982,117.57887,2024,water / tidal flat,1.0
+jamaica,chip_0230,1.79,18.01735,-77.83147,2019,other vegetation,1.0
+mahakam,chip_0138,1.79,-0.47062,117.45621,2021,water / tidal flat,1.0
+everglades,chip_0080,1.79,25.17781,-80.81793,2024,water / tidal flat,0.83799
+mahakam,chip_0055,1.79,-0.64003,117.43041,2024,water / tidal flat,1.0
+mahakam,chip_0316,1.79,-0.70128,117.45052,2021,water / tidal flat,1.0
+mekong,chip_0372,1.78,9.73578,104.87073,2020,water / tidal flat,0.99438
+mahakam,chip_0082,1.78,-0.43558,117.50547,2024,water / tidal flat,1.0
+mekong,chip_0298,1.78,8.78665,105.08007,2023,water / tidal flat,0.98876
+mahakam,chip_0199,1.77,-0.7812,117.519,2019,water / tidal flat,1.0
+everglades,chip_0122,1.77,25.62894,-81.09446,2021,other vegetation,1.0
+jamaica,chip_0252,1.77,17.90549,-77.01992,2024,other vegetation,1.0
+mekong,chip_0282,1.77,8.73028,105.11671,2021,water / tidal flat,1.0
+rufiji,chip_0352,1.77,-8.18555,39.21753,2021,water / tidal flat,0.71751
+rufiji,chip_0268,1.76,-8.08362,39.39315,2024,water / tidal flat,1.0
+jamaica,chip_0392,1.75,18.26335,-76.68764,2023,other vegetation,1.0
+rufiji,chip_0395,1.75,-7.82427,39.25211,2022,other vegetation,1.0
+mekong,chip_0209,1.75,8.66615,104.96622,2023,water / tidal flat,1.0
+mekong,chip_0327,1.75,8.63414,104.96828,2024,water / tidal flat,1.0
+mekong,chip_0335,1.74,8.62764,104.95892,2023,water / tidal flat,1.0
+rufiji,chip_0031,1.74,-7.90631,39.36404,2019,other vegetation,1.0
+rufiji,chip_0340,1.74,-7.84501,39.25273,2019,other vegetation,1.0
+mekong,chip_0254,1.74,10.47534,106.77878,2019,water / tidal flat,0.98276
+mekong,chip_0287,1.73,8.74968,105.05647,2023,water / tidal flat,1.0
+rufiji,chip_0174,1.73,-7.88876,39.30981,2024,water / tidal flat,0.6474
+sundarbans,chip_0213,1.73,21.93325,89.50627,2024,water / tidal flat,1.0
+matang,chip_0348,1.72,4.72693,100.58449,2021,water / tidal flat,1.0
+mahakam,chip_0275,1.72,-0.71649,117.47108,2023,water / tidal flat,1.0
+everglades,chip_0092,1.72,25.35041,-81.03194,2021,other vegetation,1.0
+rufiji,chip_0062,1.72,-7.8601,39.27631,2019,other vegetation,1.0
+mekong,chip_0305,1.71,10.38248,106.89686,2024,cropland,0.54386
+mekong,chip_0303,1.71,8.64727,105.0027,2023,water / tidal flat,1.0
+rufiji,chip_0349,1.71,-7.90337,39.39884,2019,other vegetation,1.0
+mekong,chip_0000,1.71,8.77412,105.11923,2023,water / tidal flat,1.0
+mekong,chip_0296,1.7,10.43377,106.75092,2023,water / tidal flat,0.86471
+mexico_pacific,chip_0114,1.7,25.16297,-112.12955,2024,water / tidal flat,1.0
+mahakam,chip_0043,1.7,-0.62637,117.4379,2024,water / tidal flat,1.0
+mekong,chip_0051,1.7,8.90711,104.85072,2020,water / tidal flat,1.0
+mekong,chip_0000,1.7,8.76487,105.11318,2022,water / tidal flat,1.0
+mekong,chip_0365,1.7,8.60725,104.82705,2022,water / tidal flat,0.92941
+mekong,chip_0329,1.7,8.74378,104.94316,2024,water / tidal flat,0.88235
+para,chip_0215,1.69,-0.87945,-46.81235,2024,water / tidal flat,1.0
+para,chip_0325,1.69,-0.71362,-47.44686,2019,water / tidal flat,1.0
+mahakam,chip_0297,1.69,-0.6282,117.42935,2019,water / tidal flat,1.0
+mahakam,chip_0110,1.69,-0.82319,117.29399,2020,water / tidal flat,1.0
+rufiji,chip_0315,1.69,-7.85194,39.26285,2019,other vegetation,1.0
+mekong,chip_0268,1.69,8.76957,105.12646,2023,water / tidal flat,1.0
+mekong,chip_0351,1.69,9.74796,106.5564,2020,water / tidal flat,0.89941
+rufiji,chip_0196,1.69,-8.15286,39.32294,2020,water / tidal flat,1.0
+para,chip_0347,1.69,-0.83494,-46.91635,2019,water / tidal flat,1.0
+para,chip_0303,1.69,-1.17953,-45.80216,2022,water / tidal flat,1.0
+mahakam,chip_0309,1.69,-0.41541,117.60789,2020,water / tidal flat,1.0
+mahakam,chip_0256,1.68,-0.446,117.56897,2019,water / tidal flat,1.0
+mahakam,chip_0228,1.68,-0.80535,117.51655,2022,water / tidal flat,1.0
+para,chip_0354,1.68,-0.80581,-46.64398,2022,water / tidal flat,1.0
+mekong,chip_0299,1.68,8.83048,105.16826,2023,water / tidal flat,1.0
+mahakam,chip_0153,1.68,-0.33944,117.46996,2021,water / tidal flat,1.0
+jamaica,chip_0378,1.68,17.91789,-77.09684,2019,other vegetation,1.0
+mahakam,chip_0349,1.67,-0.44919,117.58436,2020,water / tidal flat,1.0
+mahakam,chip_0049,1.67,-0.75069,117.57205,2022,water / tidal flat,1.0
+mekong,chip_0130,1.67,8.91475,105.36463,2022,water / tidal flat,1.0
+mekong,chip_0378,1.66,8.75208,104.91647,2020,water / tidal flat,1.0
+mekong,chip_0154,1.66,10.18328,104.63044,2024,other vegetation,0.56024
+mekong,chip_0273,1.66,10.00645,106.6533,2021,water / tidal flat,1.0
+mekong,chip_0215,1.65,8.80447,105.11031,2023,water / tidal flat,1.0
+rufiji,chip_0006,1.65,-7.85837,39.25615,2019,other vegetation,0.98788
+mekong,chip_0011,1.65,8.74101,105.09283,2023,water / tidal flat,1.0
+mekong,chip_0311,1.64,8.6315,104.8569,2021,built-up,0.56098
+mahakam,chip_0198,1.64,-0.41917,117.43076,2022,water / tidal flat,0.95122
+mekong,chip_0288,1.64,9.21803,105.77515,2020,water / tidal flat,1.0
+mekong,chip_0135,1.64,9.03304,105.3969,2020,water / tidal flat,1.0
+para,chip_0125,1.63,-1.04978,-46.15207,2023,water / tidal flat,1.0
+mahakam,chip_0250,1.63,-0.67388,117.44299,2020,water / tidal flat,1.0
+mahakam,chip_0049,1.63,-0.75456,117.572,2022,water / tidal flat,1.0
+mekong,chip_0047,1.63,9.60623,106.29087,2024,water / tidal flat,0.93252
+mekong,chip_0227,1.62,8.67959,104.92705,2022,water / tidal flat,1.0
+mekong,chip_0015,1.62,9.13993,105.60033,2023,water / tidal flat,1.0
+mekong,chip_0231,1.62,8.59581,104.83579,2023,water / tidal flat,0.91975
+mahakam,chip_0052,1.62,-0.54309,117.49897,2019,water / tidal flat,1.0
+mahakam,chip_0325,1.62,-0.81733,117.46524,2020,water / tidal flat,1.0
+mahakam,chip_0153,1.61,-0.34146,117.46867,2020,water / tidal flat,1.0
+rufiji,chip_0124,1.61,-7.83036,39.24888,2022,other vegetation,1.0
+mekong,chip_0288,1.6,9.22375,105.77516,2023,built-up,0.6
+rufiji,chip_0308,1.6,-8.16165,39.32424,2020,other vegetation,1.0
+sundarbans,chip_0305,1.6,21.76789,89.45569,2024,water / tidal flat,1.0
+sundarbans,chip_0003,1.6,22.25497,89.55702,2024,water / tidal flat,1.0
+mekong,chip_0108,1.6,8.85048,105.1068,2023,water / tidal flat,1.0
+mekong,chip_0094,1.59,8.7234,105.05757,2024,water / tidal flat,1.0
+niger_delta,chip_0259,1.59,4.38644,6.68624,2024,other vegetation,0.96226
+jamaica,chip_0270,1.59,18.03567,-77.82114,2024,other vegetation,1.0
+mahakam,chip_0309,1.58,-0.41908,117.60551,2020,water / tidal flat,1.0
+matang,chip_0348,1.58,4.72115,100.58418,2023,water / tidal flat,1.0
+para,chip_0345,1.58,-0.70587,-47.46409,2019,water / tidal flat,1.0
+mekong,chip_0007,1.58,8.63986,105.0372,2019,other vegetation,0.70253
+mahakam,chip_0146,1.58,-0.74981,117.58471,2020,water / tidal flat,1.0
+rufiji,chip_0062,1.58,-7.85655,39.27689,2022,other vegetation,1.0
+mahakam,chip_0183,1.57,-0.47403,117.52108,2021,water / tidal flat,1.0
+rufiji,chip_0233,1.57,-7.86171,39.24232,2022,other vegetation,0.81529
+mahakam,chip_0058,1.57,-0.62253,117.48907,2023,other vegetation,1.0
+mekong,chip_0215,1.56,8.81052,105.11875,2023,water / tidal flat,1.0
+jamaica,chip_0389,1.56,17.80429,-77.2918,2020,other vegetation,1.0
+niger_delta,chip_0196,1.56,4.35266,6.80007,2023,other vegetation,0.69872
+jamaica,chip_0342,1.56,18.01287,-77.82194,2024,other vegetation,1.0
+rufiji,chip_0135,1.55,-7.85369,39.26236,2022,water / tidal flat,0.81935
+mahakam,chip_0333,1.55,-0.42186,117.48241,2023,water / tidal flat,1.0
+sundarbans,chip_0168,1.55,21.95268,89.36713,2024,water / tidal flat,1.0
+mekong,chip_0338,1.55,9.80855,104.8903,2024,water / tidal flat,1.0
+sundarbans,chip_0162,1.55,22.23789,89.40776,2024,water / tidal flat,1.0
+mekong,chip_0187,1.55,8.63225,104.81071,2023,water / tidal flat,1.0
+mekong,chip_0329,1.54,8.74498,104.94821,2022,water / tidal flat,1.0
+jamaica,chip_0342,1.54,18.01216,-77.82725,2024,other vegetation,1.0
+mekong,chip_0215,1.54,8.80389,105.11251,2023,water / tidal flat,1.0
+mekong,chip_0126,1.54,9.73636,105.18132,2020,water / tidal flat,0.64935
+para,chip_0010,1.54,-0.93117,-46.5575,2023,water / tidal flat,1.0
+mekong,chip_0365,1.54,8.60747,104.82336,2020,water / tidal flat,1.0
+mekong,chip_0335,1.53,8.62652,104.95814,2024,water / tidal flat,1.0
+para,chip_0074,1.53,-0.84185,-46.77202,2019,water / tidal flat,1.0
+mekong,chip_0199,1.53,9.87578,106.65934,2019,water / tidal flat,0.54248
+everglades,chip_0106,1.53,25.75642,-81.32224,2024,other vegetation,1.0
+mekong,chip_0345,1.53,8.7111,104.98606,2023,water / tidal flat,1.0
+mahakam,chip_0082,1.52,-0.43818,117.5054,2021,water / tidal flat,1.0
+matang,chip_0320,1.52,5.00551,100.4116,2022,other vegetation,1.0
+everglades,chip_0203,1.52,25.51442,-81.00777,2021,other vegetation,1.0
+mexico_pacific,chip_0255,1.52,25.05707,-112.1771,2024,bare ground,0.98026
+mahakam,chip_0358,1.52,-0.4301,117.60169,2023,water / tidal flat,1.0
+mekong,chip_0195,1.51,8.8101,104.8994,2019,water / tidal flat,1.0
+mekong,chip_0305,1.51,10.38412,106.8995,2024,cropland,0.68874
+mekong,chip_0135,1.51,9.0299,105.39237,2020,water / tidal flat,0.72185
+rufiji,chip_0031,1.51,-7.90957,39.3598,2019,water / tidal flat,0.74834
+rufiji,chip_0351,1.51,-7.80574,39.24313,2022,other vegetation,1.0
+mekong,chip_0388,1.5,8.60082,104.93322,2021,water / tidal flat,1.0
+jamaica,chip_0155,1.5,18.4763,-77.64627,2023,other vegetation,1.0
+mahakam,chip_0019,1.5,-0.44532,117.54217,2022,water / tidal flat,1.0
+rufiji,chip_0174,1.5,-7.88712,39.3075,2019,other vegetation,0.98667
+everglades,chip_0361,1.5,25.34754,-81.03998,2019,other vegetation,1.0
+jamaica,chip_0156,1.49,18.04048,-77.88981,2024,other vegetation,1.0
+rufiji,chip_0073,1.49,-7.84923,39.24951,2019,other vegetation,1.0
+mekong,chip_0164,1.49,9.04516,104.8826,2019,water / tidal flat,0.52349
+niger_delta,chip_0231,1.49,4.69162,6.61631,2024,other vegetation,1.0
+mekong,chip_0215,1.49,8.80104,105.10773,2023,water / tidal flat,1.0
+mekong,chip_0179,1.49,8.64525,104.91958,2023,water / tidal flat,0.87919
+matang,chip_0397,1.49,4.6143,100.67487,2024,water / tidal flat,0.71812
+mahakam,chip_0113,1.49,-0.74757,117.47132,2019,water / tidal flat,1.0
+rufiji,chip_0028,1.49,-8.16335,39.35518,2021,other vegetation,1.0
+jamaica,chip_0184,1.49,18.49097,-77.6668,2024,built-up,0.6443
+mahakam,chip_0136,1.49,-0.36776,117.45049,2024,water / tidal flat,1.0
+mahakam,chip_0010,1.49,-0.75177,117.43974,2021,water / tidal flat,1.0
+sundarbans,chip_0293,1.48,21.76769,88.57128,2024,water / tidal flat,1.0
+para,chip_0328,1.48,-0.60994,-47.28757,2019,water / tidal flat,0.68919
+matang,chip_0323,1.48,4.65861,100.63678,2023,water / tidal flat,1.0
+mekong,chip_0138,1.48,8.77985,105.17287,2023,water / tidal flat,1.0
+mahakam,chip_0008,1.48,-0.61854,117.50636,2019,water / tidal flat,1.0
+rufiji,chip_0062,1.48,-7.8625,39.2838,2024,water / tidal flat,1.0
+rufiji,chip_0295,1.47,-8.19199,39.21797,2021,other vegetation,0.95918
+mahakam,chip_0002,1.47,-0.78522,117.47181,2019,water / tidal flat,1.0
+mekong,chip_0108,1.47,8.84829,105.09954,2020,water / tidal flat,0.9932
+mahakam,chip_0330,1.47,-0.72585,117.46946,2021,water / tidal flat,1.0
+jamaica,chip_0232,1.47,17.82333,-77.18161,2022,other vegetation,1.0
+mahakam,chip_0052,1.47,-0.54623,117.50367,2020,water / tidal flat,1.0
+jamaica,chip_0334,1.47,18.26706,-76.70926,2024,other vegetation,1.0
+mekong,chip_0233,1.47,8.67285,104.91332,2023,water / tidal flat,1.0
+mekong,chip_0315,1.47,9.67196,104.85953,2019,water / tidal flat,1.0
+everglades,chip_0392,1.47,25.14217,-80.95445,2024,other vegetation,1.0
+mahakam,chip_0289,1.47,-0.77246,117.11941,2019,other vegetation,1.0
+matang,chip_0164,1.47,4.91261,100.59111,2022,built-up,0.46259
+sundarbans,chip_0305,1.47,21.76341,89.44572,2024,water / tidal flat,1.0
+mekong,chip_0132,1.46,8.89688,105.31066,2023,water / tidal flat,1.0
+rufiji,chip_0051,1.46,-8.19288,39.35248,2019,other vegetation,0.97945
+mahakam,chip_0047,1.46,-0.49623,117.48601,2024,water / tidal flat,1.0
+niger_delta,chip_0127,1.46,4.7067,6.84692,2023,other vegetation,1.0
+mekong,chip_0091,1.46,8.99297,105.3614,2021,water / tidal flat,1.0
+mekong,chip_0128,1.46,8.90693,105.26259,2020,water / tidal flat,1.0
+rufiji,chip_0094,1.45,-7.84406,39.27264,2020,other vegetation,0.77931
+mahakam,chip_0028,1.45,-0.40325,117.44095,2022,water / tidal flat,1.0
+mahakam,chip_0146,1.45,-0.75385,117.57778,2020,water / tidal flat,1.0
+sundarbans,chip_0291,1.45,21.8112,89.27373,2024,water / tidal flat,1.0
+rufiji,chip_0106,1.44,-7.8344,39.24239,2024,other vegetation,1.0
+mahakam,chip_0210,1.44,-0.86106,117.4144,2020,water / tidal flat,1.0
+mahakam,chip_0104,1.44,-0.47399,117.46548,2024,water / tidal flat,1.0
+mekong,chip_0345,1.44,8.71574,104.98702,2022,water / tidal flat,1.0
+niger_delta,chip_0358,1.44,4.71601,6.79393,2023,other vegetation,1.0
+mekong,chip_0146,1.44,9.08404,105.05127,2020,water / tidal flat,0.98611
+jamaica,chip_0316,1.44,18.47935,-77.63642,2021,built-up,0.75
+sundarbans,chip_0364,1.44,21.69208,88.5289,2024,water / tidal flat,1.0
+everglades,chip_0054,1.43,25.17768,-80.78639,2024,water / tidal flat,0.8042
+mekong,chip_0011,1.43,8.73844,105.09841,2020,water / tidal flat,1.0
+para,chip_0283,1.43,-0.68754,-47.12519,2021,water / tidal flat,1.0
+rufiji,chip_0309,1.43,-7.8679,39.36476,2019,other vegetation,0.76224
+mekong,chip_0313,1.43,8.74708,105.00316,2023,water / tidal flat,0.98601
+rufiji,chip_0034,1.42,-7.80662,39.25631,2020,other vegetation,1.0
+mekong,chip_0313,1.42,8.74719,105.00025,2024,water / tidal flat,1.0
+jamaica,chip_0362,1.42,17.80334,-77.19878,2019,other vegetation,1.0
+mahakam,chip_0205,1.42,-0.75719,117.59902,2021,water / tidal flat,1.0
+jamaica,chip_0216,1.41,18.48788,-77.6576,2020,built-up,0.80851
+rufiji,chip_0121,1.41,-7.87522,39.31126,2022,other vegetation,1.0
+mahakam,chip_0028,1.41,-0.4038,117.44497,2023,water / tidal flat,1.0
+mahakam,chip_0370,1.41,-0.56547,117.45301,2024,water / tidal flat,1.0
+rufiji,chip_0251,1.41,-7.87109,39.41867,2019,other vegetation,1.0
+sundarbans,chip_0162,1.41,22.23277,89.41078,2024,water / tidal flat,1.0
+mekong,chip_0304,1.41,9.13065,105.04893,2020,other vegetation,0.44681
+mekong,chip_0146,1.41,9.07872,105.05083,2020,water / tidal flat,0.44681
+mekong,chip_0128,1.4,8.90426,105.26355,2024,water / tidal flat,1.0
+rufiji,chip_0094,1.4,-7.83887,39.26218,2019,other vegetation,1.0
+matang,chip_0053,1.4,4.7231,100.6923,2022,other vegetation,0.8
+everglades,chip_0078,1.4,25.65717,-81.25512,2024,water / tidal flat,1.0
+mekong,chip_0381,1.39,8.85123,105.23569,2023,water / tidal flat,0.84173
+mahakam,chip_0158,1.39,-0.30207,117.44475,2021,other vegetation,1.0
+rufiji,chip_0234,1.39,-8.06954,39.42054,2022,water / tidal flat,1.0
+mahakam,chip_0372,1.39,-0.73808,117.56158,2023,water / tidal flat,1.0
+rufiji,chip_0009,1.38,-8.14046,39.37255,2020,water / tidal flat,0.64493
+mekong,chip_0199,1.38,9.8739,106.66087,2019,water / tidal flat,1.0
+jamaica,chip_0167,1.38,18.48228,-77.65622,2023,bare ground,0.64493
+mahakam,chip_0078,1.38,-0.64392,117.54324,2020,water / tidal flat,1.0
+mekong,chip_0020,1.38,8.71303,104.99696,2021,water / tidal flat,1.0
+para,chip_0073,1.38,-0.70675,-47.21202,2023,water / tidal flat,1.0
+mekong,chip_0381,1.37,8.85171,105.23229,2023,water / tidal flat,1.0
+mekong,chip_0177,1.37,8.66463,104.88774,2020,water / tidal flat,0.62774
+jamaica,chip_0046,1.37,18.44633,-77.92838,2024,other vegetation,1.0
+mekong,chip_0313,1.37,8.745,105.0004,2024,water / tidal flat,1.0
+mekong,chip_0011,1.37,8.74046,105.09445,2023,water / tidal flat,1.0
+mahakam,chip_0228,1.37,-0.80905,117.52004,2021,water / tidal flat,1.0
+rufiji,chip_0076,1.36,-7.83895,39.28925,2020,other vegetation,1.0
+mahakam,chip_0163,1.36,-0.65414,117.38171,2023,water / tidal flat,1.0
+mekong,chip_0153,1.36,9.92672,106.4461,2019,other vegetation,0.75
+mekong,chip_0189,1.36,8.94962,104.81523,2023,water / tidal flat,1.0
+mahakam,chip_0145,1.36,-0.80798,117.45336,2019,water / tidal flat,1.0
+mekong,chip_0192,1.35,8.77122,105.20137,2023,water / tidal flat,1.0
+mekong,chip_0176,1.35,10.29203,104.60406,2023,water / tidal flat,1.0
+mekong,chip_0093,1.35,8.76469,104.9303,2022,water / tidal flat,1.0
+mahakam,chip_0203,1.35,-0.86077,117.35055,2024,water / tidal flat,1.0
+mekong,chip_0338,1.35,9.80904,104.88643,2024,water / tidal flat,1.0
+mahakam,chip_0185,1.35,-0.75562,117.53148,2020,water / tidal flat,1.0
+mahakam,chip_0334,1.35,-0.87235,117.43454,2020,water / tidal flat,1.0
+mekong,chip_0398,1.35,9.04647,105.44103,2019,other vegetation,0.87407
+para,chip_0005,1.35,-1.05684,-46.09774,2020,water / tidal flat,1.0
+mekong,chip_0397,1.35,8.6347,104.99512,2023,water / tidal flat,1.0
+sundarbans,chip_0104,1.34,21.93093,89.21779,2024,water / tidal flat,1.0
+mekong,chip_0377,1.34,8.65686,104.83321,2019,water / tidal flat,1.0
+mahakam,chip_0376,1.34,-0.51976,117.56622,2019,water / tidal flat,1.0
+jamaica,chip_0271,1.34,17.9487,-77.82888,2022,other vegetation,1.0
+rufiji,chip_0329,1.34,-7.86928,39.34526,2021,other vegetation,1.0
+mekong,chip_0069,1.34,8.67383,104.98605,2023,water / tidal flat,1.0
+para,chip_0346,1.34,-0.94006,-46.51105,2021,water / tidal flat,1.0
+sundarbans,chip_0318,1.33,22.15977,89.41227,2024,water / tidal flat,1.0
+mahakam,chip_0303,1.33,-0.53056,117.48428,2019,water / tidal flat,1.0
+mahakam,chip_0362,1.33,-0.72713,117.39325,2019,water / tidal flat,1.0
+mekong,chip_0091,1.33,8.99374,105.35806,2020,water / tidal flat,1.0
+mekong,chip_0298,1.33,8.77758,105.07922,2023,water / tidal flat,1.0
+mekong,chip_0272,1.33,8.7956,104.7879,2023,water / tidal flat,1.0
+jamaica,chip_0090,1.32,18.48653,-77.67899,2023,other vegetation,1.0
+everglades,chip_0365,1.32,25.17665,-80.78871,2024,other vegetation,0.60606
+mahakam,chip_0052,1.32,-0.54595,117.50201,2020,water / tidal flat,1.0
+mahakam,chip_0234,1.32,-0.75166,117.52719,2023,water / tidal flat,1.0
+mekong,chip_0343,1.32,8.75945,105.09067,2022,water / tidal flat,1.0
+mekong,chip_0219,1.32,8.75699,105.15908,2022,water / tidal flat,1.0
+mahakam,chip_0043,1.32,-0.61739,117.44254,2019,water / tidal flat,1.0
+mekong,chip_0020,1.32,8.70925,104.99606,2023,water / tidal flat,1.0
+sundarbans,chip_0370,1.32,21.95878,89.5039,2024,water / tidal flat,1.0
+rufiji,chip_0124,1.31,-7.82722,39.24699,2022,other vegetation,0.89313
+mahakam,chip_0378,1.31,-0.72492,117.39615,2021,water / tidal flat,1.0
+mahakam,chip_0349,1.31,-0.45119,117.58375,2019,water / tidal flat,1.0
+mahakam,chip_0258,1.31,-0.87025,117.41197,2019,water / tidal flat,1.0
+rufiji,chip_0034,1.31,-7.80271,39.24947,2021,other vegetation,1.0
+mahakam,chip_0307,1.31,-0.7274,117.44126,2019,water / tidal flat,1.0
+mahakam,chip_0329,1.31,-0.7278,117.4661,2021,water / tidal flat,1.0
+matang,chip_0320,1.31,5.0011,100.41316,2024,water / tidal flat,0.8626
+mekong,chip_0309,1.31,8.62385,104.92174,2023,water / tidal flat,1.0
+mekong,chip_0146,1.3,9.07904,105.05814,2020,water / tidal flat,0.99231
+mekong,chip_0313,1.3,8.74457,104.99583,2022,water / tidal flat,1.0
+mekong,chip_0127,1.3,8.65883,104.92035,2023,water / tidal flat,1.0
+mekong,chip_0364,1.29,8.62797,104.95632,2022,water / tidal flat,1.0
+para,chip_0347,1.29,-0.84108,-46.91766,2021,water / tidal flat,1.0
+mekong,chip_0088,1.29,9.8183,105.26166,2020,cropland,0.71318
+mekong,chip_0354,1.29,8.5732,104.83589,2019,other vegetation,1.0
+sundarbans,chip_0111,1.29,22.0048,89.09255,2024,water / tidal flat,1.0
+mekong,chip_0257,1.29,8.80914,104.83462,2024,water / tidal flat,1.0
+para,chip_0034,1.29,-0.83816,-46.76232,2021,water / tidal flat,1.0
+mahakam,chip_0054,1.29,-0.70269,117.50958,2020,water / tidal flat,1.0
+mahakam,chip_0055,1.29,-0.63843,117.42532,2020,water / tidal flat,1.0
+rufiji,chip_0380,1.29,-7.83192,39.38274,2024,water / tidal flat,1.0
+everglades,chip_0221,1.29,25.79027,-81.15781,2020,other vegetation,1.0
+mekong,chip_0319,1.28,8.73344,104.99762,2024,water / tidal flat,1.0
+mekong,chip_0025,1.28,8.70939,105.09583,2023,water / tidal flat,1.0
+mekong,chip_0001,1.28,8.60516,104.89252,2021,water / tidal flat,1.0
+mekong,chip_0250,1.28,9.80637,106.53433,2019,water / tidal flat,1.0
+rufiji,chip_0124,1.28,-7.82972,39.25107,2022,other vegetation,1.0
+mekong,chip_0361,1.28,10.1647,104.8351,2024,built-up,0.38281
+rufiji,chip_0249,1.28,-7.84838,39.24621,2022,other vegetation,1.0
+mahakam,chip_0079,1.27,-0.77252,117.39124,2024,water / tidal flat,1.0
+jamaica,chip_0262,1.27,18.01418,-77.81464,2023,other vegetation,1.0
+jamaica,chip_0339,1.27,17.77815,-77.28468,2019,water / tidal flat,1.0
+mahakam,chip_0146,1.27,-0.75241,117.5844,2023,water / tidal flat,1.0
+sundarbans,chip_0332,1.27,21.73969,89.22109,2024,water / tidal flat,1.0
+sundarbans,chip_0172,1.27,21.81072,89.47156,2024,water / tidal flat,1.0
+mahakam,chip_0133,1.26,-0.35152,117.47664,2021,water / tidal flat,1.0
+jamaica,chip_0230,1.26,18.01921,-77.83256,2019,other vegetation,1.0
+mahakam,chip_0250,1.26,-0.67297,117.43887,2019,water / tidal flat,1.0
+sundarbans,chip_0386,1.26,22.15511,89.10233,2024,water / tidal flat,1.0
+mekong,chip_0327,1.26,8.6282,104.96753,2024,water / tidal flat,1.0
+mekong,chip_0001,1.26,8.60481,104.89685,2022,water / tidal flat,1.0
+rufiji,chip_0301,1.26,-7.87157,39.23816,2019,other vegetation,1.0
+mahakam,chip_0306,1.25,-0.43312,117.61802,2024,water / tidal flat,1.0
+sundarbans,chip_0292,1.25,21.72725,89.13908,2024,water / tidal flat,1.0
+mahakam,chip_0383,1.25,-0.67188,117.4212,2019,water / tidal flat,1.0
+para,chip_0076,1.25,-1.15355,-45.82142,2023,water / tidal flat,0.856
+mahakam,chip_0191,1.25,-0.83357,117.47781,2024,other vegetation,1.0
+mekong,chip_0303,1.24,8.65335,105.00565,2023,water / tidal flat,1.0
+mekong,chip_0118,1.24,10.23009,104.6307,2020,water / tidal flat,1.0
+mekong,chip_0272,1.24,8.80401,104.79743,2023,water / tidal flat,1.0
+para,chip_0074,1.24,-0.84021,-46.76778,2020,water / tidal flat,1.0
+mekong,chip_0320,1.24,8.78589,105.11867,2020,water / tidal flat,1.0
+mahakam,chip_0021,1.24,-0.60672,117.43006,2019,water / tidal flat,1.0
+mekong,chip_0209,1.24,8.66303,104.96642,2024,water / tidal flat,1.0
+mahakam,chip_0362,1.24,-0.72685,117.4012,2021,water / tidal flat,1.0
+mahakam,chip_0221,1.23,-0.73565,117.35298,2022,water / tidal flat,1.0
+mahakam,chip_0126,1.23,-0.86997,117.25815,2022,water / tidal flat,1.0
+para,chip_0394,1.23,-0.9044,-46.46985,2021,other vegetation,1.0
+everglades,chip_0120,1.23,25.49302,-81.03604,2024,other vegetation,1.0
+everglades,chip_0272,1.23,25.48648,-80.9705,2024,other vegetation,0.99187
+mahakam,chip_0204,1.22,-0.38781,117.44888,2024,water / tidal flat,1.0
+para,chip_0271,1.22,-0.8785,-46.77389,2021,water / tidal flat,1.0
+mahakam,chip_0398,1.22,-0.7042,117.5131,2024,water / tidal flat,1.0
+rufiji,chip_0305,1.22,-7.85051,39.22826,2022,other vegetation,0.85246
+jamaica,chip_0317,1.22,17.79885,-77.2879,2021,other vegetation,1.0
+mahakam,chip_0113,1.21,-0.75272,117.46324,2019,water / tidal flat,1.0
+mahakam,chip_0280,1.21,-0.65193,117.39059,2020,water / tidal flat,1.0
+mekong,chip_0346,1.21,8.67731,104.89562,2022,water / tidal flat,1.0
+rufiji,chip_0353,1.21,-8.18995,39.29104,2024,other vegetation,1.0
+rufiji,chip_0006,1.21,-7.86043,39.25656,2019,other vegetation,0.98347
+mahakam,chip_0112,1.21,-0.51827,117.53175,2020,water / tidal flat,1.0
+mahakam,chip_0165,1.21,-0.76547,117.55539,2024,water / tidal flat,1.0
+mekong,chip_0311,1.21,8.63477,104.85415,2022,water / tidal flat,0.73554
+mekong,chip_0139,1.21,8.85555,104.89856,2020,water / tidal flat,1.0
+jamaica,chip_0345,1.2,18.50929,-77.74594,2021,built-up,0.80833
+rufiji,chip_0140,1.2,-7.84551,39.36309,2022,other vegetation,1.0
+everglades,chip_0106,1.2,25.75276,-81.32052,2024,other vegetation,1.0
+everglades,chip_0269,1.2,25.65351,-81.09403,2021,other vegetation,1.0
+mahakam,chip_0073,1.2,-0.61209,117.45792,2021,water / tidal flat,1.0
+mekong,chip_0011,1.2,8.74351,105.10184,2023,water / tidal flat,1.0
+mahakam,chip_0313,1.2,-0.80661,117.53011,2019,water / tidal flat,1.0
+mahakam,chip_0075,1.2,-0.69762,117.39121,2019,water / tidal flat,1.0
+rufiji,chip_0112,1.2,-7.82252,39.26,2022,other vegetation,1.0
+mekong,chip_0258,1.2,8.83165,105.18147,2023,water / tidal flat,1.0
+rufiji,chip_0233,1.2,-7.86813,39.2398,2019,other vegetation,0.96667
+mekong,chip_0219,1.2,8.75556,105.15385,2020,water / tidal flat,1.0
+mahakam,chip_0280,1.2,-0.65915,117.40127,2021,water / tidal flat,1.0
+mekong,chip_0154,1.19,10.18203,104.628,2023,water / tidal flat,0.53782
+rufiji,chip_0329,1.19,-7.86527,39.3485,2023,other vegetation,1.0
+para,chip_0310,1.19,-0.69092,-47.12398,2022,water / tidal flat,1.0
+rufiji,chip_0369,1.19,-7.87552,39.35158,2022,other vegetation,0.53782
+mahakam,chip_0281,1.19,-0.35296,117.51671,2020,water / tidal flat,1.0
+everglades,chip_0105,1.18,25.16023,-80.99211,2024,other vegetation,0.77966
+mekong,chip_0334,1.18,8.78121,105.11387,2023,water / tidal flat,1.0
+mahakam,chip_0018,1.18,-0.51396,117.46094,2024,other vegetation,0.50847
+mekong,chip_0011,1.18,8.74884,105.09491,2020,water / tidal flat,1.0
+mekong,chip_0094,1.18,8.71961,105.05816,2023,water / tidal flat,1.0
+rufiji,chip_0380,1.18,-7.83503,39.38088,2019,other vegetation,1.0
+everglades,chip_0349,1.18,25.12912,-81.04372,2024,water / tidal flat,0.99153
+mahakam,chip_0167,1.18,-0.64855,117.42589,2021,water / tidal flat,1.0
+mekong,chip_0282,1.18,8.73397,105.116,2023,water / tidal flat,1.0
+para,chip_0317,1.18,-1.06243,-46.14308,2020,water / tidal flat,1.0
+matang,chip_0028,1.18,4.75736,100.68009,2022,other vegetation,1.0
+mekong,chip_0392,1.17,8.73714,105.12183,2023,water / tidal flat,1.0
+mahakam,chip_0226,1.17,-0.54527,117.55622,2024,water / tidal flat,1.0
+mekong,chip_0139,1.17,8.85512,104.90293,2021,water / tidal flat,1.0
+niger_delta,chip_0285,1.17,4.32762,6.53841,2024,other vegetation,1.0
+jamaica,chip_0241,1.17,17.8214,-77.18553,2019,other vegetation,1.0
+mekong,chip_0301,1.17,8.7128,104.84512,2024,water / tidal flat,1.0
+mahakam,chip_0388,1.17,-0.76153,117.55774,2020,water / tidal flat,1.0
+para,chip_0257,1.17,-0.86911,-46.77608,2024,water / tidal flat,1.0
+sundarbans,chip_0178,1.17,21.76986,89.12886,2024,water / tidal flat,1.0
+jamaica,chip_0342,1.17,18.01905,-77.82428,2023,other vegetation,1.0
+mekong,chip_0259,1.16,8.80579,105.1248,2020,water / tidal flat,1.0
+jamaica,chip_0173,1.16,17.80864,-77.19185,2019,other vegetation,1.0
+sundarbans,chip_0241,1.16,21.72048,89.46256,2024,bare ground,0.64655
+mekong,chip_0071,1.16,9.78079,105.10803,2020,water / tidal flat,1.0
+mahakam,chip_0291,1.16,-0.58848,117.44673,2024,other vegetation,1.0
+jamaica,chip_0230,1.16,18.01772,-77.83783,2023,other vegetation,1.0
+rufiji,chip_0034,1.16,-7.80433,39.25581,2022,other vegetation,1.0
+rufiji,chip_0346,1.16,-7.87236,39.2792,2022,other vegetation,1.0
+mahakam,chip_0052,1.16,-0.53884,117.50889,2019,water / tidal flat,1.0
+mahakam,chip_0011,1.15,-0.87202,117.34169,2019,water / tidal flat,1.0
+mekong,chip_0345,1.15,8.70957,104.98217,2024,water / tidal flat,1.0
+mekong,chip_0110,1.15,9.83586,106.49917,2019,water / tidal flat,1.0
+mahakam,chip_0330,1.15,-0.72886,117.46791,2021,water / tidal flat,1.0
+jamaica,chip_0331,1.15,17.91335,-77.0575,2020,water / tidal flat,0.86957
+mahakam,chip_0112,1.15,-0.51639,117.5264,2020,water / tidal flat,1.0
+rufiji,chip_0006,1.15,-7.85532,39.2649,2019,other vegetation,1.0
+mahakam,chip_0334,1.15,-0.8801,117.44102,2020,water / tidal flat,1.0
+mahakam,chip_0386,1.14,-0.53922,117.53164,2024,water / tidal flat,1.0
+jamaica,chip_0293,1.14,17.83187,-77.34104,2022,other vegetation,1.0
+mekong,chip_0320,1.14,8.79188,105.11601,2023,water / tidal flat,1.0
+mahakam,chip_0372,1.14,-0.73671,117.56671,2021,water / tidal flat,1.0
+mekong,chip_0323,1.13,8.67825,105.00515,2021,built-up,0.61947
+mahakam,chip_0383,1.13,-0.67114,117.42719,2019,water / tidal flat,1.0
+rufiji,chip_0286,1.13,-7.90389,39.26704,2022,water / tidal flat,0.76991
+mekong,chip_0117,1.13,8.70808,104.96644,2024,water / tidal flat,1.0
+niger_delta,chip_0238,1.13,4.72467,6.71868,2023,other vegetation,1.0
+mekong,chip_0237,1.13,8.58848,104.76575,2020,water / tidal flat,1.0
+mahakam,chip_0141,1.13,-0.51821,117.47344,2021,water / tidal flat,1.0
+mekong,chip_0020,1.13,8.7076,104.99022,2024,water / tidal flat,1.0
+rufiji,chip_0124,1.13,-7.83476,39.25694,2020,other vegetation,1.0
+mekong,chip_0220,1.13,8.73032,105.09609,2023,water / tidal flat,1.0
+matang,chip_0349,1.13,4.60448,100.68452,2022,other vegetation,1.0
+mahakam,chip_0107,1.13,-0.74408,117.52417,2022,water / tidal flat,1.0
+sundarbans,chip_0217,1.12,22.30223,89.60021,2024,water / tidal flat,1.0
+everglades,chip_0010,1.12,25.72212,-81.29799,2024,water / tidal flat,1.0
+mekong,chip_0398,1.12,9.05692,105.44979,2020,water / tidal flat,0.91071
+rufiji,chip_0012,1.12,-7.86946,39.32902,2021,other vegetation,1.0
+mekong,chip_0214,1.12,8.72816,104.93287,2020,water / tidal flat,1.0
+mekong,chip_0108,1.12,8.84653,105.10745,2023,water / tidal flat,1.0
+mahakam,chip_0350,1.12,-0.46385,117.53584,2024,water / tidal flat,1.0
+mekong,chip_0252,1.11,8.75522,105.05184,2024,water / tidal flat,1.0
+mekong,chip_0135,1.11,9.03298,105.39543,2020,water / tidal flat,1.0
+para,chip_0072,1.11,-0.83655,-47.07721,2019,water / tidal flat,1.0
+papua,chip_0097,1.11,-4.94946,137.50424,2023,water / tidal flat,1.0
+mahakam,chip_0323,1.11,-0.61466,117.51217,2020,water / tidal flat,1.0
+mekong,chip_0076,1.11,9.60208,106.23699,2020,other vegetation,1.0
+rufiji,chip_0174,1.11,-7.88649,39.30555,2020,other vegetation,0.92793
+mekong,chip_0123,1.1,9.25433,105.77768,2019,water / tidal flat,0.58182
+mahakam,chip_0380,1.1,-0.47126,117.47939,2024,other vegetation,1.0
+mekong,chip_0258,1.1,8.83364,105.18044,2023,water / tidal flat,1.0
+rufiji,chip_0331,1.1,-7.89209,39.38939,2020,other vegetation,1.0
+para,chip_0381,1.1,-1.05595,-46.18368,2022,water / tidal flat,1.0
+jamaica,chip_0156,1.1,18.03932,-77.88514,2024,other vegetation,1.0
+mahakam,chip_0055,1.1,-0.63092,117.42897,2019,water / tidal flat,1.0
+mahakam,chip_0051,1.09,-0.86988,117.41311,2020,water / tidal flat,1.0
+mahakam,chip_0093,1.09,-0.85615,117.29257,2020,water / tidal flat,1.0
+niger_delta,chip_0244,1.09,4.62324,6.79308,2024,other vegetation,1.0
+mekong,chip_0008,1.09,8.59967,104.94073,2021,water / tidal flat,1.0
+para,chip_0011,1.09,-0.91301,-46.63893,2021,water / tidal flat,1.0
+mekong,chip_0220,1.09,8.72496,105.09989,2024,water / tidal flat,1.0
+para,chip_0366,1.09,-0.75314,-47.10804,2023,water / tidal flat,1.0
+everglades,chip_0018,1.08,25.27745,-80.83847,2024,other vegetation,1.0
+rufiji,chip_0181,1.08,-7.86246,39.36088,2020,other vegetation,1.0
+mekong,chip_0344,1.08,8.99556,105.37056,2023,water / tidal flat,1.0
+jamaica,chip_0220,1.08,17.9309,-76.22135,2022,other vegetation,1.0
+mekong,chip_0128,1.08,8.90763,105.26642,2022,water / tidal flat,0.90741
+jamaica,chip_0154,1.08,17.97309,-77.82929,2023,other vegetation,1.0
+mekong,chip_0345,1.08,8.71781,104.98374,2024,water / tidal flat,1.0
+mekong,chip_0381,1.08,8.84832,105.2348,2023,water / tidal flat,1.0
+rufiji,chip_0236,1.08,-8.06486,39.39097,2021,other vegetation,0.90741
+mekong,chip_0322,1.08,9.71768,104.86324,2023,water / tidal flat,1.0
+mekong,chip_0146,1.08,9.08472,105.05907,2020,water / tidal flat,1.0
+mekong,chip_0135,1.07,9.02566,105.38786,2020,water / tidal flat,1.0
+mahakam,chip_0121,1.07,-0.77549,117.54831,2019,water / tidal flat,1.0
+mahakam,chip_0229,1.07,-0.55641,117.53182,2021,water / tidal flat,1.0
+mekong,chip_0228,1.07,8.73232,105.08988,2023,water / tidal flat,1.0
+mekong,chip_0319,1.07,8.73612,104.99615,2023,water / tidal flat,1.0
+matang,chip_0105,1.07,4.60665,100.59094,2020,water / tidal flat,1.0
+rufiji,chip_0073,1.06,-7.84412,39.25528,2019,other vegetation,1.0
+rufiji,chip_0202,1.06,-7.97583,39.43436,2024,water / tidal flat,1.0
+rufiji,chip_0126,1.06,-8.10813,39.37422,2024,other vegetation,0.99057
+mahakam,chip_0316,1.06,-0.69925,117.45822,2019,water / tidal flat,1.0
+mekong,chip_0335,1.06,8.63195,104.96039,2023,water / tidal flat,1.0
+mekong,chip_0320,1.06,8.78337,105.11745,2020,water / tidal flat,1.0
+rufiji,chip_0031,1.06,-7.90908,39.36588,2019,other vegetation,1.0
+rufiji,chip_0235,1.06,-7.73227,39.3214,2022,water / tidal flat,1.0
+mekong,chip_0117,1.06,8.70148,104.96082,2022,water / tidal flat,1.0
+mekong,chip_0135,1.06,9.0253,105.38984,2020,water / tidal flat,1.0
+rufiji,chip_0352,1.06,-8.18576,39.22262,2020,other vegetation,1.0
+everglades,chip_0280,1.06,25.27856,-80.69989,2024,other vegetation,1.0
+niger_delta,chip_0285,1.06,4.32474,6.53175,2023,other vegetation,1.0
+jamaica,chip_0162,1.05,18.4095,-78.26019,2022,built-up,0.86667
+mekong,chip_0128,1.05,8.90335,105.2657,2024,water / tidal flat,1.0
+mahakam,chip_0146,1.05,-0.75477,117.58143,2023,water / tidal flat,1.0
+mahakam,chip_0116,1.05,-0.56383,117.57697,2019,water / tidal flat,1.0
+mekong,chip_0388,1.05,8.60312,104.93024,2022,water / tidal flat,0.90476
+mahakam,chip_0142,1.05,-0.45732,117.59294,2024,water / tidal flat,1.0
+mekong,chip_0020,1.05,8.71319,104.98945,2023,water / tidal flat,1.0
+papua,chip_0045,1.05,-4.90059,137.49653,2020,water / tidal flat,1.0
+mekong,chip_0312,1.05,9.20521,104.81513,2020,water / tidal flat,0.87619
+mekong,chip_0001,1.05,8.61048,104.8959,2024,water / tidal flat,1.0
+mekong,chip_0346,1.05,8.67306,104.89884,2022,water / tidal flat,0.75238
+matang,chip_0167,1.05,4.64026,100.6059,2023,water / tidal flat,1.0
+mahakam,chip_0191,1.05,-0.83218,117.48041,2024,water / tidal flat,1.0
+niger_delta,chip_0378,1.04,4.52999,6.64484,2020,water / tidal flat,0.5
+niger_delta,chip_0185,1.04,4.61926,6.80691,2022,other vegetation,1.0
+mekong,chip_0139,1.04,8.85641,104.90698,2020,water / tidal flat,1.0
+jamaica,chip_0326,1.04,18.48513,-77.67625,2023,other vegetation,1.0
+mekong,chip_0365,1.04,8.60144,104.82885,2020,water / tidal flat,1.0
+rufiji,chip_0160,1.04,-7.76257,39.25939,2019,other vegetation,1.0
+mekong,chip_0093,1.04,8.75455,104.92764,2020,water / tidal flat,1.0
+mekong,chip_0251,1.03,8.65524,105.01871,2024,water / tidal flat,1.0
+mahakam,chip_0310,1.03,-0.52952,117.45792,2024,water / tidal flat,1.0
+mekong,chip_0335,1.03,8.62806,104.95731,2024,water / tidal flat,1.0
+mekong,chip_0139,1.03,8.85349,104.90064,2019,water / tidal flat,1.0
+mahakam,chip_0275,1.03,-0.71441,117.46373,2022,water / tidal flat,1.0
+rufiji,chip_0221,1.03,-7.99474,39.42513,2021,other vegetation,1.0
+rufiji,chip_0021,1.03,-7.87377,39.33892,2021,other vegetation,1.0
+rufiji,chip_0296,1.03,-7.87423,39.34089,2021,other vegetation,1.0
+matang,chip_0307,1.03,4.91728,100.44998,2022,water / tidal flat,1.0
+rufiji,chip_0144,1.02,-7.87248,39.36493,2022,other vegetation,1.0
+mekong,chip_0011,1.02,8.74015,105.09738,2023,water / tidal flat,1.0
+rufiji,chip_0034,1.02,-7.80401,39.24927,2022,other vegetation,1.0
+mekong,chip_0127,1.02,8.66853,104.92054,2023,water / tidal flat,1.0
+everglades,chip_0078,1.02,25.65519,-81.25002,2024,water / tidal flat,0.82353
+mekong,chip_0199,1.02,9.877,106.6573,2022,water / tidal flat,0.89216
+mekong,chip_0224,1.02,8.76969,105.13245,2023,water / tidal flat,1.0
+jamaica,chip_0062,1.02,17.88699,-77.14201,2019,other vegetation,1.0
+rufiji,chip_0378,1.02,-7.86762,39.37418,2020,other vegetation,1.0
+jamaica,chip_0319,1.02,17.90864,-77.05153,2024,other vegetation,1.0
+jamaica,chip_0293,1.01,17.83365,-77.34402,2021,other vegetation,1.0
+matang,chip_0375,1.01,4.89614,100.64179,2019,other vegetation,1.0
+mahakam,chip_0230,1.01,-0.73765,117.53326,2019,water / tidal flat,1.0
+jamaica,chip_0203,1.01,18.04196,-77.90008,2024,other vegetation,1.0
+rufiji,chip_0148,1.01,-7.95156,39.40803,2022,other vegetation,1.0
+mahakam,chip_0057,1.01,-0.65961,117.48046,2024,water / tidal flat,1.0
+mahakam,chip_0050,1.01,-0.53704,117.45642,2022,water / tidal flat,1.0
+everglades,chip_0203,1.01,25.51301,-81.00037,2024,other vegetation,1.0
+mekong,chip_0209,1.01,8.66875,104.9661,2024,water / tidal flat,1.0
+jamaica,chip_0378,1.01,17.91421,-77.09567,2019,other vegetation,1.0
+mahakam,chip_0107,1.01,-0.74335,117.51828,2019,water / tidal flat,1.0
+mekong,chip_0185,1.01,8.65372,104.82578,2022,water / tidal flat,0.84158
+mekong,chip_0204,1.0,8.8382,105.3026,2021,water / tidal flat,1.0
+rufiji,chip_0351,1.0,-7.80049,39.24337,2020,other vegetation,1.0
+mekong,chip_0153,1.0,9.92342,106.44868,2019,other vegetation,0.7
+mekong,chip_0182,1.0,10.1127,106.78102,2021,water / tidal flat,1.0
+mahakam,chip_0113,1.0,-0.74181,117.46158,2019,water / tidal flat,1.0
+rufiji,chip_0114,1.0,-8.14798,39.35999,2019,other vegetation,1.0
+mekong,chip_0139,1.0,8.84835,104.90957,2022,water / tidal flat,0.93
+mahakam,chip_0248,1.0,-0.54744,117.53135,2020,water / tidal flat,1.0
+mahakam,chip_0007,1.0,-0.44455,117.5819,2021,water / tidal flat,1.0
+para,chip_0128,0.99,-0.95843,-46.60689,2019,water / tidal flat,1.0
+mekong,chip_0051,0.99,8.90301,104.85317,2022,water / tidal flat,0.85859
+rufiji,chip_0121,0.99,-7.86978,39.31153,2024,other vegetation,1.0
+mahakam,chip_0360,0.99,-0.65826,117.45412,2024,water / tidal flat,1.0
+mahakam,chip_0133,0.99,-0.35664,117.47329,2020,water / tidal flat,1.0
+mekong,chip_0287,0.99,8.7418,105.04905,2023,water / tidal flat,1.0
+jamaica,chip_0156,0.99,18.04067,-77.88778,2024,other vegetation,1.0
+mexico_pacific,chip_0357,0.99,24.32274,-111.43271,2023,water / tidal flat,1.0
+mahakam,chip_0293,0.99,-0.42,117.51295,2019,water / tidal flat,1.0
+everglades,chip_0092,0.99,25.35021,-81.03567,2019,other vegetation,1.0
+mekong,chip_0375,0.99,10.01485,106.66955,2019,water / tidal flat,1.0
+mekong,chip_0008,0.99,8.60646,104.93963,2023,water / tidal flat,1.0
+mekong,chip_0276,0.98,8.75751,105.03899,2019,water / tidal flat,1.0
+mekong,chip_0268,0.98,8.76741,105.12326,2020,water / tidal flat,1.0
+rufiji,chip_0142,0.98,-7.84195,39.35104,2022,other vegetation,1.0
+rufiji,chip_0309,0.98,-7.86168,39.36951,2019,other vegetation,0.91837
+mekong,chip_0298,0.98,8.78198,105.08694,2023,water / tidal flat,1.0
+rufiji,chip_0369,0.98,-7.88042,39.35902,2019,other vegetation,1.0
+mekong,chip_0292,0.98,8.78375,105.18488,2023,water / tidal flat,1.0
+everglades,chip_0076,0.98,25.24689,-80.82514,2024,other vegetation,1.0
+rufiji,chip_0331,0.98,-7.8943,39.39367,2022,water / tidal flat,1.0
+rufiji,chip_0049,0.98,-7.91662,39.366,2019,other vegetation,1.0
+para,chip_0080,0.98,-1.0922,-46.21017,2023,water / tidal flat,1.0
+mahakam,chip_0329,0.97,-0.71741,117.47221,2020,water / tidal flat,1.0
+mahakam,chip_0226,0.97,-0.53959,117.56193,2024,water / tidal flat,1.0
+jamaica,chip_0171,0.97,18.03343,-77.82336,2024,other vegetation,1.0
+rufiji,chip_0357,0.97,-7.93272,39.41326,2019,other vegetation,1.0
+papua,chip_0348,0.97,-4.89784,137.6173,2024,water / tidal flat,1.0
+mexico_pacific,chip_0346,0.97,24.74764,-111.96326,2022,water / tidal flat,1.0
+mekong,chip_0000,0.97,8.76992,105.11476,2023,water / tidal flat,0.86598
+mahakam,chip_0082,0.97,-0.43736,117.50374,2021,water / tidal flat,1.0
+niger_delta,chip_0397,0.97,4.51326,6.64056,2024,cropland,1.0
+mekong,chip_0160,0.97,8.68215,104.98327,2024,water / tidal flat,1.0
+jamaica,chip_0368,0.96,17.89883,-76.89894,2021,bare ground,0.71875
+mahakam,chip_0297,0.96,-0.63261,117.43337,2019,water / tidal flat,1.0
+rufiji,chip_0352,0.96,-8.18764,39.22189,2021,other vegetation,0.96875
+sundarbans,chip_0005,0.96,21.7296,88.91407,2024,water / tidal flat,1.0
+rufiji,chip_0059,0.96,-7.85501,39.38717,2020,other vegetation,1.0
+matang,chip_0307,0.96,4.92084,100.45719,2020,water / tidal flat,1.0
+mekong,chip_0108,0.96,8.85317,105.09754,2020,water / tidal flat,1.0
+mekong,chip_0313,0.96,8.74625,105.00128,2024,water / tidal flat,0.97917
+mahakam,chip_0293,0.96,-0.42479,117.51299,2022,water / tidal flat,1.0
+mekong,chip_0200,0.95,9.90199,106.66279,2024,water / tidal flat,1.0
+everglades,chip_0109,0.95,25.65632,-81.10901,2021,other vegetation,1.0
+mahakam,chip_0211,0.95,-0.41421,117.42425,2022,water / tidal flat,1.0
+mekong,chip_0251,0.95,8.661,105.02803,2022,water / tidal flat,1.0
+mahakam,chip_0307,0.95,-0.73017,117.44445,2024,water / tidal flat,1.0
+mekong,chip_0132,0.95,8.89804,105.31176,2023,water / tidal flat,0.97895
+mahakam,chip_0211,0.95,-0.41642,117.43063,2019,water / tidal flat,1.0
+mekong,chip_0142,0.95,8.7357,105.07549,2022,water / tidal flat,1.0
+rufiji,chip_0315,0.95,-7.85328,39.26364,2022,water / tidal flat,0.76842
+rufiji,chip_0021,0.95,-7.87787,39.33435,2019,other vegetation,1.0
+rufiji,chip_0248,0.95,-8.0303,39.28632,2021,other vegetation,1.0
+everglades,chip_0105,0.95,25.16088,-80.99052,2024,water / tidal flat,0.52632
+niger_delta,chip_0245,0.95,4.64293,6.83913,2024,other vegetation,1.0
+para,chip_0113,0.95,-0.68049,-47.23697,2022,water / tidal flat,1.0
+jamaica,chip_0335,0.95,18.21433,-78.07849,2024,other vegetation,1.0
+niger_delta,chip_0369,0.94,4.77601,6.94914,2022,other vegetation,0.90426
+mekong,chip_0375,0.94,10.01218,106.66833,2019,water / tidal flat,1.0
+mekong,chip_0228,0.94,8.73154,105.09412,2023,water / tidal flat,1.0
+mekong,chip_0358,0.94,8.72409,105.02847,2024,water / tidal flat,1.0
+rufiji,chip_0035,0.94,-7.88071,39.30232,2023,other vegetation,1.0
+mekong,chip_0363,0.94,9.1088,105.50372,2019,built-up,0.78723
+mekong,chip_0299,0.94,8.83061,105.164,2023,water / tidal flat,0.5
+mekong,chip_0011,0.94,8.74289,105.09668,2023,water / tidal flat,1.0
+mekong,chip_0069,0.94,8.66711,104.98885,2023,water / tidal flat,1.0
+mahakam,chip_0030,0.94,-0.7363,117.59038,2021,water / tidal flat,1.0
+mahakam,chip_0304,0.94,-0.4095,117.52149,2019,water / tidal flat,1.0
+mahakam,chip_0297,0.94,-0.62498,117.43706,2024,water / tidal flat,1.0
+para,chip_0006,0.94,-0.76584,-47.00503,2021,water / tidal flat,1.0
+mekong,chip_0295,0.93,8.74167,105.10589,2022,water / tidal flat,1.0
+mahakam,chip_0398,0.93,-0.70219,117.522,2020,water / tidal flat,1.0
+mahakam,chip_0137,0.93,-0.74606,117.41775,2024,water / tidal flat,1.0
+mahakam,chip_0081,0.93,-0.84942,117.42633,2024,water / tidal flat,1.0
+mahakam,chip_0203,0.93,-0.86931,117.34491,2019,water / tidal flat,1.0
+mekong,chip_0142,0.93,8.74087,105.0684,2021,water / tidal flat,1.0
+rufiji,chip_0107,0.93,-7.72493,39.27202,2024,other vegetation,1.0
+mekong,chip_0038,0.93,10.1404,106.72359,2023,water / tidal flat,1.0
+niger_delta,chip_0135,0.92,4.55546,6.93231,2022,water / tidal flat,1.0
+mekong,chip_0228,0.92,8.73374,105.09502,2024,water / tidal flat,1.0
+jamaica,chip_0014,0.92,18.35319,-78.33487,2021,other vegetation,1.0
+mekong,chip_0071,0.92,9.78073,105.10307,2021,water / tidal flat,1.0
+mahakam,chip_0081,0.92,-0.84763,117.42073,2020,water / tidal flat,1.0
+mekong,chip_0346,0.92,8.677,104.90151,2024,water / tidal flat,1.0
+mekong,chip_0146,0.92,9.07986,105.05367,2019,water / tidal flat,1.0
+sundarbans,chip_0005,0.92,21.73309,88.91567,2024,water / tidal flat,1.0
+mekong,chip_0350,0.92,10.17728,106.74544,2019,water / tidal flat,0.61957
+mekong,chip_0358,0.92,8.72207,105.02115,2023,water / tidal flat,1.0
+mahakam,chip_0175,0.92,-0.55703,117.55776,2024,water / tidal flat,1.0
+rufiji,chip_0329,0.92,-7.86298,39.34889,2022,other vegetation,1.0
+everglades,chip_0065,0.92,25.1401,-80.96864,2024,water / tidal flat,0.6413
+everglades,chip_0392,0.92,25.13964,-80.95084,2024,other vegetation,1.0
+niger_delta,chip_0161,0.92,4.72205,6.62159,2023,other vegetation,1.0
+everglades,chip_0221,0.92,25.79131,-81.15565,2024,other vegetation,1.0
+niger_delta,chip_0369,0.92,4.76822,6.94934,2022,other vegetation,1.0
+mekong,chip_0262,0.92,8.83044,104.80348,2024,water / tidal flat,1.0
+mahakam,chip_0373,0.92,-0.73706,117.55686,2024,water / tidal flat,1.0
+mekong,chip_0108,0.92,8.84403,105.09786,2023,water / tidal flat,1.0
+mahakam,chip_0026,0.91,-0.72033,117.44446,2023,water / tidal flat,1.0
+mahakam,chip_0167,0.91,-0.65087,117.41565,2020,water / tidal flat,1.0
+mahakam,chip_0121,0.91,-0.777,117.54929,2019,water / tidal flat,1.0
+para,chip_0366,0.91,-0.75217,-47.10159,2023,water / tidal flat,1.0
+mekong,chip_0349,0.91,8.63306,104.94435,2023,water / tidal flat,1.0
+mahakam,chip_0291,0.91,-0.58673,117.44746,2021,other vegetation,1.0
+mexico_pacific,chip_0177,0.91,24.32386,-111.43552,2019,water / tidal flat,1.0
+mahakam,chip_0185,0.91,-0.75178,117.53969,2022,water / tidal flat,1.0
+mahakam,chip_0049,0.91,-0.74697,117.56831,2022,water / tidal flat,1.0
+niger_delta,chip_0210,0.91,4.6938,6.56604,2023,other vegetation,1.0
+jamaica,chip_0241,0.91,17.8147,-77.18773,2024,other vegetation,1.0
+mekong,chip_0139,0.91,8.84873,104.90811,2020,water / tidal flat,0.93407
+niger_delta,chip_0280,0.91,4.76228,6.88724,2023,other vegetation,0.6044
+mekong,chip_0237,0.9,8.59015,104.75902,2020,water / tidal flat,1.0
+mekong,chip_0134,0.9,9.30268,105.89582,2022,other vegetation,0.64444
+mekong,chip_0097,0.9,9.01122,105.32141,2020,water / tidal flat,1.0
+mahakam,chip_0344,0.9,-0.42592,117.59488,2020,water / tidal flat,1.0
+everglades,chip_0392,0.9,25.14265,-80.95174,2024,other vegetation,1.0
+mahakam,chip_0319,0.9,-0.8026,117.50648,2019,water / tidal flat,1.0
+mahakam,chip_0071,0.9,-0.7653,117.44501,2020,water / tidal flat,1.0
+mahakam,chip_0316,0.9,-0.69966,117.45356,2019,water / tidal flat,1.0
+mekong,chip_0398,0.9,9.05084,105.442,2019,water / tidal flat,0.46667
+mekong,chip_0370,0.9,10.10813,106.78295,2022,other vegetation,0.67778
+matang,chip_0397,0.9,4.6166,100.67143,2020,other vegetation,1.0
+everglades,chip_0105,0.9,25.15824,-80.99461,2024,water / tidal flat,0.72222
+mekong,chip_0364,0.9,8.6269,104.96091,2024,water / tidal flat,1.0
+mekong,chip_0127,0.9,8.66358,104.91921,2024,water / tidal flat,1.0
+mahakam,chip_0007,0.9,-0.44145,117.57973,2019,water / tidal flat,1.0
+mahakam,chip_0333,0.89,-0.42826,117.4823,2019,water / tidal flat,1.0
+mekong,chip_0228,0.89,8.73537,105.08917,2024,water / tidal flat,1.0
+mekong,chip_0004,0.89,8.81455,105.24417,2023,water / tidal flat,1.0
+mekong,chip_0051,0.89,8.90695,104.85734,2020,water / tidal flat,0.92135
+mekong,chip_0009,0.89,8.71318,104.87718,2020,water / tidal flat,1.0
+rufiji,chip_0384,0.89,-7.765,39.35366,2019,other vegetation,1.0
+rufiji,chip_0234,0.89,-8.07212,39.42029,2020,bare ground,0.52809
+mekong,chip_0260,0.89,8.63481,104.94345,2023,water / tidal flat,1.0
+mekong,chip_0298,0.89,8.77723,105.08091,2023,water / tidal flat,1.0
+mekong,chip_0295,0.89,8.74167,105.10395,2023,water / tidal flat,1.0
+mekong,chip_0219,0.89,8.76317,105.15775,2023,water / tidal flat,1.0
+mekong,chip_0001,0.88,8.60201,104.89638,2023,water / tidal flat,1.0
+niger_delta,chip_0236,0.88,4.71841,6.69521,2023,other vegetation,1.0
+mahakam,chip_0291,0.88,-0.5908,117.44817,2023,other vegetation,1.0
+mahakam,chip_0318,0.88,-0.46375,117.55097,2024,water / tidal flat,1.0
+rufiji,chip_0234,0.88,-8.06702,39.42144,2019,bare ground,0.53409
+rufiji,chip_0106,0.88,-7.83967,39.23579,2022,other vegetation,1.0
+mekong,chip_0199,0.88,9.87471,106.65783,2023,water / tidal flat,1.0
+mekong,chip_0261,0.88,8.72884,105.03686,2023,water / tidal flat,1.0
+mekong,chip_0071,0.88,9.77927,105.1114,2021,water / tidal flat,0.90909
+mekong,chip_0389,0.88,10.16289,106.77624,2022,water / tidal flat,0.69318
+mekong,chip_0000,0.88,8.77484,105.11469,2023,water / tidal flat,1.0
+rufiji,chip_0331,0.88,-7.89114,39.39237,2020,other vegetation,1.0
+mekong,chip_0349,0.88,8.63537,104.9445,2020,water / tidal flat,1.0
+matang,chip_0320,0.88,5.00383,100.4141,2022,other vegetation,1.0
+mahakam,chip_0155,0.87,-0.60959,117.51582,2019,water / tidal flat,1.0
+rufiji,chip_0035,0.87,-7.8813,39.29618,2022,other vegetation,0.65517
+mekong,chip_0359,0.87,8.82202,105.18376,2022,water / tidal flat,1.0
+mahakam,chip_0138,0.87,-0.46999,117.45493,2024,water / tidal flat,1.0
+mahakam,chip_0342,0.87,-0.45738,117.42583,2019,water / tidal flat,1.0
+rufiji,chip_0362,0.87,-8.11762,39.35715,2019,water / tidal flat,0.65517
+para,chip_0154,0.87,-1.08654,-46.20308,2023,water / tidal flat,1.0
+para,chip_0310,0.87,-0.69801,-47.1247,2021,water / tidal flat,1.0
+rufiji,chip_0251,0.87,-7.87615,39.42386,2024,other vegetation,1.0
+mahakam,chip_0351,0.87,-0.81067,117.32348,2022,water / tidal flat,1.0
+mekong,chip_0289,0.87,8.6644,104.97496,2023,water / tidal flat,1.0
+mekong,chip_0258,0.87,8.83242,105.17773,2023,water / tidal flat,1.0
+mahakam,chip_0085,0.87,-0.48688,117.54729,2020,water / tidal flat,1.0
+para,chip_0303,0.87,-1.17411,-45.80076,2024,water / tidal flat,1.0
+para,chip_0325,0.87,-0.71587,-47.45213,2021,water / tidal flat,1.0
+rufiji,chip_0112,0.86,-7.82077,39.26504,2022,other vegetation,1.0
+mekong,chip_0051,0.86,8.90768,104.84674,2021,water / tidal flat,1.0
+mahakam,chip_0322,0.86,-0.44846,117.55745,2024,water / tidal flat,1.0
+mekong,chip_0320,0.86,8.78342,105.10926,2023,water / tidal flat,1.0
+mekong,chip_0269,0.86,8.69499,104.81524,2022,water / tidal flat,1.0
+mahakam,chip_0147,0.86,-0.54646,117.5109,2019,water / tidal flat,1.0
+mekong,chip_0358,0.86,8.73109,105.02954,2023,water / tidal flat,1.0
+mahakam,chip_0079,0.86,-0.76301,117.38618,2019,water / tidal flat,1.0
+mekong,chip_0011,0.86,8.74321,105.09569,2024,water / tidal flat,1.0
+mekong,chip_0319,0.86,8.73941,105.00331,2023,water / tidal flat,1.0
+mahakam,chip_0136,0.86,-0.36569,117.4524,2021,water / tidal flat,1.0
+mahakam,chip_0135,0.86,-0.60191,117.46778,2019,water / tidal flat,1.0
+mekong,chip_0303,0.86,8.64948,105.01188,2020,water / tidal flat,0.61628
+para,chip_0200,0.86,-0.90782,-46.75625,2019,other vegetation,1.0
+rufiji,chip_0073,0.86,-7.85115,39.24887,2020,water / tidal flat,0.86047
+para,chip_0366,0.86,-0.74966,-47.10339,2021,water / tidal flat,1.0
+rufiji,chip_0134,0.85,-7.8814,39.31724,2020,other vegetation,1.0
+mekong,chip_0227,0.85,8.68044,104.93364,2021,water / tidal flat,0.96471
+para,chip_0106,0.85,-1.02699,-46.2263,2022,water / tidal flat,1.0
+mekong,chip_0103,0.85,9.74825,104.87124,2021,water / tidal flat,0.85882
+mekong,chip_0112,0.85,9.42829,105.90627,2019,other vegetation,0.63529
+rufiji,chip_0154,0.85,-7.87558,39.27404,2020,other vegetation,1.0
+para,chip_0215,0.85,-0.87033,-46.80742,2024,water / tidal flat,1.0
+mekong,chip_0108,0.85,8.85265,105.10426,2023,water / tidal flat,1.0
+jamaica,chip_0254,0.85,17.91706,-76.90692,2024,water / tidal flat,1.0
+rufiji,chip_0021,0.85,-7.87145,39.33044,2021,other vegetation,1.0
+mekong,chip_0011,0.84,8.7484,105.09262,2023,water / tidal flat,1.0
+jamaica,chip_0186,0.84,18.2249,-78.17022,2024,other vegetation,0.70238
+mekong,chip_0193,0.84,8.64223,104.86921,2022,water / tidal flat,0.9881
+mekong,chip_0215,0.84,8.8009,105.11135,2023,water / tidal flat,1.0
+mekong,chip_0219,0.84,8.76293,105.1592,2023,water / tidal flat,1.0
+rufiji,chip_0233,0.84,-7.86861,39.23555,2019,other vegetation,1.0
+mekong,chip_0179,0.84,8.64705,104.91082,2022,water / tidal flat,1.0
+mahakam,chip_0143,0.84,-0.66918,117.38315,2022,water / tidal flat,1.0
+mahakam,chip_0096,0.84,-0.90307,117.33903,2020,water / tidal flat,1.0
+niger_delta,chip_0378,0.84,4.5277,6.6447,2020,other vegetation,0.66667
+mekong,chip_0212,0.84,9.84332,104.91625,2020,water / tidal flat,1.0
+mekong,chip_0294,0.84,10.03195,106.68125,2023,water / tidal flat,1.0
+mekong,chip_0313,0.83,8.7478,104.99858,2019,water / tidal flat,1.0
+mekong,chip_0077,0.83,10.03912,106.67189,2022,water / tidal flat,1.0
+mahakam,chip_0269,0.83,-0.77779,117.55489,2020,water / tidal flat,1.0
+mekong,chip_0344,0.83,8.99268,105.3747,2024,water / tidal flat,1.0
+mekong,chip_0341,0.83,8.81387,105.14412,2021,water / tidal flat,1.0
+jamaica,chip_0217,0.83,17.76049,-77.2528,2019,water / tidal flat,1.0
+jamaica,chip_0204,0.83,17.9238,-76.8958,2023,other vegetation,1.0
+mahakam,chip_0173,0.83,-0.91061,117.23513,2022,water / tidal flat,1.0
+mekong,chip_0303,0.83,8.65564,105.00211,2023,water / tidal flat,1.0
+mekong,chip_0112,0.83,9.42403,105.90692,2020,other vegetation,0.9759
+everglades,chip_0105,0.83,25.15906,-80.99317,2024,other vegetation,0.50602
+everglades,chip_0030,0.82,25.24616,-80.86223,2024,other vegetation,1.0
+matang,chip_0137,0.82,4.69939,100.686,2022,other vegetation,1.0
+mekong,chip_0372,0.82,9.73467,104.87335,2020,water / tidal flat,1.0
+matang,chip_0387,0.82,4.89707,100.5269,2023,water / tidal flat,1.0
+mahakam,chip_0376,0.82,-0.52362,117.57562,2024,water / tidal flat,1.0
+mahakam,chip_0001,0.82,-0.54264,117.49649,2019,water / tidal flat,1.0
+mahakam,chip_0372,0.82,-0.73682,117.56431,2021,water / tidal flat,1.0
+sundarbans,chip_0084,0.82,22.15633,89.2357,2024,water / tidal flat,1.0
+para,chip_0038,0.82,-0.76673,-46.97036,2021,water / tidal flat,1.0
+jamaica,chip_0178,0.82,17.8539,-77.02033,2023,water / tidal flat,0.97561
+jamaica,chip_0365,0.82,18.36797,-78.30419,2024,other vegetation,0.79268
+mekong,chip_0139,0.82,8.85535,104.90544,2019,water / tidal flat,1.0
+mahakam,chip_0063,0.82,-0.75912,117.49562,2019,water / tidal flat,1.0
+mahakam,chip_0322,0.82,-0.4507,117.56303,2019,water / tidal flat,1.0
+mekong,chip_0224,0.82,8.76044,105.12723,2022,water / tidal flat,1.0
+matang,chip_0344,0.82,4.94283,100.43129,2024,water / tidal flat,1.0
+mekong,chip_0398,0.82,9.04922,105.44221,2019,other vegetation,0.86585
+mahakam,chip_0128,0.82,-0.48826,117.46426,2022,water / tidal flat,1.0
+rufiji,chip_0062,0.82,-7.86115,39.2798,2020,other vegetation,1.0
+jamaica,chip_0333,0.81,17.81176,-77.31756,2024,water / tidal flat,1.0
+mekong,chip_0007,0.81,8.63822,105.03792,2019,other vegetation,0.50617
+mekong,chip_0007,0.81,8.63718,105.0351,2023,built-up,0.50617
+mekong,chip_0335,0.81,8.63186,104.95889,2022,water / tidal flat,1.0
+rufiji,chip_0121,0.81,-7.87211,39.30236,2019,other vegetation,1.0
+everglades,chip_0092,0.81,25.35078,-81.03851,2021,other vegetation,1.0
+matang,chip_0232,0.81,4.79927,100.65497,2021,other vegetation,1.0
+rufiji,chip_0321,0.81,-7.83259,39.28816,2022,other vegetation,1.0
+rufiji,chip_0085,0.81,-7.85726,39.27359,2024,other vegetation,1.0
+mahakam,chip_0385,0.81,-0.76824,117.59809,2020,water / tidal flat,1.0
+para,chip_0021,0.81,-1.05461,-45.97562,2024,bare ground,0.87654
+jamaica,chip_0262,0.8,18.01215,-77.81177,2024,other vegetation,1.0
+mahakam,chip_0019,0.8,-0.44719,117.54007,2019,water / tidal flat,1.0
+mekong,chip_0047,0.8,9.61026,106.29184,2019,water / tidal flat,0.65
+mekong,chip_0343,0.8,8.75835,105.09091,2023,water / tidal flat,1.0
+mekong,chip_0233,0.8,8.67481,104.91705,2023,water / tidal flat,1.0
+mahakam,chip_0003,0.8,-0.9022,117.32904,2019,water / tidal flat,1.0
+mekong,chip_0108,0.8,8.85382,105.10379,2023,water / tidal flat,1.0
+rufiji,chip_0073,0.8,-7.84654,39.25355,2019,other vegetation,1.0
+jamaica,chip_0230,0.8,18.01553,-77.83228,2024,other vegetation,1.0
+mahakam,chip_0129,0.8,-0.57317,117.41621,2024,water / tidal flat,1.0
+mahakam,chip_0318,0.8,-0.45585,117.54443,2019,water / tidal flat,1.0
+everglades,chip_0078,0.8,25.65529,-81.25313,2024,water / tidal flat,0.5125
+mekong,chip_0200,0.8,9.90147,106.67228,2022,water / tidal flat,1.0
+mekong,chip_0375,0.8,10.01571,106.67077,2019,water / tidal flat,1.0
+mekong,chip_0294,0.8,10.02692,106.68689,2022,other vegetation,0.4625
+mekong,chip_0365,0.8,8.60391,104.83218,2024,water / tidal flat,1.0
+rufiji,chip_0309,0.8,-7.86573,39.36731,2022,other vegetation,0.95
+niger_delta,chip_0219,0.8,4.70818,6.61053,2023,other vegetation,1.0
+mekong,chip_0215,0.79,8.80262,105.11133,2023,water / tidal flat,1.0
+everglades,chip_0022,0.79,25.18304,-80.84861,2024,other vegetation,1.0
+niger_delta,chip_0087,0.79,4.71289,6.83394,2022,other vegetation,1.0
+mahakam,chip_0304,0.79,-0.4146,117.52451,2024,water / tidal flat,1.0
+sundarbans,chip_0145,0.79,22.06398,88.68385,2022,water / tidal flat,1.0
+mahakam,chip_0070,0.79,-0.75439,117.59785,2020,water / tidal flat,1.0
+mahakam,chip_0135,0.79,-0.60687,117.47708,2023,water / tidal flat,1.0
+rufiji,chip_0014,0.79,-7.79493,39.27264,2019,other vegetation,1.0
+mekong,chip_0128,0.79,8.90428,105.26935,2020,water / tidal flat,1.0
+mahakam,chip_0085,0.79,-0.49132,117.54,2024,water / tidal flat,1.0
+rufiji,chip_0076,0.79,-7.84147,39.28883,2022,other vegetation,1.0
+mekong,chip_0093,0.79,8.75736,104.92518,2020,water / tidal flat,1.0
+mekong,chip_0346,0.79,8.66824,104.89537,2023,water / tidal flat,1.0
+jamaica,chip_0194,0.79,17.90812,-77.06677,2019,bare ground,0.5443
+niger_delta,chip_0259,0.79,4.38405,6.68899,2024,water / tidal flat,1.0
+jamaica,chip_0179,0.79,17.92603,-76.20504,2020,other vegetation,1.0
+rufiji,chip_0351,0.78,-7.80183,39.24336,2019,other vegetation,1.0
+mekong,chip_0365,0.78,8.60014,104.82731,2022,water / tidal flat,0.89744
+mahakam,chip_0041,0.78,-0.78217,117.48433,2024,water / tidal flat,1.0
+rufiji,chip_0014,0.78,-7.79515,39.26728,2023,other vegetation,1.0
+mahakam,chip_0171,0.78,-0.41821,117.61781,2024,water / tidal flat,1.0
+mahakam,chip_0231,0.78,-0.78495,117.4437,2020,water / tidal flat,1.0
+niger_delta,chip_0101,0.78,4.51479,6.36833,2024,water / tidal flat,1.0
+para,chip_0147,0.78,-1.04191,-46.11214,2023,water / tidal flat,1.0
+mahakam,chip_0009,0.78,-0.69884,117.41659,2022,water / tidal flat,1.0
+jamaica,chip_0167,0.78,18.47849,-77.65592,2023,other vegetation,1.0
+rufiji,chip_0009,0.78,-8.13475,39.37766,2023,other vegetation,1.0
+jamaica,chip_0222,0.78,18.48863,-77.62222,2023,bare ground,0.5
+para,chip_0372,0.78,-0.99673,-46.46547,2019,water / tidal flat,1.0
+mekong,chip_0230,0.77,9.13677,105.58278,2024,water / tidal flat,1.0
+rufiji,chip_0301,0.77,-7.87225,39.24159,2019,other vegetation,1.0
+rufiji,chip_0274,0.77,-7.8418,39.23613,2024,water / tidal flat,1.0
+sundarbans,chip_0254,0.77,21.74974,89.03014,2024,water / tidal flat,1.0
+mekong,chip_0139,0.77,8.84863,104.89899,2021,water / tidal flat,1.0
+rufiji,chip_0229,0.77,-7.90528,39.35902,2022,other vegetation,1.0
+mekong,chip_0160,0.77,8.68721,104.98099,2024,water / tidal flat,1.0
+rufiji,chip_0092,0.77,-7.84339,39.30985,2024,other vegetation,1.0
+mahakam,chip_0087,0.77,-0.83587,117.48851,2022,water / tidal flat,1.0
+mahakam,chip_0378,0.77,-0.72191,117.39149,2021,water / tidal flat,1.0
+mekong,chip_0268,0.77,8.76188,105.12461,2020,water / tidal flat,1.0
+mekong,chip_0289,0.77,8.66583,104.97937,2024,water / tidal flat,1.0
+mahakam,chip_0142,0.77,-0.46454,117.60249,2024,water / tidal flat,1.0
+matang,chip_0072,0.77,4.99985,100.42352,2023,water / tidal flat,0.96104
+rufiji,chip_0031,0.77,-7.91031,39.36352,2019,other vegetation,1.0
+mahakam,chip_0376,0.77,-0.51601,117.57359,2024,water / tidal flat,1.0
+jamaica,chip_0394,0.77,17.94114,-76.83593,2020,built-up,1.0
+matang,chip_0225,0.77,4.67697,100.61832,2022,water / tidal flat,1.0
+mahakam,chip_0054,0.77,-0.70135,117.50606,2024,water / tidal flat,1.0
+mekong,chip_0327,0.77,8.63362,104.96638,2022,water / tidal flat,1.0
+mekong,chip_0220,0.77,8.72674,105.09866,2023,water / tidal flat,1.0
+mahakam,chip_0144,0.76,-0.50835,117.55296,2021,water / tidal flat,1.0
+mahakam,chip_0256,0.76,-0.45089,117.57032,2023,water / tidal flat,1.0
+mexico_pacific,chip_0367,0.76,25.285,-112.12067,2019,water / tidal flat,1.0
+mahakam,chip_0126,0.76,-0.8772,117.26179,2024,water / tidal flat,1.0
+mekong,chip_0381,0.76,8.84814,105.22961,2023,water / tidal flat,1.0
+rufiji,chip_0048,0.76,-7.74324,39.34344,2020,other vegetation,1.0
+mahakam,chip_0003,0.76,-0.90126,117.32942,2020,water / tidal flat,1.0
+matang,chip_0349,0.76,4.59997,100.68004,2023,other vegetation,1.0
+mekong,chip_0094,0.76,8.72269,105.05469,2024,water / tidal flat,1.0
+mahakam,chip_0303,0.76,-0.53555,117.48426,2021,water / tidal flat,1.0
+mekong,chip_0139,0.76,8.84663,104.90956,2020,water / tidal flat,1.0
+jamaica,chip_0243,0.75,18.2122,-78.05938,2023,other vegetation,1.0
+niger_delta,chip_0284,0.75,4.44191,5.80602,2023,other vegetation,1.0
+mekong,chip_0017,0.75,9.80151,104.88838,2019,water / tidal flat,1.0
+mekong,chip_0215,0.75,8.80895,105.10802,2024,water / tidal flat,1.0
+mekong,chip_0185,0.75,8.6495,104.82799,2023,water / tidal flat,0.77333
+mekong,chip_0358,0.75,8.72449,105.02209,2024,water / tidal flat,1.0
+mekong,chip_0294,0.75,10.03504,106.68145,2021,water / tidal flat,1.0
+mahakam,chip_0334,0.75,-0.87819,117.43976,2020,water / tidal flat,1.0
+mexico_pacific,chip_0225,0.75,24.33632,-111.46878,2023,bare ground,0.52
+mahakam,chip_0332,0.75,-0.42898,117.58864,2019,water / tidal flat,1.0
+mekong,chip_0160,0.75,8.68687,104.98404,2024,water / tidal flat,1.0
+mahakam,chip_0081,0.75,-0.84565,117.41958,2020,water / tidal flat,1.0
+mahakam,chip_0325,0.75,-0.81642,117.46424,2019,water / tidal flat,1.0
+matang,chip_0107,0.74,4.70692,100.68496,2024,other vegetation,1.0
+mekong,chip_0197,0.74,9.53292,106.38103,2020,water / tidal flat,1.0
+rufiji,chip_0035,0.74,-7.87815,39.29805,2020,other vegetation,1.0
+mekong,chip_0383,0.74,8.81669,105.24911,2022,water / tidal flat,1.0
+mahakam,chip_0125,0.74,-0.54759,117.44394,2019,water / tidal flat,1.0
+mekong,chip_0273,0.74,10.0048,106.6581,2022,water / tidal flat,1.0
+mekong,chip_0345,0.74,8.71094,104.98783,2023,water / tidal flat,1.0
+mekong,chip_0077,0.74,10.04471,106.67509,2021,water / tidal flat,1.0
+mekong,chip_0260,0.74,8.63481,104.9405,2024,water / tidal flat,1.0
+mekong,chip_0345,0.74,8.71193,104.98723,2023,water / tidal flat,1.0
+mekong,chip_0093,0.74,8.76229,104.93194,2019,water / tidal flat,1.0
+mekong,chip_0341,0.74,8.81321,105.14956,2023,water / tidal flat,1.0
+mekong,chip_0231,0.74,8.59041,104.8376,2019,built-up,0.63514
+rufiji,chip_0181,0.74,-7.86479,39.36189,2019,other vegetation,0.82432
+mekong,chip_0093,0.74,8.75871,104.9267,2022,water / tidal flat,1.0
+mekong,chip_0315,0.74,9.6773,104.85963,2019,water / tidal flat,1.0
+mekong,chip_0326,0.74,8.76425,104.92219,2024,water / tidal flat,1.0
+mekong,chip_0327,0.74,8.62936,104.96849,2024,water / tidal flat,1.0
+para,chip_0048,0.74,-0.78098,-46.96513,2022,water / tidal flat,1.0
+niger_delta,chip_0236,0.74,4.72116,6.69096,2023,other vegetation,1.0
+sundarbans,chip_0394,0.73,21.97514,89.56151,2024,water / tidal flat,1.0
+sundarbans,chip_0161,0.73,22.12703,89.32622,2024,water / tidal flat,1.0
+mekong,chip_0327,0.73,8.63763,104.96691,2022,water / tidal flat,1.0
+jamaica,chip_0128,0.73,17.82664,-77.33239,2019,other vegetation,1.0
+papua,chip_0358,0.73,-4.88302,137.61736,2024,water / tidal flat,1.0
+mekong,chip_0306,0.73,8.78633,104.91944,2024,water / tidal flat,1.0
+mekong,chip_0346,0.73,8.67066,104.90037,2023,water / tidal flat,1.0
+rufiji,chip_0379,0.73,-8.11233,39.33378,2019,other vegetation,1.0
+mahakam,chip_0393,0.73,-0.73555,117.48698,2023,water / tidal flat,1.0
+jamaica,chip_0310,0.73,17.77733,-77.28091,2019,water / tidal flat,1.0
+mekong,chip_0351,0.73,9.74848,106.55328,2024,other vegetation,1.0
+rufiji,chip_0035,0.73,-7.88666,39.30297,2020,other vegetation,1.0
+matang,chip_0028,0.73,4.76031,100.67838,2022,other vegetation,1.0
+rufiji,chip_0068,0.72,-7.82892,39.24635,2020,other vegetation,1.0
+mekong,chip_0323,0.72,8.67997,105.01341,2023,water / tidal flat,1.0
+mekong,chip_0325,0.72,8.62909,104.9835,2023,water / tidal flat,1.0
+everglades,chip_0080,0.72,25.18381,-80.81568,2024,other vegetation,0.94444
+mekong,chip_0063,0.72,9.55965,104.84341,2020,water / tidal flat,0.43056
+mahakam,chip_0315,0.72,-0.67689,117.44634,2019,water / tidal flat,1.0
+mekong,chip_0127,0.72,8.661,104.91977,2021,water / tidal flat,0.98611
+mexico_pacific,chip_0177,0.72,24.32708,-111.43403,2024,water / tidal flat,1.0
+rufiji,chip_0384,0.72,-7.758,39.3543,2020,other vegetation,1.0
+matang,chip_0225,0.72,4.6766,100.61454,2023,water / tidal flat,1.0
+matang,chip_0332,0.72,4.89418,100.53014,2024,water / tidal flat,1.0
+mahakam,chip_0126,0.72,-0.87815,117.25995,2024,water / tidal flat,1.0
+mexico_pacific,chip_0368,0.72,24.79117,-112.24359,2023,bare ground,0.97222
+rufiji,chip_0398,0.72,-8.05653,39.3816,2022,water / tidal flat,1.0
+para,chip_0389,0.72,-0.88302,-46.50626,2019,other vegetation,1.0
+sundarbans,chip_0300,0.72,21.99821,88.55143,2024,water / tidal flat,1.0
+niger_delta,chip_0285,0.72,4.32934,6.53204,2024,other vegetation,1.0
+mekong,chip_0369,0.72,8.62571,105.02673,2019,water / tidal flat,0.90278
+mekong,chip_0303,0.71,8.65011,105.00247,2023,water / tidal flat,1.0
+jamaica,chip_0378,0.71,17.91602,-77.08855,2023,built-up,0.71831
+mahakam,chip_0164,0.71,-0.69796,117.39297,2019,water / tidal flat,1.0
+mekong,chip_0372,0.71,9.74319,104.87386,2021,other vegetation,0.52113
+mekong,chip_0370,0.71,10.11191,106.78217,2024,water / tidal flat,1.0
+mekong,chip_0093,0.71,8.7643,104.9335,2019,water / tidal flat,1.0
+jamaica,chip_0334,0.71,18.26587,-76.70952,2024,other vegetation,1.0
+mekong,chip_0186,0.71,8.84198,105.2912,2019,water / tidal flat,1.0
+mekong,chip_0186,0.71,8.84265,105.29302,2023,water / tidal flat,1.0
+mekong,chip_0383,0.71,8.81951,105.24499,2023,water / tidal flat,1.0
+rufiji,chip_0034,0.71,-7.80528,39.2572,2021,other vegetation,1.0
+mahakam,chip_0333,0.71,-0.42708,117.47805,2024,water / tidal flat,1.0
+rufiji,chip_0034,0.71,-7.80628,39.25078,2020,other vegetation,1.0
+mekong,chip_0155,0.71,9.99754,106.65959,2021,water / tidal flat,1.0
+mahakam,chip_0345,0.71,-0.54693,117.57517,2022,water / tidal flat,1.0
+niger_delta,chip_0036,0.71,4.32973,6.51328,2023,other vegetation,1.0
+jamaica,chip_0378,0.71,17.91569,-77.09637,2019,other vegetation,0.87324
+mahakam,chip_0385,0.7,-0.76837,117.5941,2021,water / tidal flat,1.0
+sundarbans,chip_0192,0.7,22.19275,89.0857,2022,water / tidal flat,1.0
+sundarbans,chip_0197,0.7,21.9132,88.53066,2019,other vegetation,1.0
+rufiji,chip_0378,0.7,-7.86098,39.38156,2024,other vegetation,1.0
+mekong,chip_0146,0.7,9.0819,105.05421,2020,water / tidal flat,1.0
+mexico_pacific,chip_0065,0.7,24.74862,-112.0622,2023,bare ground,0.95714
+mekong,chip_0358,0.7,8.72567,105.01963,2022,water / tidal flat,1.0
+niger_delta,chip_0180,0.7,4.58317,6.96634,2022,water / tidal flat,1.0
+mahakam,chip_0291,0.7,-0.5893,117.43983,2019,water / tidal flat,0.92857
+jamaica,chip_0128,0.7,17.82433,-77.32713,2023,other vegetation,1.0
+rufiji,chip_0094,0.7,-7.84841,39.26765,2019,other vegetation,1.0
+mekong,chip_0333,0.7,8.60861,104.83373,2022,water / tidal flat,1.0
+mekong,chip_0359,0.7,8.81664,105.18143,2023,water / tidal flat,1.0
+mekong,chip_0185,0.7,8.64995,104.82669,2022,water / tidal flat,0.51429
+rufiji,chip_0336,0.7,-8.17024,39.31938,2019,water / tidal flat,1.0
+matang,chip_0320,0.69,5.00631,100.40942,2022,other vegetation,0.55072
+mexico_pacific,chip_0385,0.69,24.37678,-111.70715,2022,water / tidal flat,1.0
+mahakam,chip_0081,0.69,-0.85213,117.42921,2020,water / tidal flat,1.0
+rufiji,chip_0137,0.69,-7.83134,39.2482,2024,other vegetation,1.0
+rufiji,chip_0094,0.69,-7.84926,39.27224,2022,other vegetation,1.0
+mahakam,chip_0028,0.69,-0.40298,117.44643,2021,water / tidal flat,1.0
+mahakam,chip_0302,0.69,-0.68167,117.52615,2019,water / tidal flat,1.0
+niger_delta,chip_0088,0.69,4.41704,6.89271,2023,water / tidal flat,1.0
+mahakam,chip_0315,0.69,-0.6861,117.45315,2020,water / tidal flat,1.0
+mekong,chip_0301,0.69,8.71264,104.84317,2023,water / tidal flat,1.0
+jamaica,chip_0321,0.69,17.79388,-77.20636,2022,other vegetation,1.0
+mekong,chip_0361,0.69,10.15832,104.83342,2023,water / tidal flat,1.0
+mekong,chip_0127,0.69,8.66404,104.9212,2023,water / tidal flat,1.0
+mekong,chip_0260,0.69,8.63701,104.93396,2024,water / tidal flat,0.94203
+rufiji,chip_0340,0.69,-7.83771,39.25652,2019,other vegetation,1.0
+mekong,chip_0128,0.69,8.90127,105.2678,2020,water / tidal flat,1.0
+mekong,chip_0366,0.69,8.69582,105.10933,2020,water / tidal flat,1.0
+mekong,chip_0398,0.69,9.04826,105.44139,2019,other vegetation,0.6087
+para,chip_0328,0.69,-0.60399,-47.28871,2023,water / tidal flat,0.52174
+jamaica,chip_0252,0.69,17.90133,-77.02624,2024,water / tidal flat,0.97101
+mahakam,chip_0172,0.69,-0.5479,117.58224,2022,water / tidal flat,1.0
+para,chip_0386,0.69,-0.97409,-46.4146,2023,water / tidal flat,1.0
+mahakam,chip_0035,0.69,-0.83026,117.21376,2019,other vegetation,1.0
+everglades,chip_0349,0.69,25.12928,-81.03751,2024,water / tidal flat,1.0
+everglades,chip_0395,0.69,25.63252,-81.23155,2024,water / tidal flat,0.98551
+rufiji,chip_0351,0.68,-7.80328,39.24782,2020,other vegetation,1.0
+mekong,chip_0365,0.68,8.6037,104.82634,2020,water / tidal flat,0.63235
+matang,chip_0147,0.68,4.61623,100.59265,2024,water / tidal flat,1.0
+mekong,chip_0388,0.68,8.60754,104.93044,2021,water / tidal flat,1.0
+mekong,chip_0151,0.68,9.2226,105.71268,2019,water / tidal flat,0.57353
+mahakam,chip_0258,0.68,-0.87905,117.40899,2020,water / tidal flat,1.0
+rufiji,chip_0314,0.68,-7.81156,39.43366,2024,other vegetation,0.73529
+mekong,chip_0344,0.68,8.99075,105.37295,2024,water / tidal flat,1.0
+mekong,chip_0299,0.68,8.82692,105.15918,2024,water / tidal flat,1.0
+mekong,chip_0167,0.68,9.83117,104.91496,2023,water / tidal flat,1.0
+jamaica,chip_0062,0.68,17.88221,-77.14315,2024,other vegetation,1.0
+mekong,chip_0108,0.68,8.85117,105.0979,2023,water / tidal flat,1.0
+mekong,chip_0346,0.68,8.67378,104.90046,2024,water / tidal flat,1.0
+mekong,chip_0323,0.68,8.67269,105.01272,2024,water / tidal flat,1.0
+sundarbans,chip_0093,0.68,22.04091,89.28346,2024,water / tidal flat,1.0
+sundarbans,chip_0110,0.68,22.08015,89.59262,2024,water / tidal flat,1.0
+niger_delta,chip_0163,0.68,4.68002,6.82891,2023,other vegetation,1.0
+mekong,chip_0077,0.68,10.0426,106.67268,2023,water / tidal flat,1.0
+rufiji,chip_0367,0.67,-7.98737,39.40496,2024,other vegetation,1.0
+matang,chip_0089,0.67,4.81508,100.65427,2022,other vegetation,1.0
+mekong,chip_0229,0.67,9.26493,104.82294,2020,water / tidal flat,1.0
+jamaica,chip_0164,0.67,17.88929,-76.2695,2020,other vegetation,1.0
+jamaica,chip_0167,0.67,18.48409,-77.65496,2024,bare ground,0.74627
+rufiji,chip_0253,0.67,-8.12014,39.37072,2022,other vegetation,1.0
+mahakam,chip_0096,0.67,-0.90975,117.34119,2020,water / tidal flat,1.0
+rufiji,chip_0073,0.67,-7.84376,39.25619,2019,other vegetation,1.0
+mahakam,chip_0338,0.67,-0.85393,117.37239,2024,other vegetation,1.0
+mahakam,chip_0256,0.67,-0.44704,117.57134,2024,water / tidal flat,1.0
+mekong,chip_0132,0.67,8.90198,105.31263,2023,water / tidal flat,1.0
+jamaica,chip_0225,0.67,18.03284,-77.91706,2024,other vegetation,1.0
+para,chip_0354,0.67,-0.80227,-46.64904,2021,water / tidal flat,1.0
+mekong,chip_0334,0.67,8.7766,105.11068,2023,water / tidal flat,1.0
+mekong,chip_0325,0.67,8.62714,104.97963,2019,water / tidal flat,1.0
+mekong,chip_0215,0.67,8.80073,105.11229,2024,water / tidal flat,1.0
+rufiji,chip_0351,0.67,-7.80479,39.24427,2024,other vegetation,1.0
+mekong,chip_0214,0.66,8.73469,104.9339,2021,water / tidal flat,1.0
+mahakam,chip_0039,0.66,-0.61716,117.46499,2023,water / tidal flat,1.0
+jamaica,chip_0171,0.66,18.03158,-77.81303,2024,other vegetation,1.0
+rufiji,chip_0053,0.66,-7.90115,39.40721,2019,other vegetation,1.0
+mexico_pacific,chip_0065,0.66,24.74692,-112.06522,2022,water / tidal flat,0.83333
+sundarbans,chip_0387,0.66,22.01648,88.73806,2024,water / tidal flat,1.0
+mekong,chip_0069,0.66,8.67231,104.9808,2023,water / tidal flat,1.0
+mahakam,chip_0305,0.66,-0.87508,117.34192,2023,water / tidal flat,1.0
+mekong,chip_0377,0.66,8.65478,104.83903,2022,water / tidal flat,1.0
+niger_delta,chip_0359,0.66,4.79998,6.86429,2024,other vegetation,1.0
+mekong,chip_0292,0.66,8.7774,105.19031,2023,water / tidal flat,1.0
+mekong,chip_0369,0.66,8.62465,105.02201,2019,built-up,0.77273
+mekong,chip_0260,0.66,8.63398,104.9362,2021,water / tidal flat,1.0
+mekong,chip_0398,0.66,9.05681,105.44478,2019,water / tidal flat,0.69697
+sundarbans,chip_0279,0.66,22.24179,89.03362,2024,water / tidal flat,0.56061
+mekong,chip_0182,0.65,10.11833,106.77931,2021,water / tidal flat,1.0
+rufiji,chip_0339,0.65,-7.83159,39.40401,2022,water / tidal flat,1.0
+mekong,chip_0263,0.65,8.59263,104.93439,2022,water / tidal flat,1.0
+mahakam,chip_0315,0.65,-0.68521,117.44781,2020,water / tidal flat,1.0
+mekong,chip_0197,0.65,9.53702,106.37763,2020,water / tidal flat,1.0
+mekong,chip_0273,0.65,10.00419,106.6538,2019,water / tidal flat,1.0
+rufiji,chip_0297,0.65,-7.90821,39.26988,2024,water / tidal flat,0.93846
+sundarbans,chip_0084,0.65,22.15967,89.23252,2022,water / tidal flat,1.0
+mahakam,chip_0066,0.65,-0.49674,117.47592,2022,water / tidal flat,1.0
+rufiji,chip_0388,0.65,-7.8545,39.32734,2022,other vegetation,1.0
+matang,chip_0243,0.65,4.85581,100.64288,2020,other vegetation,1.0
+mekong,chip_0097,0.65,9.00889,105.32664,2020,water / tidal flat,1.0
+mekong,chip_0392,0.65,8.73839,105.13172,2023,water / tidal flat,1.0
+mekong,chip_0214,0.65,8.73484,104.93606,2022,water / tidal flat,1.0
+sundarbans,chip_0326,0.65,22.02074,88.77482,2024,water / tidal flat,1.0
+jamaica,chip_0326,0.64,18.4864,-77.67789,2023,other vegetation,1.0
+rufiji,chip_0001,0.64,-7.81509,39.27571,2019,other vegetation,1.0
+sundarbans,chip_0133,0.64,22.1631,88.97027,2024,water / tidal flat,1.0
+mekong,chip_0358,0.64,8.72073,105.02197,2022,water / tidal flat,1.0
+rufiji,chip_0032,0.64,-8.19143,39.28343,2021,other vegetation,1.0
+rufiji,chip_0370,0.64,-7.91234,39.35955,2019,other vegetation,1.0
+rufiji,chip_0073,0.64,-7.84772,39.2573,2019,other vegetation,1.0
+mahakam,chip_0295,0.64,-0.78924,117.42805,2020,water / tidal flat,1.0
+mekong,chip_0049,0.64,9.24879,105.78974,2019,other vegetation,0.98438
+rufiji,chip_0148,0.64,-7.94393,39.41466,2020,other vegetation,1.0
+mekong,chip_0358,0.64,8.72562,105.02729,2023,water / tidal flat,1.0
+mahakam,chip_0280,0.64,-0.65663,117.39685,2019,water / tidal flat,1.0
+sundarbans,chip_0253,0.64,22.15674,89.47153,2024,water / tidal flat,1.0
+mahakam,chip_0013,0.64,-0.55551,117.50812,2020,water / tidal flat,1.0
+rufiji,chip_0129,0.64,-7.92461,39.41429,2020,other vegetation,1.0
+mekong,chip_0265,0.64,9.35816,106.14075,2023,other vegetation,1.0
+mekong,chip_0299,0.64,8.82944,105.16277,2024,water / tidal flat,0.78125
+mekong,chip_0398,0.64,9.05524,105.4449,2021,water / tidal flat,1.0
+mekong,chip_0381,0.64,8.8503,105.23122,2023,built-up,0.57812
+sundarbans,chip_0348,0.64,21.92202,89.04958,2024,water / tidal flat,1.0
+jamaica,chip_0216,0.64,18.49263,-77.66303,2023,built-up,1.0
+everglades,chip_0248,0.64,25.23271,-81.08013,2022,other vegetation,1.0
+mekong,chip_0385,0.63,10.45665,106.79461,2022,water / tidal flat,1.0
+mekong,chip_0257,0.63,8.80938,104.8294,2024,water / tidal flat,1.0
+papua,chip_0382,0.63,-4.8786,137.62563,2024,water / tidal flat,1.0
+mekong,chip_0051,0.63,8.90664,104.84977,2019,water / tidal flat,1.0
+mekong,chip_0080,0.63,10.17625,106.74844,2022,water / tidal flat,0.96825
+mahakam,chip_0340,0.63,-0.77349,117.50477,2021,water / tidal flat,1.0
+rufiji,chip_0233,0.63,-7.86469,39.24345,2022,water / tidal flat,0.73016
+mekong,chip_0310,0.63,8.63673,104.83428,2023,water / tidal flat,1.0
+mahakam,chip_0010,0.63,-0.75042,117.43965,2024,water / tidal flat,1.0
+papua,chip_0221,0.63,-4.89335,137.57423,2020,other vegetation,1.0
+mahakam,chip_0399,0.63,-0.57963,117.53748,2022,water / tidal flat,1.0
+rufiji,chip_0213,0.63,-7.78861,39.26831,2020,other vegetation,1.0
+mekong,chip_0075,0.63,9.427,105.93805,2019,other vegetation,0.73016
+rufiji,chip_0049,0.63,-7.91043,39.3696,2022,other vegetation,1.0
+mekong,chip_0177,0.63,8.65864,104.88543,2024,water / tidal flat,1.0
+everglades,chip_0365,0.63,25.17422,-80.78878,2024,water / tidal flat,0.7619
+everglades,chip_0367,0.63,25.25275,-80.8569,2024,other vegetation,1.0
+rufiji,chip_0007,0.63,-7.84035,39.4113,2024,other vegetation,1.0
+para,chip_0341,0.63,-0.76567,-47.08682,2021,water / tidal flat,1.0
+mekong,chip_0283,0.63,10.21244,104.70266,2021,water / tidal flat,1.0
+matang,chip_0315,0.63,4.96283,100.42441,2023,other vegetation,1.0
+mekong,chip_0231,0.63,8.58534,104.8385,2021,water / tidal flat,1.0
+mekong,chip_0296,0.63,10.43594,106.7572,2021,other vegetation,1.0
+jamaica,chip_0171,0.63,18.03618,-77.81449,2024,other vegetation,1.0
+mahakam,chip_0116,0.63,-0.56508,117.5765,2024,water / tidal flat,1.0
+jamaica,chip_0331,0.63,17.91,-77.0599,2023,other vegetation,1.0
+mahakam,chip_0121,0.63,-0.77334,117.54084,2020,water / tidal flat,1.0
+mekong,chip_0093,0.62,8.75676,104.93295,2024,water / tidal flat,1.0
+mekong,chip_0058,0.62,9.37661,104.96194,2024,other vegetation,0.93548
+mahakam,chip_0090,0.62,-0.62542,117.39156,2024,water / tidal flat,1.0
+mekong,chip_0343,0.62,8.76011,105.09324,2022,water / tidal flat,1.0
+mekong,chip_0180,0.62,8.65131,105.02798,2019,water / tidal flat,1.0
+everglades,chip_0246,0.62,25.38706,-80.8766,2024,other vegetation,1.0
+mekong,chip_0295,0.62,8.74245,105.10261,2023,water / tidal flat,1.0
+mekong,chip_0146,0.62,9.08542,105.05222,2024,water / tidal flat,1.0
+mahakam,chip_0145,0.62,-0.80968,117.45594,2020,water / tidal flat,1.0
+mekong,chip_0362,0.62,9.31691,104.82584,2019,other vegetation,1.0
+mahakam,chip_0397,0.62,-0.55843,117.46641,2022,water / tidal flat,1.0
+everglades,chip_0382,0.62,25.25776,-81.06644,2021,other vegetation,1.0
+matang,chip_0002,0.62,4.62603,100.66479,2022,other vegetation,1.0
+matang,chip_0059,0.62,4.89238,100.53475,2024,water / tidal flat,1.0
+mekong,chip_0344,0.62,8.99336,105.36957,2021,water / tidal flat,1.0
+mekong,chip_0211,0.62,8.73489,104.92513,2022,water / tidal flat,1.0
+mexico_pacific,chip_0374,0.62,25.21272,-112.11321,2024,water / tidal flat,1.0
+mexico_pacific,chip_0077,0.62,24.73943,-111.98466,2024,water / tidal flat,1.0
+matang,chip_0317,0.62,5.00373,100.40223,2019,water / tidal flat,1.0
+matang,chip_0320,0.62,5.00571,100.40848,2021,water / tidal flat,1.0
+rufiji,chip_0068,0.62,-7.83514,39.24115,2022,other vegetation,1.0
+rufiji,chip_0085,0.62,-7.85727,39.27146,2022,other vegetation,1.0
+mekong,chip_0203,0.61,8.77458,105.21002,2020,water / tidal flat,1.0
+mahakam,chip_0358,0.61,-0.4343,117.60267,2020,water / tidal flat,1.0
+mekong,chip_0154,0.61,10.17924,104.62533,2020,other vegetation,0.88525
+mekong,chip_0297,0.61,9.69976,104.86504,2020,water / tidal flat,1.0
+mekong,chip_0108,0.61,8.8515,105.10369,2023,water / tidal flat,1.0
+mekong,chip_0359,0.61,8.82209,105.17791,2022,water / tidal flat,1.0
+mahakam,chip_0146,0.61,-0.75936,117.58402,2020,water / tidal flat,1.0
+sundarbans,chip_0353,0.61,21.9761,88.57417,2024,water / tidal flat,1.0
+sundarbans,chip_0150,0.61,21.62207,88.84413,2024,water / tidal flat,1.0
+mekong,chip_0058,0.61,9.37758,104.96229,2024,other vegetation,0.52459
+mahakam,chip_0301,0.61,-0.37559,117.45274,2021,water / tidal flat,1.0
+rufiji,chip_0092,0.61,-7.84359,39.30803,2019,other vegetation,1.0
+rufiji,chip_0121,0.61,-7.87683,39.31332,2022,other vegetation,1.0
+sundarbans,chip_0155,0.61,21.98347,88.51669,2023,other vegetation,1.0
+mahakam,chip_0133,0.61,-0.35038,117.47654,2020,water / tidal flat,1.0
+mekong,chip_0164,0.61,9.05196,104.87674,2020,built-up,0.47541
+mekong,chip_0349,0.6,8.64177,104.94835,2024,water / tidal flat,1.0
+rufiji,chip_0137,0.6,-7.83027,39.25389,2022,other vegetation,1.0
+rufiji,chip_0094,0.6,-7.84435,39.26269,2019,other vegetation,1.0
+mekong,chip_0309,0.6,8.63037,104.92245,2022,water / tidal flat,1.0
+everglades,chip_0022,0.6,25.18036,-80.85251,2024,other vegetation,1.0
+sundarbans,chip_0115,0.6,21.89162,89.1917,2024,water / tidal flat,1.0
+mekong,chip_0261,0.6,8.7234,105.03416,2024,water / tidal flat,1.0
+mahakam,chip_0141,0.6,-0.51996,117.47823,2019,water / tidal flat,1.0
+mekong,chip_0134,0.6,9.30506,105.90514,2019,water / tidal flat,0.7
+rufiji,chip_0001,0.6,-7.81346,39.27717,2022,other vegetation,1.0
+mekong,chip_0378,0.6,8.75039,104.91463,2020,water / tidal flat,1.0
+mekong,chip_0193,0.6,8.64592,104.86801,2024,water / tidal flat,1.0
+para,chip_0347,0.6,-0.83876,-46.91544,2021,water / tidal flat,1.0
+mahakam,chip_0173,0.6,-0.91873,117.22536,2024,water / tidal flat,1.0
+mekong,chip_0128,0.6,8.90143,105.25843,2020,water / tidal flat,1.0
+mahakam,chip_0228,0.6,-0.80719,117.51829,2020,water / tidal flat,1.0
+mekong,chip_0354,0.6,8.56783,104.82532,2019,other vegetation,0.73333
+mahakam,chip_0155,0.6,-0.6111,117.5157,2019,water / tidal flat,1.0
+mahakam,chip_0144,0.6,-0.50798,117.54856,2022,water / tidal flat,1.0
+mekong,chip_0117,0.6,8.71106,104.96172,2019,water / tidal flat,1.0
+para,chip_0011,0.6,-0.90855,-46.64241,2022,water / tidal flat,1.0
+rufiji,chip_0063,0.6,-7.85815,39.36419,2022,other vegetation,0.93333
+mekong,chip_0274,0.59,8.80401,105.18806,2021,water / tidal flat,1.0
+jamaica,chip_0308,0.59,18.02837,-77.86543,2019,other vegetation,1.0
+mahakam,chip_0364,0.59,-0.41712,117.48602,2022,water / tidal flat,1.0
+rufiji,chip_0009,0.59,-8.14157,39.37758,2023,other vegetation,1.0
+mekong,chip_0382,0.59,9.27014,105.88335,2021,water / tidal flat,1.0
+mahakam,chip_0032,0.59,-0.62958,117.35234,2024,other vegetation,1.0
+niger_delta,chip_0259,0.59,4.38501,6.68355,2024,other vegetation,1.0
+mekong,chip_0264,0.59,9.36723,106.16997,2021,water / tidal flat,1.0
+jamaica,chip_0230,0.59,18.01913,-77.82816,2024,other vegetation,1.0
+mahakam,chip_0213,0.59,-0.46592,117.4451,2022,water / tidal flat,1.0
+rufiji,chip_0342,0.59,-7.84203,39.2939,2024,water / tidal flat,1.0
+mekong,chip_0171,0.59,9.16535,105.52767,2023,water / tidal flat,1.0
+mekong,chip_0164,0.59,9.05203,104.8752,2020,other vegetation,0.9661
+mekong,chip_0154,0.59,10.17976,104.6244,2020,cropland,0.74576
+mahakam,chip_0126,0.59,-0.87694,117.26061,2024,water / tidal flat,1.0
+jamaica,chip_0334,0.59,18.26456,-76.71066,2019,other vegetation,1.0
+niger_delta,chip_0282,0.59,4.77391,6.91115,2022,other vegetation,1.0
+mekong,chip_0323,0.59,8.67578,105.01135,2023,water / tidal flat,0.71186
+mahakam,chip_0020,0.59,-0.66798,117.39272,2019,water / tidal flat,1.0
+sundarbans,chip_0142,0.59,22.38151,89.53145,2024,water / tidal flat,1.0
+mahakam,chip_0313,0.59,-0.80106,117.53483,2024,water / tidal flat,1.0
+sundarbans,chip_0111,0.59,21.99853,89.09302,2024,water / tidal flat,1.0
+sundarbans,chip_0179,0.59,22.35412,89.26946,2019,water / tidal flat,1.0
+mahakam,chip_0050,0.59,-0.54038,117.45868,2019,water / tidal flat,1.0
+mahakam,chip_0042,0.58,-0.82653,117.35131,2019,water / tidal flat,1.0
+everglades,chip_0030,0.58,25.24002,-80.86187,2024,other vegetation,1.0
+sundarbans,chip_0362,0.58,22.16935,88.92692,2024,water / tidal flat,1.0
+mahakam,chip_0043,0.58,-0.61897,117.43774,2024,water / tidal flat,1.0
+mahakam,chip_0295,0.58,-0.78639,117.42521,2020,water / tidal flat,1.0
+mahakam,chip_0370,0.58,-0.55898,117.4599,2024,other vegetation,1.0
+rufiji,chip_0350,0.58,-7.98923,39.42788,2020,other vegetation,1.0
+matang,chip_0130,0.58,4.72583,100.58593,2023,water / tidal flat,1.0
+jamaica,chip_0266,0.58,17.86349,-77.40419,2024,other vegetation,1.0
+mekong,chip_0127,0.58,8.65887,104.91707,2022,water / tidal flat,1.0
+mekong,chip_0128,0.58,8.90692,105.26866,2024,water / tidal flat,1.0
+mekong,chip_0118,0.58,10.23014,104.62879,2019,water / tidal flat,1.0
+jamaica,chip_0278,0.58,17.84884,-77.38004,2024,other vegetation,0.53448
+rufiji,chip_0048,0.58,-7.7489,39.33918,2024,other vegetation,1.0
+jamaica,chip_0331,0.58,17.91345,-77.05557,2023,other vegetation,0.81034
+rufiji,chip_0301,0.58,-7.87194,39.23387,2019,other vegetation,1.0
+mekong,chip_0093,0.58,8.75949,104.9342,2019,water / tidal flat,1.0
+rufiji,chip_0229,0.58,-7.90376,39.35984,2019,other vegetation,0.81034
+mahakam,chip_0107,0.58,-0.73649,117.51893,2023,water / tidal flat,1.0
+mekong,chip_0315,0.58,9.68163,104.8605,2024,water / tidal flat,1.0
+mekong,chip_0342,0.58,8.64801,105.08844,2020,water / tidal flat,1.0
+mekong,chip_0343,0.58,8.7536,105.08814,2024,water / tidal flat,1.0
+mekong,chip_0102,0.58,10.45055,106.69908,2024,other vegetation,0.56897
+everglades,chip_0057,0.58,25.17389,-80.82948,2024,other vegetation,0.82759
+everglades,chip_0308,0.57,25.22591,-81.03276,2019,other vegetation,1.0
+sundarbans,chip_0179,0.57,22.35746,89.27679,2024,built-up,0.36842
+sundarbans,chip_0162,0.57,22.22973,89.41627,2024,water / tidal flat,1.0
+rufiji,chip_0133,0.57,-7.86427,39.25214,2024,other vegetation,1.0
+mahakam,chip_0309,0.57,-0.41598,117.61217,2020,water / tidal flat,1.0
+rufiji,chip_0213,0.57,-7.78484,39.26927,2020,other vegetation,1.0
+mekong,chip_0007,0.57,8.6358,105.03388,2019,other vegetation,0.54386
+mekong,chip_0127,0.57,8.66937,104.91929,2023,water / tidal flat,1.0
+jamaica,chip_0339,0.57,17.77887,-77.28816,2019,water / tidal flat,1.0
+rufiji,chip_0072,0.57,-8.08294,39.39064,2023,water / tidal flat,1.0
+rufiji,chip_0073,0.57,-7.84844,39.25626,2020,other vegetation,1.0
+rufiji,chip_0268,0.57,-8.0745,39.39252,2022,water / tidal flat,1.0
+mekong,chip_0051,0.57,8.90353,104.84794,2019,water / tidal flat,1.0
+mekong,chip_0302,0.57,10.06982,106.75046,2024,water / tidal flat,1.0
+rufiji,chip_0361,0.57,-7.86838,39.25362,2021,other vegetation,1.0
+matang,chip_0102,0.57,4.67524,100.63668,2023,water / tidal flat,1.0
+para,chip_0363,0.57,-0.89923,-46.22585,2020,bare ground,0.63158
+mekong,chip_0397,0.57,8.64025,104.99888,2024,water / tidal flat,1.0
+mahakam,chip_0226,0.57,-0.54322,117.55899,2021,water / tidal flat,1.0
+mekong,chip_0267,0.57,8.7784,104.82414,2020,built-up,0.98246
+mekong,chip_0384,0.57,9.30728,105.97731,2020,water / tidal flat,1.0
+jamaica,chip_0049,0.57,18.4892,-77.61933,2024,other vegetation,0.98246
+para,chip_0114,0.57,-0.82283,-46.74159,2021,water / tidal flat,1.0
+mexico_pacific,chip_0362,0.57,25.08133,-112.17021,2024,bare ground,1.0
+mahakam,chip_0052,0.57,-0.54804,117.50483,2024,water / tidal flat,1.0
+mekong,chip_0177,0.57,8.66476,104.89057,2024,water / tidal flat,1.0
+para,chip_0130,0.57,-0.6572,-47.24171,2021,water / tidal flat,1.0
+mekong,chip_0146,0.57,9.07706,105.05426,2024,water / tidal flat,0.85965
+sundarbans,chip_0068,0.57,21.72159,88.59528,2024,water / tidal flat,1.0
+mekong,chip_0220,0.57,8.7312,105.1,2023,water / tidal flat,1.0
+rufiji,chip_0329,0.57,-7.86342,39.35378,2021,other vegetation,1.0
+niger_delta,chip_0180,0.57,4.58718,6.96488,2022,water / tidal flat,1.0
+mekong,chip_0291,0.57,8.62578,104.86394,2022,water / tidal flat,0.70175
+rufiji,chip_0014,0.57,-7.80258,39.26311,2022,other vegetation,1.0
+mekong,chip_0063,0.56,9.55466,104.8435,2019,water / tidal flat,1.0
+matang,chip_0384,0.56,4.61644,100.67043,2022,other vegetation,1.0
+mekong,chip_0348,0.56,8.76056,105.06928,2023,water / tidal flat,1.0
+rufiji,chip_0035,0.56,-7.88235,39.29338,2022,other vegetation,1.0
+mekong,chip_0299,0.56,8.82955,105.16057,2023,water / tidal flat,1.0
+rufiji,chip_0062,0.56,-7.86055,39.28198,2020,other vegetation,1.0
+mekong,chip_0304,0.56,9.12701,105.05175,2021,water / tidal flat,0.91071
+jamaica,chip_0049,0.56,18.4866,-77.61737,2023,other vegetation,0.69643
+niger_delta,chip_0219,0.56,4.70802,6.612,2024,other vegetation,1.0
+jamaica,chip_0062,0.56,17.88915,-77.1396,2024,other vegetation,1.0
+jamaica,chip_0262,0.56,18.01291,-77.81413,2019,other vegetation,1.0
+mekong,chip_0269,0.56,8.68912,104.81139,2022,water / tidal flat,1.0
+mahakam,chip_0175,0.56,-0.56278,117.55402,2019,water / tidal flat,1.0
+mahakam,chip_0394,0.56,-0.38365,117.52061,2021,water / tidal flat,1.0
+mahakam,chip_0371,0.56,-0.88251,117.36873,2024,water / tidal flat,1.0
+mekong,chip_0311,0.56,8.63317,104.85539,2021,other vegetation,0.55357
+sundarbans,chip_0125,0.56,22.34415,89.58568,2024,water / tidal flat,1.0
+mahakam,chip_0136,0.56,-0.36519,117.45038,2021,water / tidal flat,1.0
+mahakam,chip_0115,0.56,-0.88838,117.32367,2021,other vegetation,1.0
+mahakam,chip_0116,0.56,-0.56029,117.57694,2020,water / tidal flat,1.0
+mekong,chip_0347,0.56,9.48572,106.20195,2019,other vegetation,0.51786
+mekong,chip_0348,0.56,8.76234,105.07093,2024,water / tidal flat,1.0
+everglades,chip_0132,0.56,25.38922,-80.92411,2024,water / tidal flat,1.0
+rufiji,chip_0116,0.56,-8.18169,39.3375,2022,other vegetation,1.0
+mekong,chip_0177,0.56,8.66534,104.89225,2023,water / tidal flat,1.0
+mexico_pacific,chip_0368,0.56,24.80199,-112.24654,2024,bare ground,1.0
+mekong,chip_0077,0.56,10.03716,106.67633,2024,water / tidal flat,1.0
+rufiji,chip_0390,0.56,-7.85807,39.37924,2020,other vegetation,1.0
+matang,chip_0055,0.56,4.64724,100.62381,2020,water / tidal flat,1.0
+mekong,chip_0234,0.56,8.76914,104.89579,2024,water / tidal flat,1.0
+mahakam,chip_0309,0.55,-0.41439,117.61442,2021,water / tidal flat,1.0
+niger_delta,chip_0036,0.55,4.32846,6.50943,2024,other vegetation,1.0
+rufiji,chip_0134,0.55,-7.88329,39.32067,2019,other vegetation,1.0
+sundarbans,chip_0374,0.55,21.78831,88.43747,2024,water / tidal flat,1.0
+jamaica,chip_0171,0.55,18.03746,-77.81814,2024,other vegetation,1.0
+mahakam,chip_0064,0.55,-0.62596,117.52456,2020,water / tidal flat,1.0
+mekong,chip_0108,0.55,8.84565,105.0969,2023,water / tidal flat,1.0
+mekong,chip_0118,0.55,10.23005,104.62302,2020,water / tidal flat,1.0
+mekong,chip_0011,0.55,8.74931,105.09377,2024,water / tidal flat,1.0
+mekong,chip_0299,0.55,8.82522,105.16554,2022,water / tidal flat,1.0
+rufiji,chip_0226,0.55,-7.8826,39.33994,2024,water / tidal flat,0.61818
+mahakam,chip_0028,0.55,-0.39656,117.44291,2022,water / tidal flat,1.0
+mahakam,chip_0211,0.55,-0.41707,117.42891,2019,water / tidal flat,1.0
+mekong,chip_0268,0.55,8.76012,105.11635,2023,water / tidal flat,1.0
+niger_delta,chip_0182,0.55,4.57228,5.90753,2019,other vegetation,1.0
+rufiji,chip_0350,0.55,-7.99007,39.42628,2021,other vegetation,1.0
+mekong,chip_0219,0.55,8.75336,105.15973,2019,water / tidal flat,1.0
+mahakam,chip_0171,0.55,-0.41999,117.6188,2024,water / tidal flat,1.0
+mekong,chip_0313,0.55,8.74285,104.99792,2023,water / tidal flat,1.0
+matang,chip_0329,0.55,4.90151,100.65064,2020,other vegetation,1.0
+mekong,chip_0306,0.55,8.77945,104.91971,2020,water / tidal flat,1.0
+mekong,chip_0097,0.55,9.00441,105.32264,2024,water / tidal flat,1.0
+everglades,chip_0022,0.55,25.18026,-80.84898,2024,other vegetation,1.0
+mahakam,chip_0315,0.55,-0.68382,117.45213,2020,water / tidal flat,1.0
+rufiji,chip_0034,0.55,-7.80341,39.25719,2024,other vegetation,1.0
+mahakam,chip_0139,0.55,-0.61715,117.46829,2023,water / tidal flat,1.0
+rufiji,chip_0082,0.55,-8.19499,39.31837,2019,other vegetation,1.0
+rufiji,chip_0043,0.54,-7.86475,39.40477,2022,water / tidal flat,1.0
+mekong,chip_0355,0.54,9.53566,106.40746,2022,other vegetation,1.0
+mahakam,chip_0090,0.54,-0.63554,117.39786,2023,water / tidal flat,1.0
+mekong,chip_0347,0.54,9.48491,106.19842,2020,water / tidal flat,0.94444
+everglades,chip_0395,0.54,25.63664,-81.2223,2024,water / tidal flat,0.7037
+mahakam,chip_0291,0.54,-0.58702,117.44974,2019,other vegetation,1.0
+everglades,chip_0221,0.54,25.78985,-81.16268,2024,other vegetation,1.0
+mahakam,chip_0280,0.54,-0.65029,117.3988,2021,water / tidal flat,1.0
+rufiji,chip_0390,0.54,-7.86011,39.383,2024,other vegetation,1.0
+rufiji,chip_0143,0.54,-7.925,39.38708,2019,water / tidal flat,1.0
+mahakam,chip_0259,0.54,-0.77929,117.31175,2019,water / tidal flat,1.0
+mahakam,chip_0309,0.54,-0.41361,117.60538,2019,water / tidal flat,1.0
+rufiji,chip_0361,0.54,-7.86817,39.25486,2022,other vegetation,1.0
+papua,chip_0330,0.54,-4.88327,137.62822,2024,water / tidal flat,1.0
+mekong,chip_0320,0.54,8.78496,105.1079,2023,water / tidal flat,1.0
+sundarbans,chip_0326,0.54,22.02073,88.77159,2024,water / tidal flat,1.0
+everglades,chip_0018,0.54,25.27947,-80.83715,2024,other vegetation,1.0
+mahakam,chip_0005,0.54,-0.62856,117.50714,2020,water / tidal flat,1.0
+rufiji,chip_0281,0.54,-7.83066,39.44567,2024,water / tidal flat,1.0
+jamaica,chip_0331,0.54,17.91448,-77.05468,2023,other vegetation,0.51852
+rufiji,chip_0034,0.54,-7.80707,39.24764,2020,other vegetation,1.0
+mekong,chip_0363,0.54,9.11178,105.50451,2020,water / tidal flat,1.0
+rufiji,chip_0301,0.54,-7.87122,39.24072,2019,other vegetation,1.0
+mekong,chip_0305,0.54,10.38614,106.90389,2019,cropland,0.74074
+mekong,chip_0389,0.54,10.16157,106.77759,2022,water / tidal flat,1.0
+mekong,chip_0133,0.54,9.70082,106.14914,2019,other vegetation,1.0
+mekong,chip_0265,0.54,9.35578,106.13701,2019,other vegetation,0.94444
+para,chip_0394,0.54,-0.90058,-46.4763,2019,water / tidal flat,1.0
+rufiji,chip_0021,0.54,-7.87624,39.32775,2021,other vegetation,1.0
+mekong,chip_0016,0.54,8.68295,105.05598,2019,water / tidal flat,1.0
+mekong,chip_0017,0.53,9.80524,104.88554,2021,water / tidal flat,1.0
+rufiji,chip_0314,0.53,-7.81352,39.43425,2019,water / tidal flat,1.0
+mekong,chip_0298,0.53,8.77833,105.07796,2023,water / tidal flat,1.0
+niger_delta,chip_0369,0.53,4.77384,6.9503,2019,water / tidal flat,1.0
+mekong,chip_0076,0.53,9.61211,106.23663,2019,water / tidal flat,1.0
+sundarbans,chip_0388,0.53,22.23279,89.47864,2024,water / tidal flat,1.0
+sundarbans,chip_0176,0.53,21.96406,88.46528,2021,water / tidal flat,0.73585
+everglades,chip_0015,0.53,25.59739,-81.22463,2024,other vegetation,1.0
+jamaica,chip_0168,0.53,18.01841,-77.81638,2022,other vegetation,1.0
+jamaica,chip_0186,0.53,18.2214,-78.17166,2024,other vegetation,1.0
+mahakam,chip_0361,0.53,-0.52586,117.52243,2020,water / tidal flat,1.0
+mahakam,chip_0368,0.53,-0.73983,117.54585,2019,water / tidal flat,1.0
+mekong,chip_0135,0.53,9.03379,105.38775,2022,water / tidal flat,1.0
+mahakam,chip_0234,0.53,-0.74572,117.52985,2021,water / tidal flat,1.0
+mekong,chip_0270,0.53,9.84993,106.65495,2020,water / tidal flat,1.0
+jamaica,chip_0159,0.53,17.80877,-77.30603,2020,other vegetation,1.0
+mekong,chip_0227,0.53,8.68416,104.93108,2022,water / tidal flat,1.0
+niger_delta,chip_0236,0.53,4.71965,6.69745,2023,other vegetation,1.0
+rufiji,chip_0315,0.53,-7.85083,39.26335,2019,other vegetation,1.0
+mekong,chip_0146,0.53,9.07854,105.05441,2020,water / tidal flat,0.90566
+mahakam,chip_0064,0.52,-0.6345,117.52986,2020,water / tidal flat,1.0
+rufiji,chip_0226,0.52,-7.88007,39.33488,2020,other vegetation,1.0
+mekong,chip_0091,0.52,8.99617,105.36144,2023,water / tidal flat,1.0
+mekong,chip_0346,0.52,8.67157,104.89917,2020,water / tidal flat,1.0
+mahakam,chip_0004,0.52,-0.75684,117.52042,2019,water / tidal flat,1.0
+mahakam,chip_0369,0.52,-0.62849,117.47471,2024,water / tidal flat,1.0
+sundarbans,chip_0249,0.52,22.27985,89.19932,2024,water / tidal flat,1.0
+mahakam,chip_0275,0.52,-0.71223,117.46434,2020,water / tidal flat,1.0
+mekong,chip_0334,0.52,8.78151,105.10451,2023,water / tidal flat,1.0
+para,chip_0067,0.52,-1.09953,-45.98102,2024,water / tidal flat,1.0
+mekong,chip_0139,0.52,8.84753,104.89922,2020,water / tidal flat,1.0
+mekong,chip_0334,0.52,8.78138,105.10611,2023,water / tidal flat,1.0
+mahakam,chip_0383,0.52,-0.66243,117.42595,2019,water / tidal flat,1.0
+rufiji,chip_0007,0.52,-7.83803,39.41399,2020,other vegetation,1.0
+mahakam,chip_0146,0.52,-0.75284,117.58087,2024,water / tidal flat,1.0
+mahakam,chip_0147,0.52,-0.54065,117.51079,2024,water / tidal flat,1.0
+mekong,chip_0289,0.52,8.66837,104.97826,2022,water / tidal flat,0.84615
+mekong,chip_0291,0.52,8.63271,104.86434,2024,water / tidal flat,1.0
+rufiji,chip_0352,0.52,-8.18223,39.21774,2021,other vegetation,0.61538
+mahakam,chip_0107,0.52,-0.74229,117.52435,2019,water / tidal flat,1.0
+rufiji,chip_0131,0.52,-7.90964,39.38436,2020,other vegetation,1.0
+mekong,chip_0326,0.52,8.76975,104.91489,2020,water / tidal flat,1.0
+everglades,chip_0199,0.52,25.42596,-80.8945,2024,other vegetation,1.0
+mahakam,chip_0077,0.52,-0.88295,117.35463,2019,water / tidal flat,1.0
+mahakam,chip_0131,0.52,-0.58564,117.57102,2024,water / tidal flat,1.0
+rufiji,chip_0063,0.52,-7.85323,39.36376,2020,other vegetation,1.0
+mekong,chip_0108,0.52,8.84839,105.09796,2024,water / tidal flat,1.0
+mekong,chip_0365,0.52,8.59809,104.83188,2024,water / tidal flat,0.76923
+niger_delta,chip_0185,0.52,4.61722,6.80579,2023,other vegetation,1.0
+mekong,chip_0379,0.52,9.9436,106.61629,2022,water / tidal flat,1.0
+mahakam,chip_0313,0.51,-0.80912,117.52937,2021,water / tidal flat,1.0
+mekong,chip_0209,0.51,8.66588,104.96771,2019,water / tidal flat,1.0
+mahakam,chip_0084,0.51,-0.43532,117.42757,2024,water / tidal flat,1.0
+rufiji,chip_0049,0.51,-7.90915,39.3703,2022,other vegetation,1.0
+matang,chip_0311,0.51,4.93208,100.58548,2022,other vegetation,1.0
+mekong,chip_0358,0.51,8.72706,105.02497,2023,water / tidal flat,1.0
+mahakam,chip_0078,0.51,-0.64913,117.53565,2021,water / tidal flat,1.0
+mekong,chip_0047,0.51,9.60776,106.28843,2019,water / tidal flat,1.0
+mekong,chip_0210,0.51,9.83021,104.92593,2020,water / tidal flat,1.0
+everglades,chip_0080,0.51,25.17857,-80.81368,2024,other vegetation,1.0
+mekong,chip_0193,0.51,8.64641,104.87463,2020,water / tidal flat,1.0
+mahakam,chip_0043,0.51,-0.61844,117.44679,2024,water / tidal flat,1.0
+papua,chip_0076,0.51,-4.85712,137.49758,2023,water / tidal flat,1.0
+niger_delta,chip_0084,0.51,4.32515,6.39726,2023,other vegetation,0.98039
+jamaica,chip_0271,0.51,17.94807,-77.82387,2024,other vegetation,1.0
+sundarbans,chip_0052,0.51,21.77142,89.0694,2020,water / tidal flat,1.0
+mahakam,chip_0182,0.51,-0.71163,117.26036,2021,other vegetation,1.0
+mekong,chip_0260,0.51,8.64008,104.93768,2024,water / tidal flat,1.0
+matang,chip_0127,0.51,4.92197,100.5909,2024,other vegetation,1.0
+mekong,chip_0377,0.51,8.66167,104.83929,2022,water / tidal flat,1.0
+mekong,chip_0001,0.51,8.60899,104.88774,2022,water / tidal flat,1.0
+niger_delta,chip_0282,0.51,4.77485,6.91048,2023,other vegetation,1.0
+jamaica,chip_0199,0.51,17.85317,-77.01244,2024,water / tidal flat,1.0
+mekong,chip_0146,0.51,9.07849,105.05675,2022,water / tidal flat,0.98039
+mahakam,chip_0250,0.51,-0.67349,117.44057,2020,water / tidal flat,1.0
+para,chip_0100,0.51,-0.89738,-46.22216,2024,bare ground,1.0
+para,chip_0125,0.51,-1.05251,-46.15145,2024,water / tidal flat,1.0
+mahakam,chip_0281,0.51,-0.35825,117.52397,2023,water / tidal flat,1.0
+mekong,chip_0219,0.51,8.76363,105.14958,2023,water / tidal flat,1.0
+sundarbans,chip_0199,0.51,21.774,88.62228,2024,water / tidal flat,1.0
+everglades,chip_0389,0.51,25.64282,-81.23867,2024,water / tidal flat,1.0
+rufiji,chip_0133,0.51,-7.86823,39.24593,2021,other vegetation,1.0
+rufiji,chip_0133,0.5,-7.86536,39.24876,2022,water / tidal flat,0.54
+mekong,chip_0322,0.5,9.71182,104.85785,2019,water / tidal flat,1.0
+mekong,chip_0326,0.5,8.77508,104.92319,2019,water / tidal flat,1.0
+mahakam,chip_0314,0.5,-0.73128,117.36157,2024,water / tidal flat,1.0
+mekong,chip_0165,0.5,8.7877,105.22515,2023,water / tidal flat,1.0
+mahakam,chip_0369,0.5,-0.631,117.46849,2020,water / tidal flat,1.0
+jamaica,chip_0168,0.5,18.02389,-77.82187,2024,other vegetation,1.0
+mekong,chip_0139,0.5,8.85684,104.90456,2024,water / tidal flat,1.0
+para,chip_0325,0.5,-0.70818,-47.44739,2019,water / tidal flat,1.0
+mahakam,chip_0207,0.5,-0.74939,117.38221,2019,water / tidal flat,1.0
+rufiji,chip_0347,0.5,-7.90692,39.39783,2019,other vegetation,1.0
+mekong,chip_0383,0.5,8.81829,105.245,2019,built-up,0.9
+jamaica,chip_0246,0.5,18.04376,-77.89897,2019,other vegetation,1.0
+jamaica,chip_0262,0.5,18.01669,-77.81411,2024,other vegetation,1.0
+jamaica,chip_0270,0.5,18.0394,-77.81955,2024,other vegetation,1.0
+matang,chip_0311,0.5,4.93093,100.59025,2022,other vegetation,1.0
+jamaica,chip_0303,0.5,17.75865,-77.14394,2024,water / tidal flat,1.0
+rufiji,chip_0028,0.5,-8.16178,39.35791,2021,other vegetation,1.0
+rufiji,chip_0296,0.5,-7.8801,39.34823,2022,other vegetation,0.92
+mekong,chip_0298,0.5,8.78205,105.08373,2023,water / tidal flat,1.0
+mekong,chip_0344,0.5,8.99132,105.36852,2023,water / tidal flat,1.0
+mahakam,chip_0090,0.5,-0.63219,117.39433,2022,water / tidal flat,1.0
+mekong,chip_0338,0.5,9.80836,104.88396,2020,built-up,0.7
+mekong,chip_0313,0.5,8.74648,105.00221,2023,water / tidal flat,1.0
+mekong,chip_0007,0.5,8.6335,105.03534,2019,other vegetation,0.96
+papua,chip_0303,0.5,-4.9206,137.50309,2023,water / tidal flat,1.0
+mahakam,chip_0308,0.5,-0.7452,117.53741,2024,water / tidal flat,1.0
+everglades,chip_0203,0.5,25.51317,-81.00402,2021,other vegetation,1.0

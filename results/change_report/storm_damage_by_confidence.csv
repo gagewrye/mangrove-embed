@@ -1,0 +1,21 @@
+case,conf_bin,px,pre_ndvi,dndvi_median,damaged_pct,dndmi_median,detector_lost_pct
+Melissa 2025 (Jamaica SW),<0.80,400,0.5541,-0.1796,74.5,-0.2373,47.5
+Melissa 2025 (Jamaica SW),0.80-0.95,400,0.6472,-0.2367,83.25,-0.2946,18.25
+Melissa 2025 (Jamaica SW),0.95-0.99,400,0.6407,-0.3287,90.25,-0.3587,7.25
+Melissa 2025 (Jamaica SW),0.99-0.999,400,0.6936,-0.3566,94.0,-0.4298,1.0
+Melissa 2025 (Jamaica SW),>0.999,400,0.7016,-0.4931,99.25,-0.5465,0.0
+Beryl 2024 (Jamaica S-central),<0.80,400,0.2469,0.054,7.75,0.0592,11.25
+Beryl 2024 (Jamaica S-central),0.80-0.95,400,0.2369,0.0176,9.75,0.0196,0.5
+Beryl 2024 (Jamaica S-central),0.95-0.99,400,0.3555,-0.0076,19.5,-0.017,0.0
+Beryl 2024 (Jamaica S-central),0.99-0.999,400,0.5809,-0.0339,28.0,-0.0198,0.0
+Beryl 2024 (Jamaica S-central),>0.999,400,0.6437,-0.0428,34.75,-0.0179,0.0
+Remal 2024 (Sundarbans),<0.80,400,0.001,0.0069,4.75,0.0545,39.5
+Remal 2024 (Sundarbans),0.80-0.95,400,0.3623,-0.0145,16.75,0.0504,1.75
+Remal 2024 (Sundarbans),0.95-0.99,400,0.4229,0.0167,10.75,0.0557,0.25
+Remal 2024 (Sundarbans),0.99-0.999,400,0.4277,0.0487,5.25,0.0795,0.0
+Remal 2024 (Sundarbans),>0.999,400,0.4238,0.0903,1.0,0.097,0.0
+control: Jamaica east (Melissa date),<0.80,400,0.587,-0.0127,10.25,-0.011,14.75
+control: Jamaica east (Melissa date),0.80-0.95,400,0.6622,-0.0168,7.5,-0.0043,0.5
+control: Jamaica east (Melissa date),0.95-0.99,400,0.6408,-0.0123,9.0,0.0014,0.0
+control: Jamaica east (Melissa date),0.99-0.999,400,0.6585,-0.0226,9.25,0.0074,0.0
+control: Jamaica east (Melissa date),>0.999,400,0.708,-0.0638,21.25,-0.0375,0.0
